@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Sefer.Backend.Api.Notifications.Test</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sefer.Backend.SharedConfig.Lib" Version="1.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.8.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.8.3" />
+    <PackageReference Include="FluentAssertions" Version="8.2.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Sefer.Backend.Api.Notifications\Sefer.Backend.Api.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Sefer.Backend.Api.Services\Sefer.Backend.Api.Services.csproj" />
+    <ProjectReference Include="..\..\src\Sefer.Backend.Api.Shared\Sefer.Backend.Api.Shared.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Test\Sefer.Backend.Api.Test.csproj" />
+    <ProjectReference Include="..\..\src\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Sefer.Backend.Api.Data.Handlers</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Algorithms\Sefer.Backend.Api.Data.Algorithms.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Requests\Sefer.Backend.Api.Data.Requests.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Shared\Sefer.Backend.Api.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="8.0.7" />
+    <PackageReference Include="Sefer.Backend.Support.Lib" Version="1.2.0" />
+  </ItemGroup>
+</Project>

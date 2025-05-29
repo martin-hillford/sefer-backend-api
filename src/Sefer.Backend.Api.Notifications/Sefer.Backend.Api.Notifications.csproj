@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <RootNamespace>Sefer.Backend.Api.Notifications</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Services\Sefer.Backend.Api.Services.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Chat\Sefer.Backend.Api.Chat.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
+  </ItemGroup>
+</Project>

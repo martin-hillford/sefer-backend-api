@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Sefer.Backend.Api.Data.Algorithms</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Models\Sefer.Backend.Api.Data.Models.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Requests\Sefer.Backend.Api.Data.Requests.csproj" />
+  </ItemGroup>
+</Project>

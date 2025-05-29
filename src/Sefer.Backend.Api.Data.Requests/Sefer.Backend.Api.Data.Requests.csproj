@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Sefer.Backend.Api.Data.Requests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Sefer.Backend.SharedConfig.Lib" Version="1.2.0" />
+    <PackageReference Include="Sefer.Backend.Support.Lib" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Models\Sefer.Backend.Api.Data.Models.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Shared\Sefer.Backend.Api.Shared.csproj" />
+  </ItemGroup>
+</Project>

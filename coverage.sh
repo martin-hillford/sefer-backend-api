@@ -1,0 +1,1 @@
+dotnet-coverage collect -f cobertura -o coverage.cobertura.xml "dotnet test --no-build"

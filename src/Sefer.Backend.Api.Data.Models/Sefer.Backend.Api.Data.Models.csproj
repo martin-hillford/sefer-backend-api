@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>Sefer.Backend.Api.Data.Models</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Extensions\Sefer.Backend.Api.Extensions.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Shared\Sefer.Backend.Api.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Annotations\NotNullAttribute.cs" />
+  </ItemGroup>
+</Project>

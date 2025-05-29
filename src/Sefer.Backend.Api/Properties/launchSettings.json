@@ -1,0 +1,14 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true
+  },
+  "profiles": {
+    "Sefer.Backend.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5000/swagger/",
+      "applicationUrl": "http://localhost:5000"
+    }
+  }
+}
