@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sefer.Backend.Api.Services</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.24.0" />
+    <PackageReference Include="MailKit" Version="4.12.0" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="Sefer.Backend.SharedConfig.Lib" Version="1.2.0" />
+    <PackageReference Include="Sefer.Backend.GeoIP.Lib" Version="1.1.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Requests\Sefer.Backend.Api.Data.Requests.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Notifications/" />
+  </ItemGroup>
+</Project>

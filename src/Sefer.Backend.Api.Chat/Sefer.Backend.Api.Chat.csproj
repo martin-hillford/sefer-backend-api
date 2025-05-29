@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Sefer.Backend.Api.Chat</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sefer.Backend.Api.Data.Requests\Sefer.Backend.Api.Data.Requests.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+    <ProjectReference Include="..\Sefer.Backend.Api.Services\Sefer.Backend.Api.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Sefer.Backend.Authentication.Lib" Version="1.1.14" />
+  </ItemGroup>
+</Project>

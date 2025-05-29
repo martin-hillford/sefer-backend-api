@@ -1,0 +1,15 @@
+global using System.Security.Cryptography;
+global using Microsoft.Extensions.DependencyInjection;
+global using Sefer.Backend.Api.Data.Models.Constants;
+global using Sefer.Backend.Api.Data.Models.Courses;
+global using Sefer.Backend.Api.Data.Models.Courses.Curricula;
+global using Sefer.Backend.Api.Data.Models.Courses.Rewards;
+global using Sefer.Backend.Api.Data.Models.Enrollments;
+global using Sefer.Backend.Api.Data.Models.Settings;
+global using Sefer.Backend.Api.Data.Models.Users;
+global using Sefer.Backend.Api.Data.Requests.CourseRevisions;
+global using Sefer.Backend.Api.Data.Requests.Curricula;
+global using Sefer.Backend.Api.Data.Requests.Enrollments;
+global using Sefer.Backend.Api.Data.Requests.Rewards;
+global using Sefer.Backend.Support.Lib.Mediator;
+global using Sefer.Backend.Api.Extensions;
