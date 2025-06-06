@@ -167,12 +167,6 @@ public class DataContext(DbContextOptions options) : DbContext(options)
 
     #endregion
 
-    #region Financial
-
-    public DbSet<Donation> Donations { get; set; }
-
-    #endregion
-
     #region Views
 
     public DbSet<UserLastActivity> UserLastActivities { get; set; }
