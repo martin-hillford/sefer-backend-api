@@ -8,7 +8,6 @@ global using Sefer.Backend.Api.Data.Models.Courses.Curricula;
 global using Sefer.Backend.Api.Data.Models.Courses.Lessons;
 global using Sefer.Backend.Api.Data.Models.Courses.Rewards;
 global using Sefer.Backend.Api.Data.Models.Enrollments;
-global using Sefer.Backend.Api.Data.Models.Financials;
 global using Sefer.Backend.Api.Data.Models.Logging;
 global using Sefer.Backend.Api.Data.Models.Resources;
 global using Sefer.Backend.Api.Data.Models.Users;
