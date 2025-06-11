@@ -6,7 +6,7 @@ namespace Sefer.Backend.Api.Controllers.Admin;
 [Authorize(Roles = "Admin")]
 public class ConfigController(IServiceProvider provider) : BaseController(provider)
 {
-    [HttpGet("/config")]
+    [HttpGet("/settings")]
     [ProducesResponseType(typeof(ConfigView), 200)]
     public async Task<IActionResult> GetConfig()
     {
@@ -15,12 +15,11 @@ public class ConfigController(IServiceProvider provider) : BaseController(provid
         return Json(view);
     }
 
-    [HttpPost("/config")]
+    [HttpPost("/settings")]
     [ProducesResponseType(202)]
     public async Task<ActionResult> SaveConfig([FromBody] ConfigPostModel config)
     {
-        if (config == null) return BadRequest();
-        if (ModelState.IsValid == false) return BadRequest();
+        if (config == null || ModelState.IsValid == false) return BadRequest();
         var valid = await Send(new UpdateSettingsRequest(config.ToModel()));
         return (valid) ? StatusCode(202) : BadRequest();
     }
