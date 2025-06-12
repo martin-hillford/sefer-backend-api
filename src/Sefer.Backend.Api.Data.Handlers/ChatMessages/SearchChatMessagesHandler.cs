@@ -19,7 +19,7 @@ public partial class SearchChatMessagesHandler(IServiceProvider serviceProvider)
             if (string.IsNullOrEmpty(term)) return [];
 
             var context = GetDataContext();
-            var query = context.Database.IsSqlServer()
+            var query = context.Database.IsRelational()
                 ? context.ChatMessages.Where(m => EF.Functions.Contains(m.ContentString, $"\"{term}*\""))
                 : context.ChatMessages.Where(m => m.ContentString.Contains(request.SearchTerm));
 
