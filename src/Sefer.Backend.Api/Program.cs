@@ -57,6 +57,7 @@ public static class Program
             .AddSingleton<IMentorAssigningFactory, MentorAssigningFactory>()
             .AddSingleton<ILoggerProvider, DatabaseLoggerProvider>()
             .AddResponseCaching()
+            .AddMemoryCache()
             .AddHttpContextAccessor()
             .AddHttpClient()
             .AddControllersAndPages();
