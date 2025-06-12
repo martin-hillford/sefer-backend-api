@@ -8,7 +8,7 @@ public class GetChannelsHandler(IServiceProvider serviceProvider)
         // Query for personal channels the user has access to and sort then last message date
         // such that the channel with the latest message is on top
         await using var context = GetDataContext();
-        if (!context.Database.IsSqlServer()) return await PureLinq(context, request, token);
+        if (!context.Database.IsSqlCapableServer()) return await PureLinq(context, request, token);
         return await SqlServer(context, request, token);
     }
 
