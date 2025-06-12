@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
 namespace Sefer.Backend.Api.Data.Handlers;
 
 public static class ServiceCollectionExtensions
@@ -26,5 +28,12 @@ public static class ServiceCollectionExtensions
             );
 
         if (serviceType != null) services.AddSingleton(serviceType, implementationType);
+    }
+
+    public static bool IsSqlCapableServer(this DatabaseFacade database)
+    {
+        return
+            database.IsSqlServer() ||
+            database.ProviderName?.Contains("Npgsql.EntityFrameworkCore.PostgreSQL") == true;
     }
 }

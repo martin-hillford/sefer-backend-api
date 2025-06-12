@@ -9,10 +9,10 @@ public class GetRandomTestimoniesHandler(IServiceProvider serviceProvider)
         var random = context.Testimonies.AsNoTracking();
         if (request.HomepageOnly) random = random.Where(t => t.CourseId == null);
 
-        if (!context.Database.IsRelational()) random = random.ToList().AsQueryable();
+        if (!context.Database.IsSqlCapableServer()) random = random.ToList().AsQueryable();
         var testimonies = random.RandomElements(request.Count);
 
-        if (!context.Database.IsRelational()) return testimonies.ToList();
+        if (!context.Database.IsSqlCapableServer()) return testimonies.ToList();
         return await testimonies.ToListAsync(token);
     }
 }

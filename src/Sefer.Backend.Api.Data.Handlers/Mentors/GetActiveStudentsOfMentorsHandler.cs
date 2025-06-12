@@ -11,7 +11,7 @@ public class GetActiveStudentsOfMentorsHandler(IServiceProvider serviceProvider)
         var context = GetDataContext();
         var activeDate = DateTime.UtcNow.AddDays(-1 * days.Value);
         
-        if (context.Database.IsRelational())
+        if (context.Database.IsSqlCapableServer())
         {
             var activeUsingSql = await context.Set<ActiveStudentsPerMentor>().ToDictionaryAsync(g => g.MentorId, g => g.ActiveStudents, token);
             return new MentorActiveStudentsDictionary(activeUsingSql);
