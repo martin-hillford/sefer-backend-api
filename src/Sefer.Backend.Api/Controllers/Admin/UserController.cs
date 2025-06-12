@@ -3,7 +3,7 @@ namespace Sefer.Backend.Api.Controllers.Admin;
 /// <summary>
 /// This controller deals with all the course requests from an admin
 /// </summary>
-// [Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class UserController(IServiceProvider serviceProvider) : BaseController(serviceProvider)
 {
     /// <summary>
