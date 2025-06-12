@@ -1,10 +1,10 @@
 namespace Sefer.Backend.Api.Data.Handlers.Settings;
 
-public class GetRegionsHandler(IServiceProvider serviceProvider) : Handler<GetRegionRequest, IEnumerable<IRegion>>(serviceProvider)
+public class GetRegionsHandler(IServiceProvider serviceProvider) : Handler<GetRegionRequest, List<IRegion>>(serviceProvider)
 {
-    public override async Task<IEnumerable<IRegion>> Handle(GetRegionRequest request, CancellationToken token)
+    public override async Task<List<IRegion>> Handle(GetRegionRequest request, CancellationToken token)
     {
-        var cached = Cache.Get<IEnumerable<IRegion>>("database-regions");
+        var cached = Cache.Get<List<IRegion>>("database-regions");
         if (cached != null) return cached;
 
         var networkProvider = ServiceProvider.GetNetworkProvider();
