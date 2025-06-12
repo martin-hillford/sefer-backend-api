@@ -12,7 +12,7 @@ public class MarkChannelAsReadHandler(IServiceProvider serviceProvider)
 
             var now = DateTime.UtcNow;
             await using var context = GetDataContext();
-            if (context.Database.IsSqlServer())
+            if (context.Database.IsRelational())
             {
                 await context.ChatChannelMessages
                     .Where(m => m.ReadDate == null && m.ReceiverId == request.ChannelId && m.Message.ChannelId == request.ChannelId)
