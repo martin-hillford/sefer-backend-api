@@ -66,14 +66,14 @@ public interface IFileStorageService
     /// <param name="relativeAddress">The relativeAddress to resolve</param>
     /// <param name="isPublic">when false, relativeAddress will be resolved relative to the PrivatePath else the PublicPath is used</param>
     /// <returns>null if a file was not found else the file itself</returns>
-    Task<IFile> ResolveFileAsync(string relativeAddress, bool isPublic);
+    Task<IFile?> ResolveFileAsync(string relativeAddress, bool isPublic);
 
     /// <summary>
     /// Resolves a directory given a path
     /// </summary>
     /// <param name="path">The path to resolve</param>
     /// <returns>null if a directory was not found else directory file itself</returns>
-    Task<IDirectory> ResolveDirectoryAsync(string path);
+    Task<IDirectory?> ResolveDirectoryAsync(string path);
 
     /// <summary>
     /// Resolves a directory given a relativeAddress
@@ -81,7 +81,7 @@ public interface IFileStorageService
     /// <param name="relativeAddress">The directory to resolve</param>
     /// <param name="isPublic">when false, relativeAddress will be resolved relative to the PrivatePath else the PublicPath is used</param>
     /// <returns>null if a file was not found else the file itself</returns>
-    Task<IDirectory> ResolveDirectoryAsync(string relativeAddress, bool isPublic);
+    Task<IDirectory?> ResolveDirectoryAsync(string relativeAddress, bool isPublic);
 
     /// <summary>
     /// This method helps is stripped paths from file name

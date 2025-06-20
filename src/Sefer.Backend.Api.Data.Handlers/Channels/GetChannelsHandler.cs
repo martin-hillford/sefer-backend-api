@@ -38,7 +38,7 @@ public class GetChannelsHandler(IServiceProvider serviceProvider)
         var query = $@"
             SELECT c.* FROM chat_channels AS c
             LEFT JOIN ( SELECT cm.channel_id, MAX(sender_date) AS sender_date FROM chat_messages as cm GROUP BY cm.channel_id ) AS cs ON cs.channel_id = C.id
-            WHERE c.id IN ( SELECT DISTINCT channel_id FROM chat_channel_receivers WHERE deleted = 0 AND archived = 0 AND user_id = {userId} ) AND type != 2
+            WHERE c.id IN ( SELECT DISTINCT channel_id FROM chat_channel_receivers WHERE deleted = FALSE AND archived = FALSE AND user_id = {userId} ) AND type != 2
             ORDER BY sender_date DESC
         ";
 

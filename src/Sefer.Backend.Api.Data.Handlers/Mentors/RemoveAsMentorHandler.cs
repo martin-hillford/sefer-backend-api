@@ -98,7 +98,7 @@ public class RemoveAsMentorHandler(IServiceProvider serviceProvider)
     private void RemoveMentorRegions(int mentorId)
     {
         var context = GetDataContext();
-        var mentorRegions = context.MentorRegions.Where(mc => mc.MentorId == mentorId);
+        var mentorRegions = context.MentorRegions.Where(mc => mc.MentorId == mentorId).ToList();
         context.MentorRegions.RemoveRange(mentorRegions);
         context.SaveChanges();
     }
