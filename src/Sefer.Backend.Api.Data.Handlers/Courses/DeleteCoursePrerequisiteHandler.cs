@@ -1,20 +1,21 @@
 namespace Sefer.Backend.Api.Data.Handlers.Courses;
 
-public class DeleteCoursePrerequisiteHandler(IServiceProvider serviceProvider)
-    : SyncHandler<DeleteCoursePrerequisiteRequest, bool>(serviceProvider)
+public class DeleteCoursePrerequisiteHandler(IServiceProvider serviceProvider) : Handler<DeleteCoursePrerequisiteRequest, bool>(serviceProvider)
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
-
-    protected override bool Handle(DeleteCoursePrerequisiteRequest request)
+    public override async Task<bool> Handle(DeleteCoursePrerequisiteRequest request, CancellationToken token)
     {
         try
         {
             var context = GetDataContext();
-            var entity = context.CoursePrerequisites.SingleOrDefault(p => p.Id == request.EntityId);
-            if (entity == null) return false;
-
-            var helper = new CoursePrerequisiteHelper(_serviceProvider, context);
-            return helper.Delete(entity);
+            var entities = await context.CoursePrerequisites
+                .Where(c => c.CourseId == request.CourseId && c.RequiredCourseId == request.RequiredCourseId)
+                .ToListAsync(token);
+            
+            if (entities.Count == 0) return true;
+            
+            context.CoursePrerequisites.RemoveRange(entities);
+            await context.SaveChangesAsync(token);
+            return true;
         }
         catch (Exception)
         {

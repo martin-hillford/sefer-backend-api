@@ -75,7 +75,6 @@ public static class Program
 
         if (EnvVar.IsDevelopmentEnv())
         {
-            application.UsePathBase("/api");
             application.UseDeveloperExceptionPage();
             application.UseSwaggerWithToken();
         }

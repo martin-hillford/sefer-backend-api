@@ -25,7 +25,7 @@ public class CoursePrerequisiteController(IServiceProvider serviceProvider) : Ba
         return Json(view);
     }
 
-    [HttpPut("/courses/{courseId}/prerequisites")]
+    [HttpPut("/courses/{courseId:int}/prerequisites")]
     [ProducesResponseType(202)]
     public async Task<ActionResult> SaveCoursePrerequisites(int courseId, [FromBody] List<int> post)
     {

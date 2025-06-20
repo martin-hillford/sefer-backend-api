@@ -264,6 +264,8 @@ public class DataContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<Enrollment>().HasOne(s => s.Mentor).WithMany(c => c.Mentoring).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MentorCourse>().HasOne(m => m.Course).WithMany(u => u.Mentors).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<MentorCourse>().HasOne(m => m.Mentor).WithMany(c => c.MentorCourses).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LessonSubmission>().HasOne(l => l.Enrollment).WithMany(e => e.LessonSubmissions).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Enrollment>().HasMany(e => e.LessonSubmissions).WithOne(l => l.Enrollment).HasForeignKey(l => l.EnrollmentId);
         modelBuilder.Entity<Course>().HasMany(c => c.CourseRevisions).WithOne(r => r.Course);
         modelBuilder.Entity<CoursePrerequisite>().HasOne(c => c.Course).WithMany(c => c.Prerequisites).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<CoursePrerequisite>().HasOne(c => c.RequiredCourse).WithMany(c => c.RequiredFor).OnDelete(DeleteBehavior.Restrict);

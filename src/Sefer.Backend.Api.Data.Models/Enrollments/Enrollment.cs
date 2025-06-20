@@ -83,7 +83,7 @@ public class Enrollment : ModifyDateLogEntity
     /// <summary>
     /// A list of all the submission of the lessons
     /// </summary>
-    public ICollection<LessonSubmission> LessonSubmissions { get; set; }
+    public ICollection<LessonSubmission> LessonSubmissions { get; set; } = [];
 
     /// <summary>
     /// Per feature request: student should be allowed to retake a course.

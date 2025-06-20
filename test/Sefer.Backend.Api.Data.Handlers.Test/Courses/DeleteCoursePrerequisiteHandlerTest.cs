@@ -17,7 +17,7 @@ public class DeleteCoursePrerequisiteHandlerTest : HandlerUnitTest
     public async Task Handle_EntityNotFound()
     {
         var entity = new CoursePrerequisite { Id = 2 };
-        await Handle(entity, false);
+        await Handle(entity, true);
     }
 
     [TestMethod]
