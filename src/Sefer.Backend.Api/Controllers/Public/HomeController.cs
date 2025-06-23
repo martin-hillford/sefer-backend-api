@@ -82,4 +82,7 @@ public class HomeController(IServiceProvider provider) : BaseController(provider
         var geoInfo = await _geoIpService.GetInfo(ipAddress);
         return Json(new { geoInfo, ipAddress });
     }
+
+    [HttpGet("/api-version")]
+    public ActionResult GetApiVersion() => Json(new { ApiSchemeVersion = "v2.0" });
 }
