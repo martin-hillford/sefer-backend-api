@@ -12,7 +12,7 @@ public class PdfView(IServiceProvider serviceProvider)
 
     public async Task<ActionResult> Render(HttpContext context, string view, string language, object model, string fileName)
     {
-        var html = await _renderService.RenderToStringAsync(view, language, model);
+        var html = await _renderService.RenderToStringAsync(view, language, "html", model);
         var client = _httpClientFactory.CreateClient();
 
         var body = new { apiKey = _pdfOptions.ApiKey, html, fileName };
@@ -27,7 +27,7 @@ public class PdfView(IServiceProvider serviceProvider)
 
     public async Task<ActionResult> RenderAsHtml(string view, string language,  object model)
     {
-        var render = await _renderService.RenderToStringAsync(view, language, model);
+        var render = await _renderService.RenderToStringAsync(view, language, "html", model);
         return new ContentResult { Content = render.Content, ContentType = "text/html", StatusCode = 200 };
     }
 }

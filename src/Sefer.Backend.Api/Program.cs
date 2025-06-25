@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Sefer.Backend.Api.Data.Algorithms;
 using Sefer.Backend.Api.Notifications;
+using Sefer.Backend.Api.Notifications.Rendering;
 using Sefer.Backend.Api.Services.Avatars;
 using Sefer.Backend.Api.Services.Logging;
 using Sefer.Backend.Api.Services.Mail;
@@ -45,6 +46,7 @@ public static class Program
             .AddAudioStorageService()
             .AddConfiguration<SecurityOptions>("Security")
             .AddConfiguration<PaymentOptions>("Payment")
+            .AddConfiguration<RenderConfigurationOptions>("RenderService")
             .AddSwagger();
 
         builder.Services

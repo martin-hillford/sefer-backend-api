@@ -14,8 +14,11 @@ public class Template : Entity
     [MaxLength(255)]
     public string Title { get; set; }
     
+    [MaxLength(4), Required, MinLength(1)]
+    public string Type { get; set; }
+    
     [MaxLength(int.MaxValue)]
     public string Content { get; set; }
     
-    public bool HasLayout => string.IsNullOrEmpty(LayoutName);
+    public bool HasLayout => !string.IsNullOrEmpty(LayoutName);
 }

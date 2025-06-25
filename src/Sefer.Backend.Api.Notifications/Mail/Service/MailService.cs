@@ -104,7 +104,7 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
         var model = new VoucherRewardModel(data, reward);
         var task = new List<Task>
         {
-            SendMessageAsync("voucher_reward_student_email", model, data.Receiver),
+                SendMessageAsync("voucher_reward_student_email", model, data.Receiver),
             SendMessageAsync("voucher_reward_admin_email", model, new MailAddress(_mailServiceOptions.AdminEmail, _mailServiceOptions.AdminEmail))
         };
 
@@ -168,8 +168,8 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
             var renderService = scope.ServiceProvider.GetService<IViewRenderService>();
             
             if (mailView == null || model == null || string.IsNullOrEmpty(address.Email)) return;
-            var html = await renderService.RenderToStringAsync(mailView + "_html", model.Data.Language, model);
-            var text = await renderService.RenderToStringAsync(mailView  + "_text", model.Data.Language, model);
+            var html = await renderService.RenderToStringAsync(mailView, model.Data.Language, "html", model);
+            var text = await renderService.RenderToStringAsync(mailView, model.Data.Language, "text", model);
 
             
             var message = new MailMessage
