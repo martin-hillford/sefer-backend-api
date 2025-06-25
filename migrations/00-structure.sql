@@ -1109,7 +1109,7 @@ CREATE TABLE IF NOT EXISTS public.templates
     id INT GENERATED ALWAYS AS IDENTITY NOT NULL CONSTRAINT pk_templates PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     title VARCHAR(255),
-    layoutName VARCHAR(255),
+    layout_name VARCHAR(255),
     language VARCHAR(3) NOT NULL,
     content TEXT NOT NULL
 );

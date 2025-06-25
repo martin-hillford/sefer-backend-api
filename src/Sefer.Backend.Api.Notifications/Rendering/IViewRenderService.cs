@@ -11,6 +11,7 @@ public interface IViewRenderService
     /// <param name="viewName">The name of the view (following default dotnet core aspnet rules for the location)</param>
     /// <param name="data">The data model to render</param>
     /// <param name="language">The language to render the content in</param>
+    /// <param name="type">The type of the template (html, text)</param>
     /// <returns>A string with the view</returns>
-    Task<Render> RenderToStringAsync(string viewName, string language, object data);
+    Task<Render> RenderToStringAsync<T>(string viewName, string language, string type, T data);
 }
