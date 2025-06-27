@@ -1115,6 +1115,15 @@ CREATE TABLE IF NOT EXISTS public.templates
 );
 CREATE INDEX IF NOT EXISTS ix_template_names_language ON public.templates (name,language);
 
+-- a table with example data for templates. Useful for testing purposes
+-- the data is a json string
+CREATE TABLE IF NOT EXISTS public.template_example_data
+(
+    id                           INT GENERATED ALWAYS AS IDENTITY   NOT NULL CONSTRAINT pk_template_example_data PRIMARY KEY,
+    name                         VARCHAR(255)                       NOT NULL,
+    data                         TEXT
+);
+
 -- A table with localization for notifications
 CREATE TABLE IF NOT EXISTS public.notification_localizations
 (

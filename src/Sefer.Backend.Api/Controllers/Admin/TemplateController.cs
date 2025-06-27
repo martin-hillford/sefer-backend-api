@@ -48,7 +48,7 @@ public class TemplateController(IServiceProvider provider) : BaseController(prov
             if (template == null) return NotFound();
             var renderService = ServiceProvider.GetService<IViewRenderService>();
             var result = await renderService.RenderToStringAsync(body.Name, body.Language, body.Type, body.Data);
-            return Json(new { content = result.Content });       
+            return Content(result.Content, body.Type == "html" ? "text/html" : "text/plain");
         }
         catch (Exception) { return StatusCode(500); }
     }

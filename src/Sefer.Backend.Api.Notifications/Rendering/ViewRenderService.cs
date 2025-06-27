@@ -51,6 +51,7 @@ public class ViewRenderService(IServiceProvider serviceProvider) : IViewRenderSe
             var body = new { accessToken, template = template.Content, layout, data };
             var requestUri = _options.RenderServiceUrl + "/render";
             var response = await _httpClient.PostAsJsonAsync(requestUri, body);
+            if(!response.IsSuccessStatusCode) throw new Exception(response.ReasonPhrase);
             var content = await response.Content.ReadAsStringAsync();
 
             return new Render { Content = content, Title = template.Title };
