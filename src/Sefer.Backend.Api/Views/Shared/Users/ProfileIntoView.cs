@@ -11,10 +11,13 @@ namespace Sefer.Backend.Api.Views.Shared.Users;
 public class ProfileInfoView : UserView
 {
     public readonly string AvatarUrl;
+    
+    public Dictionary<string, string> Settings { get; set; }
 
-    public ProfileInfoView(User user, IAvatarService avatarService) : base(user)
+    public ProfileInfoView(User user, List<UserSetting> settings, IAvatarService avatarService) : base(user)
     {
         AvatarUrl = avatarService.GetNonCachedAvatarUrl(Id, Name);
+        Settings = settings.ToDictionary(s => s.KeyName, s => s.Value);
     }
 }
 

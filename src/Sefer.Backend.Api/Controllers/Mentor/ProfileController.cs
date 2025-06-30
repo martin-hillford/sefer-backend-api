@@ -6,7 +6,7 @@ using Sefer.Backend.Api.Views.Shared.Users;
 namespace Sefer.Backend.Api.Controllers.Mentor;
 
 [Authorize(Roles = "Mentor")]
-public class ProfileController(IServiceProvider provider) : Abstract.ProfileController(provider)
+public class ProfileController(IServiceProvider provider, IHttpContextAccessor accessor) : Abstract.ProfileController(provider)
 {
     private readonly IAvatarService _avatarService = provider.GetService<IAvatarService>();
 
@@ -16,20 +16,24 @@ public class ProfileController(IServiceProvider provider) : Abstract.ProfileCont
     {
         var mentor = await GetCurrentUser();
         if (mentor.Role != UserRoles.Mentor) return Forbid();
+        
+        var userSettings = await Send(new GetUserSettingsRequest(mentor.Id));
+        var mentorSettings = await Mediator.Send(new GetMentorSettingsRequest { MentorId = mentor.Id });
+        if (mentorSettings == null) return NotFound();
 
-        var settings = await Mediator.Send(new GetMentorSettingsRequest { MentorId = mentor.Id });
-        if (settings == null) return NotFound();
-
-        var view = new MentorSettingsView(mentor, settings);
-        return Json(view);
+        var view = new MentorSettingsView(mentor, mentorSettings);
+        return UserSettingsHelper.ToJson(view, userSettings);
     }
 
     [HttpPost("/mentor/settings")]
-    public async Task<ActionResult> SetMentorSettings([FromBody] MentorSettingsPostModel settings)
+    public async Task<ActionResult> SetMentorSettings()
     {
-        if (settings == null) return BadRequest();
         var mentor = await GetCurrentUser();
         if (mentor is not { Role: UserRoles.Mentor }) return Forbid();
+        
+        var userSettings = await Send(new GetUserSettingsRequest(mentor.Id));
+        var settings = await UserSettingsHelper.FromJson<MentorSettingsPostModel>(accessor, userSettings);
+        if (settings == null) return BadRequest();
 
         var data = await Send(new GetMentorSettingsRequest { MentorId = mentor.Id });
         data.AllowOverflow = settings.AllowOverflow;
@@ -38,6 +42,9 @@ public class ProfileController(IServiceProvider provider) : Abstract.ProfileCont
 
         var settingsUpdated = await Send(new SetMentorSettingsRequest(data));
         if (!settingsUpdated) return BadRequest();
+        
+        var saved = await Send(new UpdateUserSettingsRequest(mentor.Id, userSettings));
+        if (!saved) return BadRequest();
 
         mentor.NotificationPreference = settings.NotificationPreference;
         var mentorUpdated = await Send(new UpdateUserRequest(mentor));
@@ -50,20 +57,21 @@ public class ProfileController(IServiceProvider provider) : Abstract.ProfileCont
     {
         var mentor = await GetCurrentUser();
         if (mentor is not { Role: UserRoles.Mentor }) return Forbid();
-        var view = new ProfileInfoView(mentor, _avatarService);
-        return Json(view);
+        var settings = await Send(new GetUserSettingsRequest(mentor.Id));
+        var view = new ProfileInfoView(mentor, settings, _avatarService);
+        return UserSettingsHelper.ToJson(view, settings);
     }
 
     [HttpPost("/mentor/profile-info")]
     [ProducesResponseType(typeof(UserView), 200)]
     [ProducesResponseType(typeof(UserView), 202)]
-    public async Task<ActionResult> UpdateMentorInformation([FromBody] ProfileInfoPostModel profile)
+    public async Task<ActionResult> UpdateMentorInformation()
     {
         // try to load the mentor that is updating his profile (404)
         var mentor = await GetCurrentUser();
         if (mentor is not { Role: UserRoles.Mentor }) return Forbid();
 
         // And use the base controller
-        return await UpdateProfileInformation(profile, mentor.Id);
+        return await UpdateProfileInformation(accessor, mentor.Id);
     }
 }
