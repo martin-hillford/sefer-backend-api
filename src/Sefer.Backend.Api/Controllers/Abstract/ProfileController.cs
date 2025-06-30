@@ -8,11 +8,16 @@ public abstract class ProfileController(IServiceProvider serviceProvider) : User
 
     protected readonly INotificationService NotificationService = serviceProvider.GetService<INotificationService>();
 
-    protected async Task<ActionResult> UpdateProfileInformation(ProfileInfoPostModel profile, int userId)
+    protected async Task<ActionResult> UpdateProfileInformation(IHttpContextAccessor httpContextAccessor, int userId)
     {
         // Verify that a user is provided
         var user = await Send(new GetUserByIdRequest(userId));
         if (user == null) return Forbid();
+        
+        // Because we have to support both the old and the new api scheme regarding user settings use the http context
+        var settings = await Send(new GetUserSettingsRequest(user.Id));
+        var profile = await UserSettingsHelper.FromJson<ProfileInfoPostModel>(httpContextAccessor, settings);
+        if(profile == null || settings == null) return BadRequest();
 
         // check if the password the user has provided is valid (403)
         var validPassword = _passwordService.IsValidPassword(user, profile.Password);
@@ -47,6 +52,10 @@ public abstract class ProfileController(IServiceProvider serviceProvider) : User
         {
             await NotificationService.SendProfileUpdatedNotificationAsync(userId, oldName);
         }
+        
+        // Save the additional user settings to the database
+        var settingsSaved = await Send(new UpdateUserSettingsRequest(user.Id, settings));
+        if(!settingsSaved) return StatusCode(500);
 
         // Everything is done! (202 for email change 202 for regular)
         var view = new UserView(user);

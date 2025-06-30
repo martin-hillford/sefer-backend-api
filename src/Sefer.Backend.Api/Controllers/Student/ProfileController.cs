@@ -6,29 +6,33 @@ using Sefer.Backend.Api.Views.Shared.Users;
 namespace Sefer.Backend.Api.Controllers.Student;
 
 [Authorize(Roles = "Student,User")]
-public class ProfileController(IServiceProvider provider) : Abstract.ProfileController(provider)
+public class ProfileController(IServiceProvider provider, IHttpContextAccessor accessor) : Abstract.ProfileController(provider)
 {
     private readonly IAvatarService _avatarService = provider.GetService<IAvatarService>();
     
     [HttpGet("/student/profile-info")]
-    [ProducesResponseType(typeof(UserView), 200)]
+    [ProducesResponseType(typeof(ProfileInfoView), 200)]
     public async Task<IActionResult> GetStudentInformation()
     {
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();
-        var view = new ProfileInfoView(student, _avatarService);
-        return Json(view);
+
+        // In order to support both the old and the new api scheme.
+        // the profile helper will inject the settings so that the old scheme is matched
+        var settings = await Send(new GetUserSettingsRequest(student.Id));
+        var view = new ProfileInfoView(student, settings, _avatarService);
+        return UserSettingsHelper.ToJson(view, settings);
     }
 
     [HttpPost("/student/profile-info")]
     [ProducesResponseType(typeof(UserView), 200)]
     [ProducesResponseType(typeof(UserView), 202)]
-    public async Task<ActionResult> UpdateStudentInformation([FromBody] ProfileInfoPostModel profile)
+    public async Task<ActionResult> UpdateStudentInformation()
     {
         // try to load the student that is updating his profile (404)
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return NotFound();
-        return await UpdateProfileInformation(profile, student.Id);
+        return await UpdateProfileInformation(accessor, student.Id);
     }
 
     [HttpPost("/student/profile/request-delete")]
@@ -46,18 +50,21 @@ public class ProfileController(IServiceProvider provider) : Abstract.ProfileCont
     }
     
     [HttpPost("/student/settings")]
-    public async Task<ActionResult> SaveSettings([FromBody] StudentSettingsPostModel settings)
+    public async Task<ActionResult> SaveSettings()
     {
-        if (ModelState.IsValid == false) return BadRequest();
-
         // try to load the student that is updating his profile (404)
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return NotFound();
         
+        var userSettings = await Send(new GetUserSettingsRequest(student.Id));
+        var settings = await UserSettingsHelper.FromJson<StudentSettingsPostModel>(accessor, userSettings);
+        
         // Save the settings that are saved in the user object itself
         student.NotificationPreference = settings.NotificationPreference;
         student.PreferSpokenCourses = settings.PreferSpokenCourses;
-        var saved = await Send(new UpdateUserRequest(student));
+        var saved = await Send(new UpdateUserRequest(student)) &&
+                    await Send(new UpdateUserSettingsRequest(student.Id, userSettings));
+        
         return saved ? StatusCode(202) : StatusCode(500);
     }
 }

@@ -25,7 +25,7 @@ public class GetTemplatesHandlerTest : HandlerUnitTest
     private Template PrepareContext()
     {
         var template = new Template
-            { Id = 13, Content = "Content", Language = "nl", Name = "template-mail", Title = "title" };
+            { Id = 13, Content = "Content", Language = "nl", Type = "html", Name = "template-mail", Title = "title" };
         var context = GetDataContext();
         context.Templates.Add(template);
         context.SaveChanges();
