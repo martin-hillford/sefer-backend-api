@@ -1,7 +1,5 @@
 ﻿// This is view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global
-using Sefer.Backend.Api.Data.JsonViews;
-
 namespace Sefer.Backend.Api.Views.Public.Users;
 
 /// <summary>
@@ -12,13 +10,14 @@ namespace Sefer.Backend.Api.Views.Public.Users;
 /// </remarks>
 /// <param name="user">The user that just logged on</param>
 /// <param name="token">The token to user for logon</param>
+/// <param name="settings">The settings to the user</param>
 /// <param name="expiration">The expiration date of the token</param>
-public sealed class LogonView(User user, DateTime expiration, string token)
+public sealed class LogonView(User user, List<UserSetting> settings, DateTime expiration, string token)
 {
     /// <summary>
     /// The user that just logged on
     /// </summary>
-    public readonly UserView User = new(user);
+    public readonly UserWithSettingsView User = new(user, settings);
 
     /// <summary>
     /// The token to user for logon

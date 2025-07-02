@@ -8,16 +8,13 @@ namespace Sefer.Backend.Api.Views.Shared.Users;
 /// <summary>
 /// An extended view of the profile
 /// </summary>
-public class ProfileInfoView : UserView
+public class ProfileInfoView : UserWithSettingsView
 {
     public readonly string AvatarUrl;
-    
-    public Dictionary<string, string> Settings { get; set; }
 
-    public ProfileInfoView(User user, List<UserSetting> settings, IAvatarService avatarService) : base(user)
+    public ProfileInfoView(User user, List<UserSetting> settings, IAvatarService avatarService) : base(user, settings)
     {
         AvatarUrl = avatarService.GetNonCachedAvatarUrl(Id, Name);
-        Settings = settings.ToDictionary(s => s.KeyName, s => s.Value);
     }
 }
 

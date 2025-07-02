@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization.Metadata;
+
 namespace Sefer.Backend.Api.Data;
 
 public static class DefaultJsonOptions

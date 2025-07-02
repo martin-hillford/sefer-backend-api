@@ -7,7 +7,7 @@ namespace Sefer.Backend.Api.Support;
 
 public static class UserSettingsHelper
 {
-    public static ActionResult ToJson<T>(T view, List<UserSetting> userSettings) where T : class
+    public static ActionResult ToJson<T>(T view, List<UserSetting> userSettings, string subProperty) where T : class
     {
         // Serialize the object to a JSON string and parse into a mutable structure
         var options = DefaultJsonOptions.GetOptions();
@@ -17,18 +17,21 @@ public static class UserSettingsHelper
         var jsonObject = jsonNode.AsObject();
         
         // Now add to the jsonObject all the properties from the settings
+        var settingsObject = subProperty != null ? jsonObject[subProperty]?.AsObject() : jsonObject;
+        if(settingsObject is null) throw new Exception("settingsObject is null");
+        
         foreach (var userSetting in userSettings)
         {
             switch (userSetting.Value?.ToLower())
             {
                 case "false":
-                    jsonObject.Add(userSetting.KeyName, false);
+                    settingsObject.Add(userSetting.KeyName, false);
                     break;
                 case "true":
-                    jsonObject.Add(userSetting.KeyName, true);
+                    settingsObject.Add(userSetting.KeyName, true);
                     break;
                 default:
-                    jsonObject.Add(userSetting.KeyName, userSetting.Value);
+                    settingsObject.Add(userSetting.KeyName, userSetting.Value);
                     break;
             }
         }

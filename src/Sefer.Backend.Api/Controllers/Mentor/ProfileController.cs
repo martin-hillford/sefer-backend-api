@@ -22,7 +22,7 @@ public class ProfileController(IServiceProvider provider, IHttpContextAccessor a
         if (mentorSettings == null) return NotFound();
 
         var view = new MentorSettingsView(mentor, mentorSettings);
-        return UserSettingsHelper.ToJson(view, userSettings);
+        return UserSettingsHelper.ToJson(view, userSettings, null);
     }
 
     [HttpPost("/mentor/settings")]
@@ -59,7 +59,7 @@ public class ProfileController(IServiceProvider provider, IHttpContextAccessor a
         if (mentor is not { Role: UserRoles.Mentor }) return Forbid();
         var settings = await Send(new GetUserSettingsRequest(mentor.Id));
         var view = new ProfileInfoView(mentor, settings, _avatarService);
-        return UserSettingsHelper.ToJson(view, settings);
+        return UserSettingsHelper.ToJson(view, settings, null);
     }
 
     [HttpPost("/mentor/profile-info")]

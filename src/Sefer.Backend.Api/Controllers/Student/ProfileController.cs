@@ -21,7 +21,7 @@ public class ProfileController(IServiceProvider provider, IHttpContextAccessor a
         // the profile helper will inject the settings so that the old scheme is matched
         var settings = await Send(new GetUserSettingsRequest(student.Id));
         var view = new ProfileInfoView(student, settings, _avatarService);
-        return UserSettingsHelper.ToJson(view, settings);
+        return UserSettingsHelper.ToJson(view, settings, null);
     }
 
     [HttpPost("/student/profile-info")]

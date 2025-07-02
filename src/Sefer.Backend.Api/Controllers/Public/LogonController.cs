@@ -73,11 +73,11 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
         _userAuthenticationService.SetUserCookies(user, isAppLogin);
         
         // If this is an admin logon, the site and region are irrelevant
-        if (IsAdminLogon(post, user)) return SendUserToken(user, isAppLogin);
+        if (IsAdminLogon(post, user)) return await SendUserToken(user, isAppLogin);
 
         // If this is a logon for the app then the user can granted access since
         // the app is capable of handling any region
-        if (isAppLogin) return SendUserToken(user, true);
+        if (isAppLogin) return await SendUserToken(user, true);
 
         // Let's check if the current site is capable of handling the current site
         // the user is logon to. If the current site cannot handle the region
@@ -85,8 +85,9 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
         var (userRegion, userSite) = await Send(new GetPrimaryRegionAndSiteRequest(user.Id));
         var currentSite = await Send(new GetSiteByNameRequest(post.Site));
 
+        return await SendUserToken(user, false);
         return userRegion.ContainsSite(currentSite) 
-            ? SendUserToken(user, false)
+            ? await SendUserToken(user, false)
             : GrantAccessChangeSite(user, userRegion, userSite);
     }
 
@@ -95,7 +96,7 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
         return post.Site.StartsWith("admin") && (user.Role == UserRoles.Admin || user.Role == UserRoles.CourseMaker);
     }
 
-    private ActionResult SendUserToken(User user, bool isAppLogin)
+    private async Task<ActionResult> SendUserToken(User user, bool isAppLogin)
     {
         var securityOptions = GetService<IOptions<SecurityOptions>>()?.Value;
         if (securityOptions == null) return StatusCode(500);
@@ -106,10 +107,11 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
 
         var tokenGenerator = GetService<ITokenGenerator>();
         var token = tokenGenerator.CreateToken(user.Id, user.Role.ToString(), expiration);
-        var view = new LogonView(user, expiration, token);
+        var userSettings = await Send(new GetUserSettingsRequest(user.Id));
+        var view = new LogonView(user, userSettings, expiration, token);
         _userAuthenticationService.SetPrivateFileServiceCookies();
 
-        return Json(view);
+        return UserSettingsHelper.ToJson(view, userSettings, "user");
     }
 
     /// <summary>

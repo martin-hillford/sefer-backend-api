@@ -12,7 +12,7 @@ public class ProfileController(IServiceProvider provider, IHttpContextAccessor a
         var admin = await GetCurrentUser();
         if (admin is not { Role: UserRoles.Admin }) return Forbid();
         var settings = await Send(new GetUserSettingsRequest(admin.Id));
-        var view = new AdminProfileInfoView(admin, settings);
+        var view = new UserWithSettingsView(admin, settings);
         return Json(view);
     }
 
