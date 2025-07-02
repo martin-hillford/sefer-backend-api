@@ -29,9 +29,10 @@ public class SiteRedirectController : BaseController
         var expiration = DateTime.UtcNow.AddHours(_securityOptions.TokenDurationInt);
         var tokenGenerator = GetService<ITokenGenerator>();
         var token = tokenGenerator.CreateToken(user.Id, user.Role.ToString(), expiration);
-        var view = new LogonView(user, expiration, token);
+        var userSettings = await Send(new GetUserSettingsRequest(user.Id));
+        var view = new LogonView(user, userSettings, expiration, token);
         _userAuthenticationService.SetPrivateFileServiceCookies();
 
-        return Json(view);
+        return UserSettingsHelper.ToJson(view, userSettings,"user");
     }
 }
