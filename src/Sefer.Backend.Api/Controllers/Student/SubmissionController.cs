@@ -43,9 +43,11 @@ public class SubmissionController(IServiceProvider serviceProvider) : GrantContr
         var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id));
         if (lesson == null) return BadRequest();
         
+        // Update the user took some action
+        await Send(new UpdateUserLastActivityRequest(enrollment.StudentId));
+        
         // Please note, pages are number with a one index
         // but audio tracks are zero index numbered
-
         if (lessonSubmission == null)
         {
             lessonSubmission = new LessonSubmission
