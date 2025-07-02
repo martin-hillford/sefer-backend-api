@@ -13,7 +13,7 @@ public class UserWithSettingsView(User user, List<UserSetting> settings) : UserV
         {
             var dictionary = settings.ToDictionary(s => s.KeyName, s => s.Value);
             dictionary.Add("notificationPreference", _user.NotificationPreference.GetLabel());
-            dictionary.Add("preferredInterfaceLanguage", _user.PreferredInterfaceLanguage.ToLower());
+            dictionary.Add("preferredInterfaceLanguage", _user.PreferredInterfaceLanguage?.ToLower());
             dictionary.Add("preferSpokenCourses", _user.PreferSpokenCourses ? "true" : "false");
             dictionary.Add("allowImpersonation", _user.AllowImpersonation ? "true" : "false");
             return dictionary;
