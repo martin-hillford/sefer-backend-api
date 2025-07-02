@@ -143,6 +143,7 @@ public class EnrollmentController(IServiceProvider serviceProvider) : UserContro
         if (enrollment == null) return NotFound();
         if (enrollment.StudentId != UserId) return Forbid();
 
+        await Send(new UpdateUserLastActivityRequest(enrollment.StudentId));
         var success = await Send(new UnEnrollRequest(enrollment.Id));
         return success ? NoContent() : StatusCode(500);
     }

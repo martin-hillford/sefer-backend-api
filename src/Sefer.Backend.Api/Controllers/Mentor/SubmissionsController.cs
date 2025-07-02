@@ -23,6 +23,9 @@ public class SubmissionsController(IServiceProvider provider) : ReviewController
         var enrollment = await Send(new GetEnrollmentByIdRequest(submission.EnrollmentId));
         if (enrollment == null) return NotFound();
         if (enrollment.MentorId != UserId) return Forbid();
+        
+        // Update the user took some action
+        if(enrollment.MentorId.HasValue) await Send(new UpdateUserLastActivityRequest(enrollment.MentorId.Value));
 
         // And now update it
         submission.ResultsStudentVisible = true;
@@ -87,6 +90,10 @@ public class SubmissionsController(IServiceProvider provider) : ReviewController
 
         // Get the result and return
         if (mentor == null || mentor.IsMentor == false) return BadRequest();
+        
+        // Update the user took some action
+        await Send(new UpdateUserLastActivityRequest(mentor.Id));
+        
         var saved = await ReviewSubmission(review, mentor);
         return saved ? Ok() : BadRequest();
     }

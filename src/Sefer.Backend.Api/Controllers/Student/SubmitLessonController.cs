@@ -29,6 +29,9 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var active = await Send(new GetActiveEnrollmentOfStudentRequest(student.Id));
         if (active == null) return NotFound();
         if (active.OnPaper) return BadRequest();
+        
+        // Update the user took some action
+        await Send(new UpdateUserLastActivityRequest(student.Id));
 
         // gets the current lesson
         var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id));
