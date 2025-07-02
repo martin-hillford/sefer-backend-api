@@ -28,5 +28,6 @@ public class PrimitiveUserView
     /// <summary>
     /// Constructor for serialization
     /// </summary>
-    protected PrimitiveUserView() { }
+    [JsonConstructor]
+    public PrimitiveUserView() { }
 }

@@ -35,21 +35,7 @@ public class AnswerView
     /// Contains the header of question this answer is about
     /// </summary>
     public string QuestionHeading { get; set; }
-
-    /// <summary>
-    /// A created header for this element.
-    /// </summary>
-    public string QuestionHeader
-    {
-        get
-        {
-            var header = "";
-            if (QuestionNumber != "") header += QuestionNumber + ": ";
-            if (QuestionHeading != "") header += QuestionHeading;
-            return header;
-        }
-    }
-
+    
     /// <summary>
     /// Contains the text of question this answer is about
     /// </summary>
@@ -66,7 +52,7 @@ public class AnswerView
     /// In the cases of a multiple choices question, the choices are set.
     /// So that javascript can match the id's to the choices
     /// </summary>
-    public IReadOnlyDictionary<int, string> QuestionChoices { get; set; }
+    public Dictionary<int, string> QuestionChoices { get; set; }
 
     /// <summary>
     /// Holds if the content is mark down content
@@ -94,7 +80,7 @@ public class AnswerView
         QuestionType = answer.QuestionType;
         IsMarkDownContent = question.IsMarkDownContent;
 
-#pragma warning disable IDE0019
+
 
         if (question is not MultipleChoiceQuestion mcQuestion) return;
         QuestionChoices = mcQuestion.Choices.Select(c => new { c.Id, c.Answer }).ToDictionary(c => c.Id, c => c.Answer);
@@ -103,7 +89,8 @@ public class AnswerView
     /// <summary>
     /// Constructor for serialization
     /// </summary>
-    protected AnswerView() { }
+    [JsonConstructor]
+    public AnswerView() { }
 
     #endregion
 }
