@@ -828,8 +828,12 @@ CREATE INDEX IF NOT EXISTS ix_chat_messages_sender_id ON public.chat_messages (s
 CREATE OR REPLACE FUNCTION fn_tg_chat_messages_insert() RETURNS TRIGGER AS
 $$
 BEGIN
-    UPDATE public.user_last_activity SET activity_date = clock_timestamp()
-    WHERE user_id = NEW.sender_id AND NEW.type = 2;
+    IF NEW.type = 2 THEN
+        UPDATE public.user_last_activity
+        SET activity_date = clock_timestamp()
+        WHERE user_id = NEW.sender_id;
+    END IF;
+    RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 

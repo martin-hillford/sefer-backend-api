@@ -22,5 +22,6 @@ public class EnrollmentView
     /// <summary>
     /// Constructor for serialization
     /// </summary>
+    [JsonConstructor]
     public EnrollmentView() { }
 }

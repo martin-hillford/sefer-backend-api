@@ -74,8 +74,9 @@ public class SubmissionView
     }
 
     /// <summary>
-    /// Constructor for serialization
+    /// Constructor for json deserialization
     /// </summary>
+    [JsonConstructor]
     public SubmissionView() { }
 
     #endregion

@@ -85,7 +85,8 @@ public class UserView : PrimitiveUserView
     }
 
     /// <summary>
-    /// Constructor for serialization
+    /// Constructor for json deserialization
     /// </summary>
+    [JsonConstructor]
     public UserView() { }
 }

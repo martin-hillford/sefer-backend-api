@@ -98,6 +98,7 @@ public class LessonView
     /// <summary>
     /// Constructor for serialization
     /// </summary>
+    [JsonConstructor]
     public LessonView() { }
 
     #endregion

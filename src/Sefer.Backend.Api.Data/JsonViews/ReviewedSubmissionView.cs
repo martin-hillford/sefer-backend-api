@@ -75,6 +75,12 @@ public class ReviewedSubmissionView
         Course = new CourseView(submission.Lesson.CourseRevision.Course);
         Lesson = new LessonView(submission.Lesson);
     }
+    
+    /// <summary>
+    /// Constructor for json deserialization
+    /// </summary>
+    [JsonConstructor]
+    public ReviewedSubmissionView () { }
 
     #endregion
 }

@@ -56,5 +56,6 @@ public class ReviewedAnswerView : AnswerView
     /// <summary>
     /// Constructor for serialization
     /// </summary>
+    [JsonConstructor]
     public ReviewedAnswerView() { }
 }

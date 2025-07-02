@@ -148,6 +148,7 @@ public class CourseView
     /// <summary>
     /// Constructor for serialization
     /// </summary>
+    [JsonConstructor]
     public CourseView() { }
 
     #endregion
