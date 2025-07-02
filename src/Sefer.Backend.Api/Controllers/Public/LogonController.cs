@@ -85,7 +85,6 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
         var (userRegion, userSite) = await Send(new GetPrimaryRegionAndSiteRequest(user.Id));
         var currentSite = await Send(new GetSiteByNameRequest(post.Site));
 
-        return await SendUserToken(user, false);
         return userRegion.ContainsSite(currentSite) 
             ? await SendUserToken(user, false)
             : GrantAccessChangeSite(user, userRegion, userSite);
