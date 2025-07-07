@@ -124,7 +124,7 @@ public class FileSystemStorageService : SharedStorageService<FileSystemStorageSe
         try
         {
             if (string.IsNullOrEmpty(path)) return string.Empty;
-            if (path.StartsWith("/")) path = path[1..];
+            if (path.StartsWith('/')) path = path[1..];
             if (path.StartsWith("public") || path.StartsWith("private")) 
                 return _options.Endpoint + "/content/download/" + path;
             throw new ArgumentException("Illegal file path", nameof(path));
