@@ -1,6 +1,6 @@
 // ReSharper disable PropertyCanBeMadeInitOnly.Global, UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedMember.Global
-namespace Sefer.Backend.Api.Models.Public.Download;
+namespace Sefer.Backend.Api.Views.Public.Download;
 
 public class Lesson(Data.Models.Courses.Lessons.Lesson lesson)
 {

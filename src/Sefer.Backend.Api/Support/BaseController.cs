@@ -1,3 +1,8 @@
+using System.IO;
+using System.IO.Compression;
+using System.Text.Json;
+using Sefer.Backend.Api.Data;
+
 namespace Sefer.Backend.Api.Support;
 
 public abstract class BaseController(IServiceProvider serviceProvider) : ControllerBase
@@ -60,5 +65,24 @@ public abstract class BaseController(IServiceProvider serviceProvider) : Control
         if (file == null) return false;
         var deleted = await file.DeleteAsync();
         return deleted;
+    }
+    
+    protected IActionResult DownloadGzippedJson<T>(T model, string fileName)
+    {
+        // Serialize the object to JSON
+        var json = JsonSerializer.Serialize(model, DefaultJsonOptions.GetOptions());
+
+        // Convert JSON string to bytes
+        var jsonBytes = Encoding.UTF8.GetBytes(json);
+
+        // Compress the JSON bytes using GZip
+        using var compressedStream = new MemoryStream();
+        using (var gzip = new GZipStream(compressedStream, CompressionLevel.Optimal, leaveOpen: true))
+        {
+            gzip.Write(jsonBytes, 0, jsonBytes.Length);
+        }
+        compressedStream.Position = 0;
+        
+        return File( compressedStream.ToArray(), "application/gzip", fileName );
     }
 }

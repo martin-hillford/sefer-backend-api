@@ -1,10 +1,10 @@
-﻿// ReSharper disable PropertyCanBeMadeInitOnly.Global, UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
-namespace Sefer.Backend.Api.Models.Public.Download;
+﻿// As this is a view, the get method of the properties may only be used by the JSON serialization
+// ReSharper disable MemberCanBePrivate.Global, UnusedMember.Global
+namespace Sefer.Backend.Api.Views.Public.Download;
 
 public class MediaElement(Data.Models.Courses.Lessons.MediaElement element) : ContentBlock(element)
 {
-    public string Content => element.Content;
+    public override string Content { get; set; } = element.Content;
 
     public bool IsMarkDownContent => element.IsMarkDownContent;
 

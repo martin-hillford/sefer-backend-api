@@ -1,7 +1,10 @@
 // ReSharper disable PropertyCanBeMadeInitOnly.Global, UnusedAutoPropertyAccessor.Global, CollectionNeverQueried.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
-// ReSharper disable UnusedMember.Global
-namespace Sefer.Backend.Api.Models.Public.Download;
+// ReSharper disable MemberCanBePrivate.Global, UnusedMember.Global
+
+using Sefer.Backend.Api.Models.Public;
+
+namespace Sefer.Backend.Api.Views.Public.Download;
 
 public class Course(Data.Models.Courses.Course course, CourseRevision revision)
 {
@@ -29,7 +32,7 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
     
     public string Copyright => course.Copyright;
     
-    public string CopyrightLogo => course.CopyrightLogo;
+    public string CopyrightLogo { get; set; } = course.CopyrightLogo;
     
     public int? MaxLessonSubmissionsPerDay => course.MaxLessonSubmissionsPerDay;
     
@@ -48,14 +51,31 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
     public Stages Stage => revision.Stage;
     
     public int Version => revision.Version;
-    
-    public Images Images => new(course);
-    
+
+    public Images Images { get; set; } = new (course);
+
     #endregion
     
     #region Collections
 
     public List<Lesson> Lessons = [];
+
+    public List<Resource> Resources = [];
+
+    #endregion
+
+    #region Methods
+
+    public async Task IncludeMedia(DownloadRequest request)
+    {
+        await Images.IncludeMedia(request, this);
+        var tasks = Lessons.SelectMany(l => l.Content.Select(c => c.IncludeMedia(request, this)));
+        await Task.WhenAll(tasks.ToArray());
+        
+        var copyrightLogo = await ContentSupport.CreateResource(request, CopyrightLogo);
+        if (copyrightLogo != null) CopyrightLogo = copyrightLogo.GetResourceUrl();
+        if (copyrightLogo != null) Resources.Add(copyrightLogo);
+    }
 
     #endregion
 }
