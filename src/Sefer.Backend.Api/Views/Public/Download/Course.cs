@@ -47,6 +47,8 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
     
     public bool AllowSelfStudy => revision.AllowSelfStudy;
     
+    public string GeneralInformation => revision.GeneralInformation;
+    
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Stages Stage => revision.Stage;
     

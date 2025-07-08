@@ -7,9 +7,14 @@ namespace Sefer.Backend.Api.Models.Admin.CourseRevision;
 public class CourseRevisionPostModel
 {
     /// <summary>
-    /// When this is set to true; Student are allowed to take this course
+    /// When this is set to true, Students are allowed to take this course
     /// without the aid of a mentor
     /// </summary>
     [Required]
     public bool AllowSelfStudy { get; set; }
+    
+    /// <summary>
+    /// Contains general course information that can be displayed with each lesson
+    /// </summary>
+    public string GeneralInformation { get; set; }
 }

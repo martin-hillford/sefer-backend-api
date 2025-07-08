@@ -1058,7 +1058,8 @@ CREATE TABLE IF NOT EXISTS public.templates
     title VARCHAR(255),
     layout_name VARCHAR(255),
     language VARCHAR(3) NOT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
+    type TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS ix_template_names_language ON public.templates (name,language);
 

@@ -7,10 +7,10 @@ public class GetSurveyByCourseRevisionHandlerTest : HandlerUnitTest
     public async Task Initialize()
     {
         await InsertAsync(new Course {Name = "course.1", Description = "course.1", Permalink = "course1" });
-        await InsertAsync(new CourseRevision {CourseId = 1, Stage = Stages.Edit, Version = 1});
+        await InsertAsync(new CourseRevision {CourseId = 1, Stage = Stages.Edit, Version = 1, GeneralInformation = "General" });
         await InsertAsync(new CourseRevision {CourseId = 1, Stage = Stages.Edit, Version = 2, AllowSelfStudy = true});
         await InsertAsync(new Survey { CourseRevisionId = 1, EnableMentorRating = true });
-        await InsertAsync(new Survey { CourseRevisionId = 2, EnableMentorRating = true });
+        await InsertAsync(new Survey { CourseRevisionId = 2, EnableMentorRating = true  });
     }
 
     [TestMethod]

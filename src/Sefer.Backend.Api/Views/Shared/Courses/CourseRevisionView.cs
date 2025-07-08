@@ -1,4 +1,4 @@
-﻿// This is view, so property may not be accessed in code
+﻿// This is a view, so properties may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global 
 using Sefer.Backend.Api.Data.JsonViews;
 
@@ -29,10 +29,15 @@ public class CourseRevisionView : AbstractView<CourseRevision>
     public int? PredecessorId => Model.PredecessorId;
 
     /// <summary>
-    /// When this is set to true; Student are allowed to take this course
+    /// When this is set to true, Students are allowed to take this course
     /// without the aid of a mentor
     /// </summary>
     public bool AllowSelfStudy => Model.AllowSelfStudy;
+
+    /// <summary>
+    /// Contains general course information that can be displayed with each lesson
+    /// </summary>
+    public string GeneralInformation => Model.GeneralInformation;
 
     /// <summary>
     /// Gets the CourseId of this revision

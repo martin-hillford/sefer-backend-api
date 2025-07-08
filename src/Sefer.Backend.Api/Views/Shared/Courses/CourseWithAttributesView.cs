@@ -19,11 +19,16 @@ public abstract class CourseWithAttributesView : CourseDisplayView
     public int Version => CourseRevision.Version;
 
     /// <summary>
-    /// When this is set to true; Student are allowed to take this course
+    /// When this is set to true; Students are allowed to take this course
     /// without the aid of a mentor
     /// </summary>
     public bool AllowSelfStudy => CourseRevision.AllowSelfStudy;
 
+    /// <summary>
+    /// Contains general course information that can be displayed with each lesson
+    /// </summary>
+    public string GeneralInformation => CourseRevision.GeneralInformation;
+    
     /// <summary>
     /// Gets if the rating of the course
     /// </summary>
