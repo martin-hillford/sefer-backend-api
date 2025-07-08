@@ -12,6 +12,8 @@ public class DataContext(DbContextOptions options) : DbContext(options)
     public DbSet<CoursePrerequisite> CoursePrerequisites { get; set; }
 
     public DbSet<CourseRevision> CourseRevisions { get; set; }
+    
+    public DbSet<CourseRevisionDictionaryWord> CourseRevisionDictionaryWords { get; set; }
 
     public DbSet<Series> Series { get; set; }
 

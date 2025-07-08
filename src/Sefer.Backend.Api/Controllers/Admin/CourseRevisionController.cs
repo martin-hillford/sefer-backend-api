@@ -1,4 +1,5 @@
 using Sefer.Backend.Api.Data.Requests.Surveys;
+using Sefer.Backend.Api.Models.Admin.Course;
 using Sefer.Backend.Api.Models.Admin.CourseRevision;
 using Sefer.Backend.Api.Views.Admin.Course;
 using Sefer.Backend.Api.Views.Shared;
@@ -17,7 +18,10 @@ public class CourseRevisionController(IServiceProvider provider) : BaseControlle
         var revision = await Send(new GetCourseRevisionByIdRequest(id));
         if (revision == null) return NotFound();
         if (revision.IsEditable == false) return BadRequest();
+        
         revision.AllowSelfStudy = model.AllowSelfStudy;
+        revision.GeneralInformation = model.GeneralInformation;
+        
         var updated = await Send(new UpdateCourseRevisionRequest(revision));
         return updated ? StatusCode(202) : StatusCode(500);
     }
@@ -97,7 +101,7 @@ public class CourseRevisionController(IServiceProvider provider) : BaseControlle
     [ProducesResponseType(202)]
     public async Task<ActionResult> UpdateLessonSequence([FromBody] List<int> lessons, int id)
     {
-        // check for correct posted revision
+        // check for the correct posted revision
         var revision = await Send(new GetCourseRevisionByIdRequest(id));
         if (revision == null) return NotFound();
         if (revision.IsEditable == false) return BadRequest();
@@ -108,14 +112,14 @@ public class CourseRevisionController(IServiceProvider provider) : BaseControlle
         var dbLessons = await Send(new GetLessonsByCourseRevisionRequest(revision.Id));
         if (dbLessons.Count != lessons.Count) return BadRequest();
 
-        // create lookup dictionary
+        // create a lookup dictionary
         var lookup = new Dictionary<int, int>();
         for (var i = 0; i < lessons.Count; i++)
         {
             lookup.Add(lessons[i], i);
         }
 
-        // check if all the lesson are provided and set the sequence id
+        // check if all the lessons are provided and set the sequence id
         foreach (var lesson in dbLessons)
         {
             if (lookup.TryGetValue(lesson.Id, out var value) == false) return BadRequest();
@@ -154,6 +158,34 @@ public class CourseRevisionController(IServiceProvider provider) : BaseControlle
         return Json(view);
     }
 
+    [HttpGet("/courses/revision/{revisionId:int}/dictionary")]
+    [Authorize(Roles = "Admin,CourseMaker")]
+    public async Task<ActionResult<CourseDictionary>> GetCourseDictionary(int revisionId)
+    {
+        var courseRevision = await Send(new GetCourseRevisionByIdRequest(revisionId));
+        if (courseRevision == null) return NotFound();
+        
+        var course = await Send(new GetCourseByIdRequest(courseRevision.CourseId));
+        if (course == null) return NotFound();
+        
+        var dictionary = await Send(new GetCourseDictionaryRequest(courseRevision.Id));
+        return Json(new CourseDictionaryView(course, courseRevision, dictionary));
+    }
+   
+    [HttpPost("/courses/revision/{revisionId:int}/dictionary")]
+    [Authorize(Roles = "Admin,CourseMaker")]
+    public async Task<ActionResult<CourseDictionary>> UpdateCourseDictionary([FromBody] CourseDictionary dictionary)
+    {
+        if(!ModelState.IsValid) return BadRequest();
+        
+        var courseRevision = await Send(new GetCourseRevisionByIdRequest(dictionary.CourseRevisionId));
+        if (courseRevision == null) return BadRequest();
+
+        var words = dictionary.GetWordList();
+        var saved = await Send(new SaveCourseDictionaryRequest(courseRevision.Id, words));
+        return saved ? StatusCode(202) : StatusCode(500);
+    }
+    
     private static ContentState GetCourseState(IReadOnlyCollection<LessonContentState> lessons)
     {
         if (lessons.All(l => l.ContentState == ContentState.Html)) return ContentState.Html;

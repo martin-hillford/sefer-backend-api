@@ -31,8 +31,7 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
 
     private async Task<bool> HandleSync(PublishCourseRevisionRequest request)
     {
-        // Create a context and transaction. Because of the thread safety of context, all subsequent actions
-        // should be synchronously!
+        // Create a context and transaction. Because of the thread safety of context, all actions should be synchronous!
         var context = GetDataContext();
         var transaction = await context.Database.BeginTransactionAsync();
         var revision = context.CourseRevisions.Single(c => c.Id == request.CourseRevisionId);
@@ -45,13 +44,10 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
         // Add a safeguard against a failing insert
         try
         {
-            // Next create a successor for each lesson
+            // Next, create a successor for each lesson
             var lessons = GetLessonsByRevisionId(context, revision.Id);
-            foreach (var lesson in lessons)
-            {
-                var success = CreateLesson(_serviceProvider, context, newRevision, lesson);
-                if (!success) return Fail(transaction);
-            }
+            var success = lessons.All(lesson => CreateLesson(_serviceProvider, context, newRevision, lesson));
+            if(!success) return Fail(transaction);
 
             // Create a successor of the survey
             var survey = context.Surveys.SingleOrDefault(s => s.CourseRevisionId == request.CourseRevisionId);
@@ -76,8 +72,11 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
                 var surveyAdded = context.Insert(_serviceProvider, newSurvey);
                 if (!surveyAdded) return Fail(transaction);
             }
-
-
+            
+            // Copy the dictionary of the course revision
+            var copied = CopyDictionary(context, revision, newRevision);
+            if(!copied) return Fail(transaction);
+            
             // Everything is created now, only update the current revision
             revision.ModificationDate = DateTime.UtcNow;
             revision.Stage = Stages.Published;
@@ -108,7 +107,7 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
 
     private bool CreateLesson(IServiceProvider serviceProvider, DataContext context, CourseRevision newRevision, Lesson lesson)
     {
-        // First check if the revision and the lessons are valid
+        // First, check if the revision and the lessons are valid
         if (lesson == null || IsValidEntity(lesson) == false) return false;
         if (lesson.CourseRevisionId != newRevision.PredecessorId) return false;
 
@@ -116,7 +115,7 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
         var newLesson = lesson.CreateSuccessor(newRevision);
         if (!context.Insert(serviceProvider, newLesson)) return false;
 
-        // Now comes the 'nasty' bit for each element and question a successor must be created
+        // Now comes the 'nasty' bit for each element and questions a successor must be created
         var success =
             CreateBlock<LessonTextElement>(serviceProvider, context, lesson, newLesson) &&
             CreateBlock<BoolQuestion>(serviceProvider, context, lesson, newLesson) &&
@@ -128,7 +127,7 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
         return success;
     }
 
-    private bool CreateBlock<T>(IServiceProvider serviceProvider, DataContext context, Lesson lesson, Lesson successorLesson)
+    private static bool CreateBlock<T>(IServiceProvider serviceProvider, DataContext context, Lesson lesson, Lesson successorLesson)
         where T : class, IContentBlock<Lesson, T>
         => ContentBlockHandlerMethods.CreateSuccessor<T>(serviceProvider, context, lesson, successorLesson);
 
@@ -152,12 +151,31 @@ public class PublishCourseRevisionHandler(IServiceProvider serviceProvider) : Ba
         return true;
     }
 
-    private List<MultipleChoiceQuestion> GetQuestions(DataContext context, IEntity lesson)
+    private static List<MultipleChoiceQuestion> GetQuestions(DataContext context, IEntity lesson)
     {
         return context.LessonMultipleChoiceQuestions
             .Where(q => q.LessonId == lesson.Id)
             .Include(q => q.Choices)
             .OrderBy(q => q.SequenceId)
             .ToList();
+    }
+
+    private bool CopyDictionary(DataContext context, CourseRevision current, CourseRevision successor)
+    {
+        try
+        {
+            //  Get the current dictionary
+            var dictionary = context .CourseRevisionDictionaryWords.Where(c => c.CourseRevisionId == current.Id);
+
+            // Make a copy / successor for each of the entries. It doesn't make sense to include a predecessor of words
+            // as key would kind of function as the key, and it is just additional information
+            foreach (var currentWord in dictionary)
+            {
+                context.Insert(_serviceProvider, currentWord.CreateSuccessor(successor));
+            }
+
+            return true;
+        }
+        catch (Exception) { return false; }
     }
 }
