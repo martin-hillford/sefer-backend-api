@@ -23,6 +23,51 @@ BEGIN
     END IF;
 END$$;
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'lesson_bool_questions' AND column_name = 'answer_explanation'
+    ) THEN
+        ALTER TABLE public.lesson_bool_questions
+            ADD COLUMN answer_explanation TEXT;
+    END IF;
+END$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'lesson_open_questions' AND column_name = 'answer_explanation'
+    ) THEN
+        ALTER TABLE public.lesson_open_questions
+            ADD COLUMN answer_explanation TEXT;
+    END IF;
+END$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'lesson_open_questions' AND column_name = 'exact_answer'
+    ) THEN
+        ALTER TABLE public.lesson_open_questions
+            ADD COLUMN exact_answer TEXT;
+    END IF;
+END$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'lesson_multiple_choice_questions' AND column_name = 'answer_explanation'
+    ) THEN
+        ALTER TABLE public.lesson_multiple_choice_questions
+            ADD COLUMN answer_explanation TEXT;
+    END IF;
+END$$;
+
+
 INSERT INTO public.__migrations("number", name, date)
 VALUES (101, 'Course with general information', CURRENT_DATE)
 ON CONFLICT ("number") DO NOTHING;

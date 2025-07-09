@@ -1,4 +1,5 @@
 using Sefer.Backend.Api.Models.Public;
+using Sefer.Backend.Api.Views.Public.Download;
 using Course = Sefer.Backend.Api.Views.Public.Download.Course;
 using Lesson = Sefer.Backend.Api.Views.Public.Download.Lesson;
 
@@ -42,8 +43,12 @@ public class DownloadCourseController(IServiceProvider serviceProvider) : BaseCo
         // If the revision can't be edited anymore (either it is closed or published) checked if it is cached
         
         var dataCourse = await Send(new GetCourseByIdRequest(dataRevision.CourseId));
+        var dictionary = await Send(new GetCourseDictionaryRequest(dataCourse.Id));
         var dataLessons = await Send(new GetLessonsByCourseRevisionRequest(dataRevision.Id));
-        var course = new Course(dataCourse, dataRevision);
+        var course = new Course(dataCourse, dataRevision)
+        {
+            Dictionary = dictionary.Select(d => new CourseWord(d)).ToList()
+        };
 
         foreach (var dataLesson in dataLessons)
         {

@@ -95,7 +95,8 @@ public class BoolQuestion : Question, ILessonQuestion<Lesson, BoolQuestion>
             Content = Content,
             CorrectAnswer = CorrectAnswer,
             CorrectAnswerIsTrue = CorrectAnswerIsTrue,
-            IsMarkDownContent = IsMarkDownContent
+            IsMarkDownContent = IsMarkDownContent,
+            AnswerExplanation = AnswerExplanation
         };
         return successor;
     }

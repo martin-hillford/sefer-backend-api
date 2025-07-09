@@ -1,4 +1,4 @@
-﻿// This post model is part of the lesson post model. So some of it properties will not be set in the code base 
+﻿// This post model is part of the lesson post model. So some of its properties will not be set in the code base 
 // ReSharper disable ClassNeverInstantiated.Global, CollectionNeverUpdated.Global, UnusedAutoPropertyAccessor.Global
 namespace Sefer.Backend.Api.Models.Admin.Lesson;
 
@@ -8,7 +8,7 @@ namespace Sefer.Backend.Api.Models.Admin.Lesson;
 public class ContentBlockPostModel
 {
     /// <summary>
-    /// (Optional) The id of the content block of a lessons, needs to be set when updating a content block
+    /// (Optional) The id of a content block needs to be set when updating a content block
     /// </summary>
     public int? Id { get; set; }
 
@@ -51,9 +51,21 @@ public class ContentBlockPostModel
     /// Content for this element, containing the question asked the student
     /// </summary>
     public string Content { get; set; }
+    
+    /// <summary>
+    /// An open question can have an exact answer (for example, when a single word must be given)
+    /// This will not be shown to students on default
+    /// </summary>
+    public string ExactAnswer { get; set; }
+    
+    /// <summary>
+    /// A course maker or admin can add an explanation to the question explaining what is the good answer.
+    /// This explanation is not shown by default
+    /// </summary>
+    public string AnswerExplanation { get; set; }
 
     /// <summary>
-    /// Holds if the content is mark down content
+    /// Holds if the content is mark-down content
     /// </summary>
     public bool IsMarkDownContent { get; set; }
 
@@ -64,12 +76,12 @@ public class ContentBlockPostModel
     public BoolAnswers? Answer { get; set; }
 
     /// <summary>
-    /// Gets / sets if the user can select multiple choices as being correct (for a multiple choice question)
+    /// Gets / sets if the user can select multiple choices as being correct (for a multiple-choice question)
     /// </summary>
     public bool IsMultiSelect { get; set; }
 
     /// <summary>
-    /// Gets / sets the choices when this is multiple choice question
+    /// Gets / sets the choices when this is a multiple-choice question
     /// </summary>
     public List<ChoicePostModel> Choices { get; set; }
 
@@ -78,13 +90,13 @@ public class ContentBlockPostModel
     /// </summary>
     public ContentBlockPostModel()
     {
-        Choices = new List<ChoicePostModel>();
+        Choices = [];
     }
 
     /// <summary>
     /// Converts the ContentBlock into a LessonTextElement
     /// </summary>
-    /// <returns>the Element when the type is text, else null</returns>
+    /// <returns>the Element when the type is 'text', else null</returns>
     public LessonTextElement ToTextElement()
     {
         if (Type != ContentBlockTypes.ElementText) return null;
@@ -151,6 +163,8 @@ public class ContentBlockPostModel
             Content = Content,
             CreationDate = DateTime.UtcNow,
             ForcePageBreak = ForcePageBreak,
+            ExactAnswer = ExactAnswer,
+            AnswerExplanation = AnswerExplanation,
             Heading = Heading,
             Id = GetId(),
             ModificationDate = DateTime.UtcNow,
@@ -177,6 +191,7 @@ public class ContentBlockPostModel
             Heading = Heading,
             Id = GetId(),
             ModificationDate = DateTime.UtcNow,
+            AnswerExplanation = AnswerExplanation,
             Number = Number,
             SequenceId = SequenceId,
             CorrectAnswer = value,
@@ -199,6 +214,7 @@ public class ContentBlockPostModel
             Heading = Heading,
             Id = GetId(),
             ModificationDate = DateTime.UtcNow,
+            AnswerExplanation = AnswerExplanation,
             Number = Number,
             SequenceId = SequenceId,
             IsMultiSelect = IsMultiSelect,

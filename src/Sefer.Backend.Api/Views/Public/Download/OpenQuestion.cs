@@ -7,6 +7,12 @@ public class OpenQuestion(Data.Models.Courses.Lessons.OpenQuestion openQuestion)
     public override string Content { get; set; } = openQuestion.Content;
 
     public bool IsMarkDownContent => openQuestion.IsMarkDownContent;
+    
+    public string AnswerExplanation => openQuestion.AnswerExplanation;
+    
+    public string ExactAnswer => openQuestion.ExactAnswer;
+    
+    public bool IsGradable => openQuestion.IsGradable;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ContentBlockTypes Type => openQuestion.Type;

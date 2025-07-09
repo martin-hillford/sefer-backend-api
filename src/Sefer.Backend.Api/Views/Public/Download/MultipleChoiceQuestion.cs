@@ -16,6 +16,8 @@ public class MultipleChoiceQuestion(Data.Models.Courses.Lessons.MultipleChoiceQu
     
     public List<Choice> Choices => question.Choices.Select(choice => new Choice(choice)).ToList();
     
+    public string AnswerExplanation => question.AnswerExplanation;
+    
     public override async Task IncludeMedia(DownloadRequest request, Course course)
     {
         await base.IncludeMedia(request, course);

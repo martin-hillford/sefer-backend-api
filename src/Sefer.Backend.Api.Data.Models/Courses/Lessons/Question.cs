@@ -13,7 +13,13 @@ public abstract class Question : ContentBlock
     public string Content { get; set; }
 
     /// <summary>
-    /// Holds if the content is mark down content
+    /// Holds if the content is mark-down content
     /// </summary>
     public bool IsMarkDownContent { get; set; } = false;
+    
+    /// <summary>
+    /// A course maker or admin can add an explanation to the question explaining what is the good answer.
+    /// This explanation is not shown by default
+    /// </summary>
+    public string AnswerExplanation { get; set; }
 }

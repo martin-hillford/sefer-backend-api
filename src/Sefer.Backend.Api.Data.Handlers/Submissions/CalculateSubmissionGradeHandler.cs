@@ -19,34 +19,41 @@ public class CalculateSubmissionGradeHandler(IServiceProvider serviceProvider)
         var context = GetDataContext();
         var answers = await context.Answers
             .Where(a => a.SubmissionId == request.SubmissionId)
-            .ToListAsync(token);
-
-        // SEF-98 - Assign the grade 10 if all question are open
+            .ToDictionaryAsync(a => a.QuestionId, a => a, token);
+        
+        // Check the number of questions and answers if either one of them is zero, no grade can be calculated
         var totalQuestions = lesson.Content.Count(c => c.IsQuestion);
-        var totalOpenQuestions = lesson.Content.Count(c => c.Type == ContentBlockTypes.QuestionOpen);
-        if (totalOpenQuestions == totalQuestions) return 1;
+        if(totalQuestions == 0 || answers.Count == 0) return null;
+        
+        // The total number of questions and the number of answers should match
+        if(totalQuestions != answers.Count) return null;
+        
+        // SEF-98 - Assign grade 10 if all questions are open
+        var ungradableQuestions = lesson.Content
+            .Where(c => c.Type == ContentBlockTypes.QuestionOpen)
+            .Cast<OpenQuestion>().Where(c => !c.IsGradable).ToDictionary(c => c.Id);
+        if(totalQuestions == ungradableQuestions.Count) return 1;
 
-        // Bookkeeping for the grading
-        var totalAnswersGiven = answers.Count(a => a.QuestionType != ContentBlockTypes.QuestionOpen);
+        // Bookkeeping for the grading - ungradable questions do not count towards the grade 
+        var gradableQuestions = totalQuestions - ungradableQuestions.Count;
 
         // Check if for each answer a question can be found and create pairs
-        var pairs = answers
-            .Select(a => (lesson.Content.First(c => c.Type == a.QuestionType && c.Id == a.QuestionId), a))
-            .ToList<(IContentBlock<Lesson> Block, QuestionAnswer Answer)>();
+        var correctBoolAnswers = lesson.Content
+            .Where(c => c.Type == ContentBlockTypes.QuestionBoolean && answers.ContainsKey(c.Id))
+            .Count(c => answers[c.Id].IsCorrectBoolQuestion(c));
 
-        var correctBoolAnswers = pairs
-            .Where(a => a.Answer.QuestionType == ContentBlockTypes.QuestionBoolean)
-            .Count(p => p.Answer.IsCorrectBoolQuestion(p.Block));
+        var correctMultipleChoiceAnswers = lesson.Content
+            .Where(c => c.Type == ContentBlockTypes.QuestionMultipleChoice && answers.ContainsKey(c.Id))
+            .Count(c => answers[c.Id].IsCorrectMultipleChoiceQuestion(c));
 
-        var correctMultipleChoiceAnswers = pairs
-            .Where(a => a.Answer.QuestionType == ContentBlockTypes.QuestionMultipleChoice)
-            .Count(p => p.Answer.IsCorrectMultipleChoiceQuestion(p.Block));
+        var correctExactAnswers = lesson.Content
+            .Where(c => c.Type == ContentBlockTypes.QuestionOpen && answers.ContainsKey(c.Id))
+            .Cast<OpenQuestion>()
+            .Count(c => answers[c.Id].TextAnswer.Trim().ToLower() == c.ExactAnswer.ToLower().Trim());
 
         // Save the grade of the submission
-        if (totalAnswersGiven != 0) return (correctBoolAnswers + correctMultipleChoiceAnswers) / (float)totalAnswersGiven;
-
-        // done
-        return null;
+        var totalCorrect = correctBoolAnswers + correctMultipleChoiceAnswers + correctExactAnswers;
+        return totalCorrect / (float)gradableQuestions;
     }
 
 }

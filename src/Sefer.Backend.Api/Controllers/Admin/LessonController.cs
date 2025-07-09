@@ -36,12 +36,12 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
     [ProducesResponseType(typeof(string), 201)]
     public async Task<ActionResult> InsertLesson([FromBody] LessonPostModel lessonPostModel)
     {
-        // First check and create a valid lesson model from the post
+        // First, check and create a valid lesson model from the post
         if (lessonPostModel == null || ModelState.IsValid == false) return BadRequest(ModelState.ValidationState);
         var model = lessonPostModel.ToLesson();
         if (model == null || !await Send(new IsLessonValidRequest(model))) return BadRequest(ModelState.ValidationState);
 
-        // Next check if the course revision exists and is editable
+        // Next, check if the course revision exists and is editable
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(model.CourseRevisionId));
         if (courseRevision == null || courseRevision.IsEditable == false) return BadRequest();
 
@@ -60,13 +60,13 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
     [ProducesResponseType(202)]
     public async Task<ActionResult> UpdateLesson([FromBody] LessonPostModel lessonPostModel, int id)
     {
-        // First check and create a valid lesson model from the post
+        // First, check and create a valid lesson model from the post
         if (lessonPostModel == null || ModelState.IsValid == false) return BadRequest(ModelState.ValidationState);
         if (await Send(new GetLessonByIdRequest(id)) == null) return NotFound();
         var model = lessonPostModel.ToLesson();
         if (model == null || !await Send(new IsLessonValidRequest(model))) return BadRequest(ModelState.ValidationState);
 
-        // Next check if the course revision exists and is editable
+        // Next, check if the course revision exists and is editable
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(model.CourseRevisionId));
         if (courseRevision == null || courseRevision.IsEditable == false) return BadRequest();
 
@@ -265,7 +265,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
             }
         }
 
-        // everything is saved, return the id of lesson that was saved
+        // everything is saved, return the id of the lesson that was saved
         return lesson.Id;
     }
 
@@ -374,6 +374,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
             dbQuestion.CorrectAnswer = question.CorrectAnswer;
             dbQuestion.Heading = question.Heading;
             dbQuestion.IsMarkDownContent = question.IsMarkDownContent;
+            dbQuestion.AnswerExplanation = question.AnswerExplanation;
 
             if (!await Send(new UpdateBoolQuestionRequest(dbQuestion))) return null;
         }
@@ -400,6 +401,8 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
             dbQuestion.SequenceId = question.SequenceId;
             dbQuestion.Heading = question.Heading;
             dbQuestion.IsMarkDownContent = question.IsMarkDownContent;
+            dbQuestion.AnswerExplanation = question.AnswerExplanation;
+            dbQuestion.ExactAnswer = question.ExactAnswer;
 
             if (!await Send(new UpdateOpenQuestionRequest(dbQuestion))) return null;
         }
@@ -415,7 +418,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
 
     private async Task<int?> SaveMultipleChoiceQuestion(Lesson lesson, ContentBlockPostModel contentBlock)
     {
-        // saving a multiple choice question is a bit different: first save the question itself
+        // saving a multiple-choice question is a bit different: first save the question itself
         var question = contentBlock.ToMultipleChoiceQuestion();
 
         if (question.Id > 0)
@@ -430,6 +433,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
             dbQuestion.IsMultiSelect = question.IsMultiSelect;
             dbQuestion.Heading = question.Heading;
             dbQuestion.IsMarkDownContent = question.IsMarkDownContent;
+            dbQuestion.AnswerExplanation = question.AnswerExplanation;
 
             if (!await Send(new UpdateMultipleChoiceQuestionRequest(dbQuestion))) return null;
         }
