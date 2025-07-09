@@ -64,6 +64,8 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
 
     public List<Resource> Resources = [];
 
+    public List<CourseWord> Dictionary = [];
+
     #endregion
 
     #region Methods
@@ -77,6 +79,13 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
         var copyrightLogo = await ContentSupport.CreateResource(request, CopyrightLogo);
         if (copyrightLogo != null) CopyrightLogo = copyrightLogo.GetResourceUrl();
         if (copyrightLogo != null) Resources.Add(copyrightLogo);
+
+        foreach (var word in Dictionary)
+        {
+            var pictureUrl = await ContentSupport.CreateResource(request, word.PictureUrl);
+            if (pictureUrl != null) word.PictureUrl = pictureUrl.GetResourceUrl();
+            if (pictureUrl != null) Resources.Add(pictureUrl);
+        }
     }
 
     #endregion

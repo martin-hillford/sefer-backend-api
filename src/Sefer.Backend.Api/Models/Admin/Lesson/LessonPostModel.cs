@@ -1,10 +1,11 @@
-﻿// The lesson is a complex object that is posted as one object. As a result
-// some properties will not be set or update in the code itself
+﻿// The lesson is a complex object posted as one object. As a result,
+// some properties will not be set or updated in the code itself.
 // ReSharper disable UnusedAutoPropertyAccessor.Global, CollectionNeverUpdated.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Sefer.Backend.Api.Models.Admin.Lesson;
 
 /// <summary>
-/// The lesson model represent a lesson posted for saving
+/// The lesson model represents a lesson posted for saving
 /// </summary>
 public class LessonPostModel
 {
@@ -15,7 +16,7 @@ public class LessonPostModel
     public string Number { get; set; }
 
     /// <summary>
-    ///  Gets / sets name for this lesson
+    ///  Gets / sets the name for this lesson
     /// </summary>
     [Required, MaxLength(50), MinLength(3)]
     public string Name { get; set; }
@@ -36,16 +37,17 @@ public class LessonPostModel
     public int CourseRevisionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the content of lesson. While posting there is no difference regarding the fields (to ease the posting)
+    /// Gets or sets the content of the lesson.
+    /// While posting, there is no difference regarding the fields (to ease the posting)
     /// </summary>
     public List<ContentBlockPostModel> Content { get; set; }
 
     /// <summary>
-    /// Creates a new lessons and ensures the content is initialized as an empty list
+    /// Creates a new lesson and ensures the content is initialized as an empty list
     /// </summary>
     public LessonPostModel()
     {
-        Content = new List<ContentBlockPostModel>();
+        Content = [];
     }
 
     /// <summary>

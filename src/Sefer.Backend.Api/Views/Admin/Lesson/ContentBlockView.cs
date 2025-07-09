@@ -1,4 +1,4 @@
-﻿// This is view, so property may not be accessed in code
+﻿// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global, UnusedAutoPropertyAccessor.Global
 namespace Sefer.Backend.Api.Views.Admin.Lesson;
 
@@ -16,7 +16,7 @@ public class ContentBlockView
     private readonly ContentBlock _block;
 
     /// <summary>
-    /// The id of the content block of a lessons.
+    /// The id of the content block.
     /// </summary>
     public int Id => _block.Id;
 
@@ -73,7 +73,7 @@ public class ContentBlockView
     public string Content { get; set; }
 
     /// <summary>
-    /// Holds if the content is mark down content
+    /// Holds if the content is mark-down content
     /// </summary>
     public bool IsMarkDownContent { get; set; }
 
@@ -84,9 +84,21 @@ public class ContentBlockView
     public BoolAnswers? Answer { get; set; }
 
     /// <summary>
-    /// Gets / sets if the user can select multiple choices as being correct (for a multiple choice question)
+    /// Gets / sets if the user can select multiple choices as being correct (for a multiple-choice question)
     /// </summary>
     public bool IsMultiSelect { get; set; }
+    
+    /// <summary>
+    /// An open question can have an exact answer (for example, when a single word must be given)
+    /// This will not be shown to students on default
+    /// </summary>
+    public string ExactAnswer { get; set; }
+    
+    /// <summary>
+    /// A course maker or admin can add an explanation to the question explaining what is the good answer.
+    /// This explanation is not shown by default
+    /// </summary>
+    public string AnswerExplanation { get; set; }
 
     /// <summary>
     /// Gets if this element is a question
@@ -107,7 +119,7 @@ public class ContentBlockView
         Type == ContentBlockTypes.ElementYoutube;
 
     /// <summary>
-    /// Gets / sets the choices when this is multiple choice question
+    /// Gets / sets the choices when this is a multiple-choice question
     /// </summary>
     // ReSharper disable once CollectionNeverQueried.Global
     public List<ChoiceView> Choices { get; set; }
@@ -117,12 +129,12 @@ public class ContentBlockView
     #region Constructor
 
     /// <summary>
-    /// A model constructor initializing the choices list
+    /// A model constructor initializing the list with choices
     /// </summary>
     private ContentBlockView(ContentBlock block, ContentBlockTypes type)
     {
         _block = block;
-        Choices = new List<ChoiceView>();
+        Choices = [];
         Type = type;
     }
 
@@ -158,6 +170,8 @@ public class ContentBlockView
     {
         Content = question.Content;
         IsMarkDownContent = question.IsMarkDownContent;
+        ExactAnswer = question.ExactAnswer;
+        AnswerExplanation = question.AnswerExplanation;
     }
 
     /// <summary>
@@ -170,6 +184,7 @@ public class ContentBlockView
         Content = question.Content;
         Answer = question.CorrectAnswer;
         IsMarkDownContent = question.IsMarkDownContent;
+        AnswerExplanation = question.AnswerExplanation;
     }
 
     /// <summary>
@@ -182,6 +197,7 @@ public class ContentBlockView
         Content = question.Content;
         IsMultiSelect = question.IsMultiSelect;
         IsMarkDownContent = question.IsMarkDownContent;
+        AnswerExplanation = question.AnswerExplanation;
         foreach (var choice in question.Choices)
         {
             Choices.Add(new ChoiceView(choice));

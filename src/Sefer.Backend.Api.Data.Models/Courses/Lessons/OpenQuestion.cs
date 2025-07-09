@@ -11,7 +11,7 @@ public class OpenQuestion : Question, ILessonQuestion<Lesson, OpenQuestion>
     #region Properties
 
     /// <summary>
-    /// The lesson to which the multiple choice question belongs
+    /// The lesson to which the multiple-choice question belongs
     /// </summary>
     /// <inheritdoc />
     [ForeignKey("LessonId")]
@@ -24,6 +24,13 @@ public class OpenQuestion : Question, ILessonQuestion<Lesson, OpenQuestion>
     public string HeaderText => Element.GetHeaderText(this);
 
     /// <summary>
+    /// An open question can have an exact answer (for example, when a single word must be given)
+    /// This will not be shown to students on default
+    /// </summary>
+    [MaxLength(int.MaxValue)]
+    public string ExactAnswer { get; set; }
+    
+    /// <summary>
     /// The type of the Element in
     /// </summary>
     /// <inheritdoc />
@@ -34,12 +41,17 @@ public class OpenQuestion : Question, ILessonQuestion<Lesson, OpenQuestion>
     /// </summary>
     [ForeignKey("PredecessorId")]
     public OpenQuestion Predecessor { get; set; }
-
+    
     /// <summary>
     /// Returns if the content block is question
     /// </summary>
     public bool IsQuestion => true;
 
+    /// <summary>
+    /// When an open-question has an exact answer is gradable.
+    /// </summary>
+    public bool IsGradable => !string.IsNullOrEmpty(ExactAnswer);
+    
     #endregion
 
     #region Methods
@@ -62,7 +74,9 @@ public class OpenQuestion : Question, ILessonQuestion<Lesson, OpenQuestion>
             PredecessorId = Id,
             SequenceId = SequenceId,
             Content = Content,
-            IsMarkDownContent = IsMarkDownContent
+            IsMarkDownContent = IsMarkDownContent,
+            ExactAnswer = ExactAnswer,
+            AnswerExplanation = AnswerExplanation
         };
     }
 

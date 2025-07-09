@@ -4,13 +4,13 @@ using Sefer.Backend.Api.Views.Shared.Courses;
 namespace Sefer.Backend.Api.Views.Admin.Lesson;
 
 /// <summary>
-/// The lesson model represent a lesson
+/// The lesson model represents a lesson
 /// </summary>
 /// <inheritdoc cref="Sefer.Backend.Api.Data.JsonViews.LessonView"/>
 public class LessonView : Data.JsonViews.LessonView
 {
     /// <summary>
-    /// The content of lesson.
+    /// The content of a lesson.
     /// </summary>
     public List<ContentBlockView> Content { get; init; }
 
@@ -36,7 +36,7 @@ public class LessonView : Data.JsonViews.LessonView
     {
         CourseRevision = new CourseRevisionView(model.CourseRevision);
         Course = new CourseView(model.CourseRevision.Course);
-        Content = new List<ContentBlockView>();
+        Content = [];
         PreviewQuery = previewQuery;
         foreach (var content in model.Content)
         {

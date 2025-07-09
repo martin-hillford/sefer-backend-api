@@ -1,11 +1,11 @@
-// This is view, so property may not be accessed in code
+// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global UnusedAutoPropertyAccessor.Global 
 using Sefer.Backend.Api.Views.Admin.Lesson;
 
 namespace Sefer.Backend.Api.Views.Shared.Courses.Lessons;
 
 /// <summary>
-/// This view is be used for admins, mentors and supervisors to provide a full overview of the questions in a course
+/// This view is used for admins, mentors and supervisors to provide a full overview of the questions in a course
 /// </summary>
 public class QuestionCheckView
 {
@@ -15,7 +15,7 @@ public class QuestionCheckView
     private readonly Question _question;
 
     /// <summary>
-    /// The id of the question of a lessons.
+    /// The id of the question
     /// </summary>
     public int Id => _question.Id;
 
@@ -52,17 +52,17 @@ public class QuestionCheckView
     public string Content => _question.Content;
 
     /// <summary>
-    /// Gets / sets if the user can select multiple choices as being correct (for a multiple choice question)
+    /// Gets / sets if the user can select multiple choices as being correct (for a multiple-choice question)
     /// </summary>
     public bool IsMultiSelect { get; set; }
 
     /// <summary>
-    /// Gets / sets the choices when this is multiple choice question
+    /// Gets / sets the choices when this is a multiple-choice question
     /// </summary>
     public List<ChoiceView> Choices { get; set; }
 
     /// <summary>
-    /// Holds if this is a markdown block
+    /// Holds if this is a mark-down block
     /// </summary>
     public bool IsMarkDownContent => _question.IsMarkDownContent;
 
@@ -70,7 +70,7 @@ public class QuestionCheckView
     /// Contains the correct answer for the question.
     /// For open question this is an empty string
     /// For boolean question this is the word 'Correct' or 'Wrong' (the text representation within the bool question object)
-    /// For multiple choice questions this is a comma separated list of choice id's
+    /// For multiple choice questions this is a comma-separated list of choice id's
     /// </summary>
     public readonly string Answer;
 
@@ -81,7 +81,7 @@ public class QuestionCheckView
     public QuestionCheckView(BoolQuestion boolQuestion)
     {
         _question = boolQuestion;
-        Choices = new List<ChoiceView>();
+        Choices = [];
         IsMultiSelect = false;
         Type = ContentBlockTypes.QuestionBoolean;
         Answer = boolQuestion.CorrectAnswerText;

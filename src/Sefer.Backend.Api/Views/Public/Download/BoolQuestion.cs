@@ -10,6 +10,8 @@ public class BoolQuestion(Data.Models.Courses.Lessons.BoolQuestion boolQuestion)
     
     public bool CorrectAnswerIsTrue => boolQuestion.CorrectAnswerIsTrue;
     
+    public string AnswerExplanation => boolQuestion.AnswerExplanation;
+    
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ContentBlockTypes Type => boolQuestion.Type;
 }

@@ -26,14 +26,14 @@ public class MultipleChoiceQuestion : Question, IMultipleChoiceQuestion<Multiple
     public ICollection<MultipleChoiceQuestionChoice> Choices { get; set; } = new List<MultipleChoiceQuestionChoice>();
 
     /// <summary>
-    /// The lesson to which the multiple choice question belongs
+    /// The lesson to which the multiple-choice question belongs
     /// </summary>
     /// <inheritdoc />
     [ForeignKey("LessonId")]
     public Lesson Lesson { get; set; }
 
     /// <summary>
-    /// Gets the number of correct answers for this  multiple choice collection
+    /// Gets the number of correct answers for this multiple-choice collection
     /// </summary>
     /// <inheritdoc />
     public int CorrectAnswerCount => Choices.Count(c => c.IsCorrectAnswer);
@@ -86,7 +86,8 @@ public class MultipleChoiceQuestion : Question, IMultipleChoiceQuestion<Multiple
             SequenceId = SequenceId,
             IsMultiSelect = IsMultiSelect,
             Content = Content,
-            IsMarkDownContent = IsMarkDownContent
+            IsMarkDownContent = IsMarkDownContent,
+            AnswerExplanation = AnswerExplanation
         };
         return successor;
     }
