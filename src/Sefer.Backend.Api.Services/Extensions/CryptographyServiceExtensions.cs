@@ -9,7 +9,7 @@ public static class CryptographyServiceExtensions
         var data = $"{user.Id}.{user.PasswordSalt}.{user.Email}.{user.Password}";
         return service.UrlHash(data)[..8].ToUpper();
     }
-
+    
     public static bool IsAsciiAlphaNumeric(this byte value)
         => value is >= 48 and <= 57 or >= 65 and <= 90 or >= 97 and <= 122;
 

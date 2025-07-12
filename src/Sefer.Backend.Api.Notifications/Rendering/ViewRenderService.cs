@@ -7,7 +7,7 @@ namespace Sefer.Backend.Api.Notifications.Rendering;
 
 /// <summary>
 /// This class is capable of rendering a razor view to a string.
-/// Useful from e-mail and or other applications when a raw html string is required
+/// Useful from e-mail and or other applications when a raw HTML string is required
 /// </summary>
 public class ViewRenderService(IServiceProvider serviceProvider) : IViewRenderService
 {
@@ -26,17 +26,17 @@ public class ViewRenderService(IServiceProvider serviceProvider) : IViewRenderSe
     /// <param name="viewName">The name of the view - as specified in the database </param>
     /// <param name="data">The data model to render</param>
     /// <param name="language">The language to render the content in</param>
-    /// <param name="type">The type of the template (text, html)</param>
+    /// <param name="type">The type of the template (text, HTML)</param>
     /// <returns>A string with the view</returns>
     public async Task<Render> RenderToStringAsync<T>(string viewName, string language, string type, T data)
     {
         try
         {
-            // First get the view from the database
+            // First, get the view from the database
             var template = await _mediator.Send(new GetTemplateByNameRequest(viewName, language, type));
             var layout = string.Empty;
             
-            // If the view has a layout load the layout from the database
+            // If the view has a layout, load the layout from the database
             if (template.HasLayout)
             {
                 var layoutTemplate = await _mediator.Send(new GetTemplateByNameRequest(template.LayoutName, language, type));
@@ -47,7 +47,7 @@ public class ViewRenderService(IServiceProvider serviceProvider) : IViewRenderSe
             var random = Random.GetString(32);
             var accessToken = random + Hashing.Sha256(random + _options.ApiKey);
 
-            // Create the post body and call the render service
+            // Create the post-body and call the render service
             var body = new { accessToken, template = template.Content, layout, data };
             var requestUri = _options.RenderServiceUrl + "/render";
             var response = await _httpClient.PostAsJsonAsync(requestUri, body);

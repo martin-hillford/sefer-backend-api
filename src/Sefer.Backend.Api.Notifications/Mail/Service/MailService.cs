@@ -136,7 +136,7 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
         var model = new EnrollmentModel(data) { StudentName = enrolledStudent.Name, MentorName = data.Receiver.Name, CourseName = course.Name };
         await SendMessageAsync("enrollment", model, data.Receiver);
         
-        // Also the admin needs to receive a copy of this e-mail
+        // Also, the admin needs to receive a copy of this e-mail
         await SendMessageAsync("enrollment", model, new MailAddress(_mailServiceOptions.AdminEmail, data.Receiver.Name));
     }
 
@@ -156,10 +156,10 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
         return message;
     }
 
-    private async Task SendMessageAsync( string mailView, MailModel model, User receiver)
+    private async Task SendMessageAsync<T>( string mailView, T model, UserView receiver) where T : MailModel
         => await SendMessageAsync(mailView, model, new MailAddress(receiver.Email, receiver.Name));
 
-    private async Task SendMessageAsync(string mailView, MailModel model,  MailAddress address)
+    private async Task SendMessageAsync<T>(string mailView, T model,  MailAddress address) where T : MailModel
     {
         try
         {
@@ -168,8 +168,8 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
             var renderService = scope.ServiceProvider.GetService<IViewRenderService>();
             
             if (mailView == null || model == null || string.IsNullOrEmpty(address.Email)) return;
-            var html = await renderService.RenderToStringAsync(mailView, model.Data.Language, "html", model);
-            var text = await renderService.RenderToStringAsync(mailView, model.Data.Language, "text", model);
+            var html = await renderService.RenderToStringAsync(mailView, model.Language, "html", model);
+            var text = await renderService.RenderToStringAsync(mailView, model.Language, "text", model);
 
             
             var message = new MailMessage

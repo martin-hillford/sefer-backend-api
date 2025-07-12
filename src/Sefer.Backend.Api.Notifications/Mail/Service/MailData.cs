@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace Sefer.Backend.Api.Notifications.Mail.Service;
 
@@ -10,7 +11,10 @@ public class MailData(IServiceProvider provider, User receiver, ISite site, IReg
 
     public readonly string Language = language;
 
-    public readonly User Receiver = receiver;
+    public readonly UserView Receiver = new(receiver);
+
+    [JsonIgnore]
+    public readonly User User = receiver;
 
     public readonly IServiceProvider ServiceProvider = provider;
     

@@ -1,4 +1,4 @@
-﻿// This is post model to an external service, so not all properties may not be accessed in code
+﻿// This is the post-model to an external service, so not all properties may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global 
 // ReSharper disable MemberCanBeProtected.Global UnusedAutoPropertyAccessor.Global
 namespace Sefer.Backend.Api.Notifications.Mail.Models;
@@ -16,7 +16,7 @@ public abstract class MailModel
     /// <summary>
     /// Contains all the underlying meta-data
     /// </summary>
-    public readonly MailData Data;
+    protected readonly MailData Data;
 
     /// <summary>
     /// The site that is sending this e-mail
@@ -43,6 +43,11 @@ public abstract class MailModel
     /// </summary>
     public string ShortUrl => Data.Site.Hostname;
 
+    /// <summary>
+    /// The language of the e-mail to the user
+    /// </summary>
+    public string Language => Data.Language;
+    
     /// <summary>
     /// A generic mail model
     /// </summary>
