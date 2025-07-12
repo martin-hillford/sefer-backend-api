@@ -1,4 +1,4 @@
-﻿// This is post model to an external service, so not all properties may not be accessed in code
+﻿// This is the post-model to an external service, so not all properties may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global 
 // ReSharper disable MemberCanBeProtected.Global UnusedAutoPropertyAccessor.Global
 
@@ -13,17 +13,12 @@ namespace Sefer.Backend.Api.Notifications.Mail.Models;
 /// <remarks>
 /// Creates a new RegistrationComplete ViewModel
 /// </remarks>
-public class RegistrationCompleteModel(MailData mailData) : MailModel(mailData)
+public class RegistrationCompleteModel(MailData mailData) : UserMailModel(mailData)
 {
     /// <summary>
     /// Service which will help with generating hashes
     /// </summary>
     private readonly ICryptographyService _protection = mailData.ServiceProvider.GetService<ICryptographyService>();
-
-    /// <summary>
-    /// The user that was registered
-    /// </summary>
-    public readonly User User = mailData.Receiver;
 
     /// <summary>
     /// The activation link that can be used by the user to activate his account
@@ -40,5 +35,5 @@ public class RegistrationCompleteModel(MailData mailData) : MailModel(mailData)
     /// <summary>
     /// The activation link that can be used by the user to activate his account
     /// </summary>
-    public string ActivationCode => _protection.GetUserActivationCode(User);
+    public string ActivationCode => _protection.GetUserActivationCode(Data.User);
 }

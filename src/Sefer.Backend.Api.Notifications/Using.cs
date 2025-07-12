@@ -34,3 +34,4 @@ global using Sefer.Backend.Api.Services.Security.Abstractions;
 global using Sefer.Backend.Support.Lib.Mediator;
 global using Sefer.Backend.SharedConfig.Lib;
 global using Sefer.Backend.SharedConfig.Lib.Abstractions;
+global using Sefer.Backend.Api.Data.JsonViews;

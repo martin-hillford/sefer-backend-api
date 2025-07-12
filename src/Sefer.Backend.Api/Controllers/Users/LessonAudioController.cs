@@ -2,7 +2,7 @@ namespace Sefer.Backend.Api.Controllers.Users;
 
 /// <summary>
 /// This controller deals with all lesson audio functionality.
-/// Thus, for all the user: public/student/mentors that only will be listening
+/// Thus, for all the users: public/student/mentors that only will be listening to
 /// but also admin users that will be able to upload and change the audio
 /// </summary>
 /// <param name="provider"></param>
@@ -11,11 +11,11 @@ public class LessonAudioController(IServiceProvider provider) : BaseController(p
     private readonly IAudioStorageService _audioStorageService = provider.GetService<IAudioStorageService>();
 
     [HttpGet("/lessons/{lessonId:int}/audio")]
-    public async Task<IActionResult> GetAudioInformation(int lessonId, Guid audioReferenceId)
+    public async Task<IActionResult> GetAudioInformation(int lessonId, [FromQuery] Guid audioReferenceId)
     {
         // Get the lesson and the course revision of the lesson
         var lesson = await Send(new GetLessonByIdRequest(lessonId));
-        if (lesson == null || !lesson.AudioReferenceId.HasValue) return NotFound();
+        if (lesson is not { AudioReferenceId: not null }) return NotFound();
         if (lesson.AudioReferenceId != audioReferenceId) return BadRequest();
 
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(lesson.CourseRevisionId));
@@ -25,7 +25,7 @@ public class LessonAudioController(IServiceProvider provider) : BaseController(p
         var user = await GetCurrentUserAsync();
         if (courseRevision.Stage != Stages.Published && user?.IsCourseMakerOrAdmin != true) return Unauthorized();
 
-        // Retrieve and return the subtitles file
+        // Retrieve and return the subtitle file
         var subtitlesFile = await _audioStorageService.RetrieveAudioAsync(lesson.AudioReferenceId.Value);
         if (subtitlesFile == null) return NotFound();
         return Json(subtitlesFile);
@@ -48,7 +48,7 @@ public class LessonAudioController(IServiceProvider provider) : BaseController(p
         var audioReferenceId = Guid.NewGuid();
 
         // It is expected that the upload is a zip with mp3 files and a srt file
-        // The first step is unzip the zip file
+        // The first step is to unzip the zip file
         var (extracted, outputDirectory) = await SubtitlesFile.CopyAndExtractAsync(audio, audioReferenceId);
         if (!extracted) return BadRequest("Extraction of the audio file failed");
 
@@ -56,7 +56,7 @@ public class LessonAudioController(IServiceProvider provider) : BaseController(p
         var subtitlesFile = await SubtitlesFile.ReadAudioDirectoryAsync(outputDirectory);
         if (subtitlesFile == null) return BadRequest("Invalid audio package");
 
-        // Now the file is read it should be uploaded to the audio storage
+        // Now the file is read, it should be uploaded to the audio storage
         var stored = await _audioStorageService.StoreAudioAsync(subtitlesFile, audioReferenceId);
         if (!stored) return BadRequest("Audio package could not be saved into the storage");
 

@@ -104,7 +104,7 @@ public class NotificationService(IServiceProvider serviceProvider) : INotificati
                 await _webSocket.SendMessage(view, true);
             }
 
-            // Send an e-mail notification (pleas note, also the admin is mailed)
+            // Send an e-mail notification (please note, also the admin is mailed)
             var (region, site) = await Send(new GetPrimaryRegionAndSiteRequest(enrollment.Mentor.Id));
             var language = enrollment.Mentor.GetPreferredInterfaceLanguage();
             var data = new MailData(serviceProvider, enrollment.Mentor, site, region, language);

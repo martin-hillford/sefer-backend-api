@@ -1,17 +1,12 @@
-﻿// This is post model to an external service, so not all properties may not be accessed in code
+﻿// This is post-model to an external service, so not all properties may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global
 namespace Sefer.Backend.Api.Notifications.Mail.Models;
 
 /// <summary>
-/// Model for a AccountDelete confirmation message to the user
+/// Model for an AccountDelete confirmation message to the user
 /// </summary>
-public class AccountDeleteModel : MailModel
+public class AccountDeleteModel : UserMailModel
 {
-    /// <summary>
-    /// The user that was registered
-    /// </summary>
-    public readonly User User;
-
     /// <summary>
     /// Service which will help with generating hashes
     /// </summary>
@@ -24,7 +19,6 @@ public class AccountDeleteModel : MailModel
     public AccountDeleteModel(MailData mailData) : base(mailData)
     {
         _protection = mailData.ServiceProvider.GetService<ICryptographyService>();
-        User = mailData.Receiver;
     }
 
     /// <summary>

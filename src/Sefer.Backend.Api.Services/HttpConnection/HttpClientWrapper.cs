@@ -16,6 +16,7 @@ public class HttpClientWrapper(IHttpClientFactory httpClientFactory) : IHttpClie
     public Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string requestUri, TValue value, JsonSerializerOptions options = null, CancellationToken cancellationToken = default)
     {
         var client = httpClientFactory.CreateClient();
+        options ??= DefaultJsonOptions.GetOptions();
         return client.PostAsJsonAsync(requestUri, value, options, cancellationToken);
     }
 }

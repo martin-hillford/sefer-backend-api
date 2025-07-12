@@ -1,19 +1,14 @@
-﻿// This is post model to an external service, so not all properties may not be accessed in code
+﻿// This is the post-model to an external service, so not all properties may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global 
 // ReSharper disable MemberCanBeProtected.Global UnusedAutoPropertyAccessor.Global
 namespace Sefer.Backend.Api.Notifications.Mail.Models;
 
 /// <summary>
-/// The model that will contain all required user information to generate a password forgot message
+/// The model that will contain all required user information to generate a password-forgot message
 /// </summary>
 /// <inheritdoc />
-public class PasswordForgotModel : MailModel
+public class PasswordForgotModel : UserMailModel
 {
-    /// <summary>
-    /// The user that requested a password forgot e-mail
-    /// </summary>
-    public readonly User User;
-
     /// <summary>
     /// Service which will help with generating hashes
     /// </summary>
@@ -25,7 +20,6 @@ public class PasswordForgotModel : MailModel
     public PasswordForgotModel(MailData mailData) : base(mailData)
     {
         _protection = mailData.ServiceProvider.GetService<ICryptographyService>();
-        User = mailData.Receiver;
     }
 
     /// <summary>
