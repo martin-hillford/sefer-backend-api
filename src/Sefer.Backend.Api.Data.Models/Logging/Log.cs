@@ -46,5 +46,4 @@ public class Log
     /// </summary>
     [MaxLength(int.MaxValue)]
     public string StackTrace { get; set; }
-
 }

@@ -10,4 +10,13 @@ public class LogController(IServiceProvider provider) : BaseController(provider)
         var logs = await Send(new GetNotificationAndMailLogsRequest(skip, take));
         return Json(logs);
     }
+    
+        [HttpGet("/logs/mail-notifications/{id:guid}")]
+    [ProducesResponseType(typeof(List<Log>), 200)]
+    public async Task<IActionResult> GetErrorById(Guid id)
+    {
+        var log = await Send(new GetLoggedInfoByIdRequest(id));
+        if(log == null) return NotFound();
+        return Json(log);
+    }
 }
