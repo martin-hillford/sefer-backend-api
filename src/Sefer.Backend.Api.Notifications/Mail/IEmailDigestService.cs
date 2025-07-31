@@ -3,7 +3,7 @@ namespace Sefer.Backend.Api.Notifications.Mail;
 /// <summary>
 /// This interface defines the e-mail the service can send.
 /// Please note: regarding this interface as internal for Sefer.Backend.Api.Notifications.
-/// use the INotificationService to ensure all notifications are send
+/// Use the INotificationService to ensure all notifications are sent
 /// </summary>
 
 public interface IEmailDigestService

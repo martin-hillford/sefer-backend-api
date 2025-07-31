@@ -27,7 +27,7 @@ public class SaveSubmissionHandler(IServiceProvider serviceProvider)
                 if (!answerSaved) throw new SaveChangesException();
             }
 
-            // When a submission is final the results of the answers and the grade should be calculated
+            // When a submission is final, the results of the answers and the grade should be calculated
             if (!request.Submission.IsFinal) return true;
             return await CalculateSubmissionGrade(request.Submission.Id, token);
         }

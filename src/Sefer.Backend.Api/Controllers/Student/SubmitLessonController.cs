@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Sefer.Backend.Api.Data.Requests.Surveys;
 using Sefer.Backend.Api.Data.Validation;
 using Sefer.Backend.Api.Models.Student.Profile;
@@ -15,6 +16,8 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
     private readonly IFileStorageService _fileStorageService = serviceProvider.GetService<IFileStorageService>();
 
     private readonly INotificationService _notificationService = serviceProvider.GetService<INotificationService>();
+    
+    private readonly ILogger<MailService> _logger = serviceProvider.GetService<ILogger<MailService>>();
 
     [HttpPost("/student/lessons/submit")]
     [ProducesResponseType(typeof(BaseSubmissionResultView), 201)]
@@ -40,7 +43,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         // check if the submission is valid
         if (IsValidSubmission(lesson, submission) == false) return BadRequest("Invalid submission");
 
-        // There are (currently) three options: not-final, final & self-study  and final & no-self-study
+        // There are (currently) three options: not-final, final for self-study and final for guided-study
         // For readability those three options have separate function
 
         // 1) not-final post: the answers of the users should be saved
@@ -107,7 +110,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         // Create the view
         var view = new EnrollmentOverview_CorrectedSubmissionResultView(submission, correctedAnswers, enrollment, _fileStorageService);
 
-        // check if this is final submission for the enrollment
+        // check if this is a final submission for the enrollment
         var finished = await CheckIsEnrollmentIsFinished(enrollment);
 
         // Situation 1) The enrollment is not completed a next lesson will be available - 201 should be returned
@@ -141,18 +144,24 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var saved = await Send(new SaveSubmissionRequest(submission, answers));
         if (saved == false) return StatusCode(500);
 
-        // Determine the correctness for all the answers
+        // Determine the correctness of all the answers
         var result = new MentorSubmissionResultView(enrollment.Id) { SubmissionId = submission.Id, };
 
-        // check if this is final submission for the enrollment
+        // check if this is the final submission for the enrollment
         var finished = await CheckIsEnrollmentIsFinished(enrollment);
 
         // Notify the mentor and check if the course is finished
         if (postedSubmission.Final && enrollment.MentorId.HasValue)
         {
-            var mentor = await Send(new GetUserByIdRequest(enrollment.MentorId.Value));
-            var notified = await _notificationService.SendLessonSubmittedNotificationAsync(submission.Id, mentor, student);
-            if (!notified) return StatusCode(500);
+            try
+            {
+                var mentor = await Send(new GetUserByIdRequest(enrollment.MentorId.Value));
+                await _notificationService.SendLessonSubmittedNotificationAsync(submission.Id, mentor, student);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Error occurred while sending notifications for submission {SubmissionId}", submission.Id);
+            }
         }
 
         // If the enrollment is not finished (a next lesson is available) 201 should be returned
@@ -178,7 +187,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         // The number of answers should match the number of questions
         if (submission.Answers.Count != questions.Count) return false;
 
-        // Every question should have answer
+        // Every question should have an answer
         var answers = submission.Answers.ToLookup(a => a.QuestionId);
         foreach (var question in questions)
         {
@@ -198,7 +207,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
                     break;
                 case ContentBlockTypes.QuestionMultipleChoice:
                     var multipleChoiceQuestion = (MultipleChoiceQuestion)question;
-                    // here is the thing, answers for multiple choice question are provided as a comma separated list of id
+                    // here is the thing, answers for multiple choice question are provided as a comma-separated list of id
                     var choiceIds = answer.Answer.Split(',');
                     var hasChoice = choiceIds.All(ac => multipleChoiceQuestion.Choices.Any(c => c.Id.ToString() == ac));
                     if (hasChoice == false) return false;
@@ -218,10 +227,10 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         if (existing == null) existing = submission.CreateNew(enrollment, lesson);
         else existing.IsFinal = submission.Final;
 
-        // When final set the submission date
+        // When final, set the submission date
         if (existing.IsFinal) existing.SubmissionDate = DateTime.UtcNow;
 
-        // Also check the content that none existing question are not added
+        // Also check the content that none existing questions are not added
         var content = new Dictionary<ContentBlockTypes, HashSet<int>>();
         foreach (var block in lesson.Content)
         {

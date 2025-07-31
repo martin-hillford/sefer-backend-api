@@ -3,7 +3,7 @@ namespace Sefer.Backend.Api.Notifications.Push;
 /// <summary>
 /// This interface defines the notifications the push notification service can send.
 /// Please note: regarding this interface as internal for Sefer.Backend.Api.Notifications.
-/// use the INotificationService to ensure all notifications (including) are send
+/// Use the INotificationService to ensure all notifications (including) are sent
 /// </summary>
 public interface IFireBaseService
 {
