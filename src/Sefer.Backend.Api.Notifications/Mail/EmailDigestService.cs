@@ -67,8 +67,8 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
             var messages = await _mediator.Send(new GetUnNotifiedMessageOfUserRequest(user.Id, delay));
             var submissions = await _mediator.Send(new GetSubmissionsForReviewRequest(user.Id));
 
-            // Note: when a lessons submission, a messages is also being sent. So only start sending when there are
-            // unnotified message
+            // Note: when a lesson is submitted, a message is also being sent.
+            // So only start sending when there are unnotified messages
             if (messages.Count == 0) return;
 
             // Logging information for debugging notifications

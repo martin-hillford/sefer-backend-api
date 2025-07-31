@@ -8,11 +8,14 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
 
     private readonly ICryptographyService _cryptoService = serviceProvider.GetService<ICryptographyService>();
     
+    private readonly INotificationService _notificationService = serviceProvider.GetService<INotificationService>();
+    
     /// <summary>
     /// Logs the user into his account
     /// </summary>
     /// <param name="post"></param>
-    /// <response code="400">The user is blocked because of misconduct</response>
+    /// <response code="200">Login accepted</response>
+    /// <response code="400">The user is blocked (because of misconduct)</response>
     /// <response code="403">The user cannot log on to his account since it is not yet approved</response>
     /// <response code="401">The user cannot log on because the username or password are incorrect</response>
     /// <response code="202">The password and username are correct, require two-factor auth</response>
@@ -38,13 +41,28 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
         return result switch
         {
             SignOnResult.Blocked => BadRequest(),
-            SignOnResult.Unapproved => Forbid(),
+            SignOnResult.Unapproved => await Unapproved(post, user),
             SignOnResult.IncorrectSignIn => Unauthorized(),
             SignOnResult.Success => await HandleCorrectLogon(post, user, isAppLogin),
             _ => StatusCode(500)
         };
     }
 
+    private async Task<ActionResult> Unapproved(LogonPostModel post, User student)
+    {
+        try
+        {
+            if (post.ResendActivation == true)
+            {
+                var language = student.PreferredInterfaceLanguage;
+                await _notificationService.SendCompleteRegistrationNotificationAsync(student, language);
+            }
+        }
+        // ReSharper disable once EmptyGeneralCatchClause
+        catch(Exception) { }
+        return Forbid();
+    }
+    
     private async Task<ActionResult> LogAndReturnUnauthorized(LogonPostModel post, SignOnResult result = SignOnResult.NoUser)
     {
         await LogonLog(result, post?.Username ?? string.Empty, null);
@@ -53,10 +71,10 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
 
     private async Task<ActionResult> HandleCorrectLogon(LogonPostModel post, User user, bool isAppLogin)
     {
-        // If 2fa is not enabled then the user gets access
+        // If two-factor authentication is not enabled, then the user gets access
         if (user.TwoFactorAuthEnabled == false) return await GrantAccess(post, user, isAppLogin);
 
-        // if this was only the logon with a code return 202 code letting the user know he should log on with two factor
+        // if this was only the logon with a code return 202 code letting the user know he should log on with two-factor auth
         if (post.Code == null) return Accepted();
 
         // The user has submitted a code. Validate it
@@ -75,12 +93,12 @@ public class LogonController(IServiceProvider serviceProvider) : BaseController(
         // If this is an admin logon, the site and region are irrelevant
         if (IsAdminLogon(post, user)) return await SendUserToken(user, isAppLogin);
 
-        // If this is a logon for the app then the user can granted access since
+        // If this is a logon for the app, then the user can granted access since
         // the app is capable of handling any region
         if (isAppLogin) return await SendUserToken(user, true);
 
         // Let's check if the current site is capable of handling the current site
-        // the user is logon to. If the current site cannot handle the region
+        // the user is logon to. If the current site cannot handle the region,
         // then the user should be redirected to log on to his/hers primary site
         var (userRegion, userSite) = await Send(new GetPrimaryRegionAndSiteRequest(user.Id));
         var currentSite = await Send(new GetSiteByNameRequest(post.Site));

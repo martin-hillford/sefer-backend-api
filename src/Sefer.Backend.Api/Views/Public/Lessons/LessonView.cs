@@ -3,14 +3,14 @@
 namespace Sefer.Backend.Api.Views.Public.Lessons;
 
 /// <summary>
-/// The lesson model represent a lesson
+/// The lesson model represents a lesson
 /// </summary>
 /// <inheritdoc cref="Sefer.Backend.Api.Data.JsonViews.LessonView"/>
 /// Todo: Refactor
 public class LessonView : Data.JsonViews.LessonView
 {
     /// <summary>
-    /// The content of lesson.
+    /// The content of the lesson.
     /// </summary>
     public List<ContentBlockView> Content { get; init; }
 

@@ -22,7 +22,12 @@ public class LogonPostModel
     public uint? Code { get; set; }
 
     /// <summary>
-    /// The site where user is logging on
+    /// The site where the user is logging on
     /// </summary>
     public string Site { get; set; }
+    
+    /// <summary>
+    /// When set to true, the server will resend the activate e-mail upon a non-activate logon
+    /// </summary>
+    public bool? ResendActivation { get; set; }
 }

@@ -52,7 +52,7 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
     }
 
     /// <summary>
-    /// This method can be used to send mail in a synchronous way.
+    /// This method can be used to send mail synchronously.
     /// </summary>
     /// <param name="message"></param>
     private void SendEmail(MailMessage message)
@@ -66,7 +66,7 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
 
 
     /// <summary>
-    /// This method can be used to send mail in a synchronous way.
+    /// This method can be used to send mail synchronously.
     /// </summary>
     /// <param name="message"></param>
     public void SendEmailSynchronously(MailMessage message)
@@ -93,7 +93,7 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
             // Check if e-mail delivery is enabled;
             if(!_mailOptions.Enabled) return;
 
-            // Connect to the server  and send the e-mail
+            // Connect to the server and send the e-mail
             using var client = new SmtpClient();
             client.AuthenticationMechanisms.Remove("XOAUTH");
             
@@ -105,14 +105,14 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Error occurred while sending e-mail");
+            logger.LogError(exception, $"Error occurred while sending e-mail '{message.ViewIdentifier}'");
             throw;
         }
     }
 
     private void WriteToFile(MimeMessage mimeMessage)
     {
-        // Note: this should NOT interfere in any way e-mail delivery
+        // Note: this should NOT interfere in any way with e-mail delivery
         try
         {
             if (string.IsNullOrEmpty(_mailOptions.WriteCopy)) return;

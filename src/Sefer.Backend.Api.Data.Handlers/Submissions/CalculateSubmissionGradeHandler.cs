@@ -47,9 +47,9 @@ public class CalculateSubmissionGradeHandler(IServiceProvider serviceProvider)
             .Count(c => answers[c.Id].IsCorrectMultipleChoiceQuestion(c));
 
         var correctExactAnswers = lesson.Content
-            .Where(c => c.Type == ContentBlockTypes.QuestionOpen && answers.ContainsKey(c.Id))
+            .Where(c => c.Type == ContentBlockTypes.QuestionOpen && answers.ContainsKey(c.Id) )
             .Cast<OpenQuestion>()
-            .Count(c => answers[c.Id].TextAnswer.Trim().ToLower() == c.ExactAnswer.ToLower().Trim());
+            .Count(c => c.ExactAnswer != null && answers[c.Id].TextAnswer.Trim().ToLower() == c.ExactAnswer?.ToLower().Trim());
 
         // Save the grade of the submission
         var totalCorrect = correctBoolAnswers + correctMultipleChoiceAnswers + correctExactAnswers;

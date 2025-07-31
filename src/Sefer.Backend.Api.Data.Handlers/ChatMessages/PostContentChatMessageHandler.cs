@@ -11,11 +11,11 @@ public abstract class PostChatMessageHandler<TRequest, TResponse>(IServiceProvid
     {
         try
         {
-            // Check if the user in channel
+            // Check if the user in the channel
             var isInChannel = await Send(new IsUserInChannelRequest(channel, sender), token);
             if (!isInChannel) return null;
 
-            // If this is quoted message, let's check if that message is in the channel
+            // If this is a quoted message, let's check if that message is in the channel
             var isValidQuote = await IsValidQuote(quotedId, quotedText, channel, token);
             if (!isValidQuote) return null;
 
@@ -48,7 +48,7 @@ public abstract class PostChatMessageHandler<TRequest, TResponse>(IServiceProvid
                 context.ChatChannelMessages.Add(meta);
             }
 
-            // The Message is inserted, the content added and the receivers send, save it and done.
+            // The Message is inserted, the content added, and the receivers send, save it and done.
             await context.SaveChangesAsync(token);
 
             message.IsAvailable = true;

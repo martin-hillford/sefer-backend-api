@@ -170,7 +170,6 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
             if (mailView == null || model == null || string.IsNullOrEmpty(address.Email)) return;
             var html = await renderService.RenderToStringAsync(mailView, model.Language, "html", model);
             var text = await renderService.RenderToStringAsync(mailView, model.Language, "text", model);
-
             
             var message = new MailMessage
             {
@@ -187,7 +186,7 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Error Occurred while sending email");
+            _logger.LogError(exception, "Error Occurred while sending email for model: {MailView}", mailView);
         }
     }
 }

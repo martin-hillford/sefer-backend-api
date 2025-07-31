@@ -62,7 +62,7 @@ public class DownloadCourseController(IServiceProvider serviceProvider) : BaseCo
             
             lesson.AddBlocks(openQuestions.Select(o => new Views.Public.Download.OpenQuestion(o)));
             lesson.AddBlocks(mediaElements.Select(m => new Views.Public.Download.MediaElement(m)));
-            lesson.AddBlocks(textElements.Select(t => new Views.Public.Download.TextElement(t)));
+            lesson.AddBlocks(textElements.Select(t => new TextElement(t)));
             lesson.AddBlocks(boolQuestions.Select(b => new Views.Public.Download.BoolQuestion(b)));
             lesson.AddBlocks(multipleChoiceQuestions.Select(o => new Views.Public.Download.MultipleChoiceQuestion(o)));
             

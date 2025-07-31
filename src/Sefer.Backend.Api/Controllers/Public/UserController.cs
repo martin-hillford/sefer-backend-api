@@ -57,7 +57,7 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
         };
         _passwordService.UpdatePassword(user, post.Password);
 
-        // Check if the user is valid, and save it
+        // Check if the user is valid and save it
         var isValid = await Send(new AddUserRequest(user));
         if (isValid == false) return BadRequest();
 
@@ -73,7 +73,7 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
         if (post.IsInAppRegistration) notify = _notificationService.SendCompleteInAppRegistrationNotificationAsync;
         await notify(user, post.Language);
 
-        // Done let the user know  it is done
+        // Done let the user know it is done
         return Json(new UserView(user), 201);
     }
 
