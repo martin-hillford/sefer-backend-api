@@ -2,8 +2,8 @@
 namespace Sefer.Backend.Api.Data.Models.Enrollments;
 
 /// <summary>
-/// The lessons submission is a data about a student (via the enrollment) who submitted a lesson
-/// to a mentor or for self study. It also is used for saving results meanwhile
+/// The lesson submission is data about a student (via the enrollment) who submitted a lesson
+/// to a mentor or for self-study. It also is used for saving results meanwhile
 /// </summary>
 public class LessonSubmission : ModifyDateLogEntity
 {
@@ -20,7 +20,7 @@ public class LessonSubmission : ModifyDateLogEntity
     public int LessonId { get; set; }
 
     /// <summary>
-    /// When final and when the course is self-study a grade is assigned (between 0 and 1)
+    /// When final and when the course is self-study, a grade is assigned (between 0 and 1)
     /// </summary>
     public double? Grade { get; set; }
 
@@ -36,7 +36,7 @@ public class LessonSubmission : ModifyDateLogEntity
     public bool ResultsStudentVisible { get; set; }
 
     /// <summary>
-    /// When the submission is final this property contains the submission date
+    /// When the submission is final, this property contains the submission date
     /// </summary>
     public DateTime? SubmissionDate { get; set; }
 
