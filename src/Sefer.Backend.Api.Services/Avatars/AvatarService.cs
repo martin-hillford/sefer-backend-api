@@ -65,6 +65,17 @@ public class AvatarService(IOptions<AvatarOptions> options) : IAvatarService
     public string GetAvatarUploadUrl(int userId)
     {
         var hash = GetAvatarId(userId);
-        return $"{_options.Service}/upload?hash={hash}";
+        var token = CreateToken();
+        return $"{_options.Service}/upload?hash={hash}&token={token}";
+    }
+    
+    private string CreateToken()
+    {
+        var unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var data = unixTime + _options.ApiKey;
+        var bytes = Encoding.UTF8.GetBytes(data);
+        var hash = SHA256.HashData(bytes);
+        var hex = BitConverter.ToString(hash).ToLower().Replace("-", string.Empty);
+        return $"{unixTime}.{hex}";
     }
 }

@@ -1,3 +1,4 @@
+using Sefer.Backend.Api.Data.Algorithms;
 using Sefer.Backend.Api.Data.JsonViews;
 using Sefer.Backend.Api.Services.Extensions;
 using Sefer.Backend.Api.Views.Shared;
@@ -67,6 +68,18 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
             var mentorId = post.Invitation.GetMentorId();
             await Send(new SetPersonalMentorRequest(user.Id, mentorId));
         }
+        
+        // The framework can run in such a way that a student gets a personal mentor assigned at registration.
+        // It is a bit harder to manage the work-load of mentors in this way, but there is a more personal connection
+        // possible.
+        else if (SetPersonalMentorAtRegistration())
+        {
+            var assigner = new PersonalMentorAssigning();
+            var mentor = assigner.GetMentor();
+            await Send(new SetPersonalMentorRequest(user.Id, mentor.Id));
+        }
+        
+        
 
         // Now send an e-mail to the user to confirm his/hers account
         var notify = _notificationService.SendCompleteRegistrationNotificationAsync;
@@ -187,4 +200,6 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
 
     private async Task<bool> IsEmailUnique(string email)
         => await Send(new GetUserByEmailRequest(email)) == null;
+
+    private bool SetPersonalMentorAtRegistration() => true;
 }

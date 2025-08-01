@@ -1,4 +1,4 @@
-// This is post model to an external service, so not all properties may not be accessed in code
+// This is the post model to an external service, so not all properties may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global UnusedAutoPropertyAccessor.Global
 namespace Sefer.Backend.Api.Notifications.Mail.Models;
 

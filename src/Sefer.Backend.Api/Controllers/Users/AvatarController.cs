@@ -13,8 +13,8 @@ public class AvatarController(IServiceProvider provider) : UserController(provid
     /// <summary>
     /// Uploads the avatar
     /// </summary>
-    /// <response code="400">The image is not set or the user could not be found</response>
-    /// <response code="500">An error occurred while uploading</response>
+    /// <response code="400">The image is not set, or the user could not be found</response>
+    /// <response code="500">Error occurred while uploading</response>
     /// <response code="204">The image is uploaded</response>
     [HttpPost("/user/avatar")]
     public async Task<ActionResult> UploadAvatar([FromBody] AvatarPostModel body)
@@ -24,7 +24,6 @@ public class AvatarController(IServiceProvider provider) : UserController(provid
 
         var response = await _httpClient.PostAsJsonAsync(uploadUrl, body);
 
-        if (!response.IsSuccessStatusCode) return new StatusCodeResult(500);
-        return NoContent();
+        return response.IsSuccessStatusCode ? NoContent() : new StatusCodeResult(500);
     }
 }
