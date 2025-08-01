@@ -15,12 +15,12 @@ public readonly struct MentorAssigningInput
     public IReadOnlyDictionary<int, User> Mentors { get; init; }
 
     /// <summary>
-    /// A dictionary which contain for each mentor the number of active students
+    /// A dictionary that contains for each mentor the number of active students
     /// </summary>
     public MentorActiveStudentsDictionary ActiveStudents { get; init; }
 
     /// <summary>
-    /// The last enrollment of student
+    /// The last enrollment of the student
     /// </summary>
     public Enrollment? LastStudentEnrollment { get; init; }
 
@@ -30,7 +30,7 @@ public readonly struct MentorAssigningInput
     public Settings WebsiteSettings { get; init; }
 
     /// <summary>
-    /// if now other mentor is available this is the backup mentor
+    /// if no other mentor is available, this is the backup mentor
     /// </summary>
     public User BackupMentor { get; init; }
 

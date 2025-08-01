@@ -3,7 +3,7 @@
 /// <summary>
 /// This class implements the Mentor Assigning algorithm.
 /// It is capable of selecting the mentor for a student based on:
-/// last taken course, gender, age and availability
+/// last-taken course, gender, age and availability
 /// </summary>
 /// <inheritdoc />
 public class MentorAssigning : IMentorAssigningAlgorithm
@@ -39,16 +39,16 @@ public class MentorAssigning : IMentorAssigningAlgorithm
     }
 
     /// <summary>
-    /// This method process the assigned data and returns the assigned mentor
+    /// This method processes the assigned data and returns the assigned mentor
     /// </summary>
     public User GetMentor()
     {
-        // Rule 1: If the student has completed a course in equal to or less than sameMentorDays days in the past and
-        //         the mentor availability is not change for the course then the student will have the same mentor
+        // Rule 1: If the student has completed a course in equal to or less than the sameMentorDays days in the past and
+        //         the mentor availability is not change for the course, then the student will have the same mentor
         var ruleOneMentor = GetMentorIfWithinReassignLimit();
         if (ruleOneMentor != null) return ruleOneMentor;
 
-        // Rule 2: If the mentor of previous course (even if the student did not complete the course) is available,
+        // Rule 2: If the mentor of the previous course (even if the student did not complete the course) is available,
         //         the student will keep that mentor
         var ruleTwoMentor = GetPreviousMentorIfAvailable();
         if (ruleTwoMentor != null) return ruleTwoMentor;
@@ -60,21 +60,21 @@ public class MentorAssigning : IMentorAssigningAlgorithm
         var ruleThreeMentor = scores.GetMentorGivenPreferredScore(true);
         if (ruleThreeMentor != null) return ruleThreeMentor;
 
-        // Rule 4: Find the mentor that is has the same gender and the best maximum availability scores
+        // Rule 4: Find the mentor that has the same gender and the best maximum availability scores
         var ruleFourMentor = scores.GetMentorGivenMaximumScore(true);
         if (ruleFourMentor != null) return ruleFourMentor;
 
-        // Rule 5: Find the mentor that is has not the same gender and the best preferred availability scores
+        // Rule 5: Find the mentor that has a different gender and the best preferred availability scores
         var ruleFiveMentor = scores.GetMentorGivenPreferredScore(false);
         if (ruleFiveMentor != null) return ruleFiveMentor;
 
-        // Rule 6: Find the mentor that is has not the same gender and the best maximum availability scores
+        // Rule 6: Find the mentor that has a different gender and the best maximum availability scores
         var ruleSixMentor = scores.GetMentorGivenMaximumScore(false);
         if (ruleSixMentor != null) return ruleSixMentor;
 
         // Rule 7: If there are no available mentors, assign the student to the mentor with the highest overflow
         // mentor score index
-        // Note: this is last resort method
+        // Note: this is the last resort method
         return GetOverFlowMentor() ?? _input.BackupMentor;
     }
 
@@ -88,7 +88,7 @@ public class MentorAssigning : IMentorAssigningAlgorithm
         var lastActiveDate = DateTime.UtcNow.AddDays(-1 * _input.SameMentorDays);
         var mentorId = _input.LastStudentEnrollment?.MentorId;
 
-        // Check if the mentor is still active, the enrollment is finished and if the student is in time to get the same mentor
+        // Check if the mentor is still active, the enrollment is finished, and if the student is in time to get the same mentor
         if (enrollmentFinished == false) return null;
         if (closureDate >= lastActiveDate == false) return null;
         if (mentorId == null) return null;

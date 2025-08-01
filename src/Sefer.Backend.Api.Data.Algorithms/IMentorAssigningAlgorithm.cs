@@ -6,7 +6,7 @@
 public interface IMentorAssigningAlgorithm
 {
     /// <summary>
-    /// This method return the assigned mentor
+    /// This method returns the assigned mentor
     /// </summary>
     /// <returns></returns>
     User GetMentor();
