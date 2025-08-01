@@ -66,6 +66,14 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
             // Get the new messages a user has
             var messages = await _mediator.Send(new GetUnNotifiedMessageOfUserRequest(user.Id, delay));
             var submissions = await _mediator.Send(new GetSubmissionsForReviewRequest(user.Id));
+            
+            // To prevent a JSON cycle, set some references to null
+            foreach (var submission in submissions)
+            {
+                // The CourseRevisions within a course are causing cycling
+                submission.Enrollment.CourseRevision.Course.CourseRevisions = [];
+                submission.Enrollment.CourseRevision.Enrollments = [];
+            }
 
             // Note: when a lesson is submitted, a message is also being sent.
             // So only start sending when there are unnotified messages
