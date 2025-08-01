@@ -9,5 +9,5 @@ public interface IMentorAssigningAlgorithm
     /// This method returns the assigned mentor
     /// </summary>
     /// <returns></returns>
-    User GetMentor();
+    User? GetMentor();
 }

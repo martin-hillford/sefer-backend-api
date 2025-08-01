@@ -26,7 +26,7 @@ public class Settings : Entity
     public byte OptimalAgeDifference { get; set; }
 
     /// <summary>
-    /// The number of days that a student will be counted as active after his last lessons submission
+    /// The number of days that a student will be counted as active after their last lessons submission
     /// </summary>
     [Range(0, short.MaxValue)]
     public short StudentActiveDays { get; set; }
@@ -46,6 +46,17 @@ public class Settings : Entity
     /// Get/set the number of lessons per day a student is allowed to submit
     /// </summary>
     public byte? MaxLessonSubmissionsPerDay { get; set; }
+    
+    /// <summary>
+    /// Get/set if during (personal) mentor assignment the mentor must have the same gender as the student.
+    /// This is required is some contexts 
+    /// </summary>
+    public bool StrictGenderAssignment { get; set; }
+    
+    /// <summary>
+    /// Gets/sets if a personal mentor must be assigned at the registration of the user.
+    /// </summary>
+    public bool AssignPersonalMentorOnRegistration  { get; set; }
 
     #endregion
 
@@ -61,6 +72,6 @@ public class Settings : Entity
     /// Holds is the lesson submissions are limited
     /// </summary>
     public bool IsLessonSubmissionsLimited => MaxLessonSubmissionsPerDay != null;
-
+    
     #endregion
 }

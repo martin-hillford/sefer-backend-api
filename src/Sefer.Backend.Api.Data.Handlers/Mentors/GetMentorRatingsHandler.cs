@@ -8,7 +8,7 @@ public class GetMentorRatingsHandler(IServiceProvider serviceProvider)
         var context = GetDataContext();
         return await context.Users
             .AsNoTracking()
-            .Where(m => m.Ratings.Any() && m.Role == request.Role)
+            .Where(m => m.Ratings.Count != 0 && m.Role == request.Role)
             .Select(m =>
                 new
                 {

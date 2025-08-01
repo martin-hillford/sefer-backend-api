@@ -1,10 +1,10 @@
--- This script contains the full schema of database as of migrations 38
--- but rewritten to Postgresql. Please note, that this script is not intended 
+-- This script contains the full schema of a database as of migrations 38
+-- but rewrites to Postgresql. Please note that this script is not intended 
 -- to run every deployment, though technically it is possible
 
--- The users table is one of the primary tables with information. Currently, this does not 
--- include any references to other table. 
--- TODO preferred_interface_language is candidate for improvement of the data structure
+-- The user's table is one of the primary tables with information. Currently, this does not 
+-- include any references to another table. 
+-- TODO preferred_interface_language is a candidate for improvement of the data structure
 CREATE TABLE IF NOT EXISTS public.users
 (
     id                           INT GENERATED ALWAYS AS IDENTITY   NOT NULL CONSTRAINT pk_users PRIMARY KEY,
@@ -52,7 +52,7 @@ EXECUTE FUNCTION fn_tg_users_insert();
 -- The table user_last_activity contains the timestamp of when the user with the give id
 -- did have any activity. This table is present for performance reasons and is maintained
 -- via triggers. This table breaks data integrity as no foreign key is present on the data
--- since this caused issues in ef core. The impact of this is minimal though since
+-- since this caused issues in ef core. The impact of this is minimal, though, since
 -- the data is not critical
 CREATE TABLE IF NOT EXISTS public.user_last_activity
 (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.push_notification_tokens
 );
 CREATE INDEX IF NOT EXISTS ix_push_notification_tokens_user_id ON public.push_notification_tokens (user_id) INCLUDE (token);
 
--- table login log entries contains logging of logon events by the system.
+-- table login log entries contain logging of logon events by the system.
 -- this data is used for both determining user activity, but foremost to prevent
 -- brute forcing password as it can act for rate limiting
 CREATE TABLE IF NOT EXISTS public.login_log_entries
@@ -104,7 +104,7 @@ CREATE OR REPLACE TRIGGER tg_login_log_entries_insert
     FOR EACH ROW
 EXECUTE FUNCTION fn_tg_login_log_entries_insert();
 
--- This table hold specific settings for students.
+-- This table holds specific settings for students.
 -- Currently, only if the student has a personal mentor assigned
 -- TODO: include foreign key reference to the user table
 CREATE TABLE IF NOT EXISTS public.student_settings
@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS public.rewards
 CREATE INDEX IF NOT EXISTS ix_rewards_type ON public.rewards (type);
 
 
--- A table with the target for a user to met for certain rewards
+-- A table with the target for a user to meet for certain rewards
 -- NOTE: the original name of the 'number' column was 'order'
 CREATE TABLE IF NOT EXISTS public.reward_targets
 (
@@ -380,7 +380,7 @@ CREATE TABLE IF NOT EXISTS public.mentor_courses
 CREATE INDEX IF NOT EXISTS ix_mentor_courses_course_id ON public.mentor_courses (course_id);
 CREATE INDEX IF NOT EXISTS ix_mentor_courses_MentorId ON public.mentor_courses (mentor_id);
 
--- A table that contains specific settings for mentor
+-- A table that contains specific settings for mentors
 CREATE TABLE IF NOT EXISTS public.mentor_settings
 (
     id                  INT GENERATED ALWAYS AS IDENTITY    NOT NULL    CONSTRAINT pk_mentor_settings PRIMARY KEY,
@@ -417,7 +417,7 @@ CREATE INDEX IF NOT EXISTS ix_reward_grants_RewardId ON public.reward_grants (re
 CREATE INDEX IF NOT EXISTS ix_reward_grants_TargetId ON public.reward_grants (target_id);
 CREATE INDEX IF NOT EXISTS ix_reward_grants_user_id ON public.reward_grants (user_id);
 
--- This tables contains to which regions mentors are assigned
+-- This table contains to which regions mentors are assigned
 CREATE TABLE IF NOT EXISTS public.mentor_regions
 (
     id         INT GENERATED ALWAYS AS IDENTITY     NOT NULL    CONSTRAINT pk_mentor_regions PRIMARY KEY,
@@ -750,7 +750,7 @@ CREATE TABLE IF NOT EXISTS public.answers
 CREATE INDEX IF NOT EXISTS ix_answers_question_id ON public.answers (question_id);
 CREATE INDEX IF NOT EXISTS ix_answers_submission_id ON public.answers (submission_id);
 
--- A table with logging api calls, is used for performance measurement
+-- A table with logging api calls used for performance measurement
 -- with some additions it can be used for rate limiting as well
 CREATE TABLE IF NOT EXISTS public.api_request_Log_entries
 (
@@ -842,7 +842,7 @@ CREATE OR REPLACE TRIGGER tg_chat_messages_update
     FOR EACH ROW
 EXECUTE FUNCTION fn_tg_chat_messages_insert();
 
--- a table to keep track if user has read their messages
+-- a table to keep track if a user has read their messages
 CREATE TABLE IF NOT EXISTS public.chat_channel_messages
 (
     id          BIGINT GENERATED ALWAYS AS IDENTITY                   NOT NULL        CONSTRAINT pk_chat_channel_messages   PRIMARY KEY,
@@ -959,7 +959,7 @@ CREATE TABLE IF NOT EXISTS public.course_prerequisites
 CREATE INDEX IF NOT EXISTS ix_course_prerequisites_course_id ON public.course_prerequisites (course_id);
 CREATE INDEX IF NOT EXISTS ix_course_prerequisites_required_course_id ON public.course_prerequisites (required_course_id);
 
--- not only are courses organised in series but also in curricula
+-- not only are courses organized in series but also in curricula
 CREATE TABLE IF NOT EXISTS public.curricula
 (
     id                INT GENERATED ALWAYS AS IDENTITY                        NOT NULL CONSTRAINT pk_curricula PRIMARY KEY,
@@ -1050,7 +1050,7 @@ CREATE TABLE IF NOT EXISTS public.user_settings
 );
 CREATE INDEX IF NOT EXISTS ix_user_settings_user_id ON public.user_settings(user_id);
 
--- A table with template for e-mails and pdfs
+-- A table with templates for e-mails and PDFs
 CREATE TABLE IF NOT EXISTS public.templates
 (
     id INT GENERATED ALWAYS AS IDENTITY NOT NULL CONSTRAINT pk_templates PRIMARY KEY,
@@ -1063,8 +1063,8 @@ CREATE TABLE IF NOT EXISTS public.templates
 );
 CREATE INDEX IF NOT EXISTS ix_template_names_language ON public.templates (name,language);
 
--- a table with example data for templates. Useful for testing purposes
--- the data is a json string
+-- A table with example data for templates. Useful for testing purposes
+-- the data is a JSON string
 CREATE TABLE IF NOT EXISTS public.template_example_data
 (
     id                           INT GENERATED ALWAYS AS IDENTITY   NOT NULL CONSTRAINT pk_template_example_data PRIMARY KEY,
@@ -1208,7 +1208,7 @@ LEFT JOIN
     GROUP BY cr.course_id
 ) AS ec ON ec.course_id = Id;
 
--- A view which determine which lessons is next
+-- A view that determines which lessons is next
 CREATE OR REPLACE VIEW enrollment_next_lessons AS
 SELECT n.enrollment_id, n.lesson_id FROM
 (
