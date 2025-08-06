@@ -15,24 +15,24 @@ public class CorrectedSubmissionResultView : BaseSubmissionResultView, ISubmissi
     public readonly int TotalAnswersGiven;
 
     /// <summary>
-    /// Gets the number of total correct answer
+    /// Gets the number of total correct answers
     /// </summary>
     /// <returns></returns>
     public readonly int CorrectAnswersGiven;
 
     /// <summary>
-    /// Return the number of wrong answer given
+    /// Return the number of wrong answers given
     /// </summary>
     public int WrongAnswersGiven => TotalAnswersGiven - CorrectAnswersGiven;
 
     /// <summary>
-    /// Holds (when the submission was final and the course is a self study course) the grade for this submission.null. It represents a value between 0 and 10
+    /// Holds (when the submission was final and the course is a self-study course) the grade for this submission.null. It represents a value between 0 and 10
     /// </summary>
     /// <returns></returns>
     public readonly float? Grade;
 
     /// <summary>
-    /// Gets is corrected answers are included
+    /// Gets if corrected answers are included
     /// </summary>
     public bool CorrectAnswersIncluded => true;
 
@@ -52,12 +52,12 @@ public class CorrectedSubmissionResultView : BaseSubmissionResultView, ISubmissi
     public string CourseName { get; private set; }
 
     /// <summary>
-    /// The name of the student that posted this submissions
+    /// The name of the student that posted this submission
     /// </summary>
     public string StudentName { get; private set; }
 
     /// <summary>
-    /// The name of the mentor that is overseeing this submissions
+    /// The name of the mentor that is overseeing this submission
     /// </summary>
     public string MentorName { get; private set; }
 
@@ -74,14 +74,14 @@ public class CorrectedSubmissionResultView : BaseSubmissionResultView, ISubmissi
     /// Creates a new view, this view will include a list of answers
     /// </summary>
     /// <inheritdoc />
-    public CorrectedSubmissionResultView(LessonSubmission submission, List<CorrectedAnswerView> correctedAnswers, Enrollment enrollment, IFileStorageService fileStorageService) : base(enrollment)
+    public CorrectedSubmissionResultView(LessonSubmission submission, Lesson lesson, List<CorrectedAnswerView> correctedAnswers, Enrollment enrollment, IFileStorageService fileStorageService) : base(enrollment)
     {
         CorrectedAnswers = correctedAnswers;
         TotalAnswersGiven = correctedAnswers.Count(a => a.QuestionType != ContentBlockTypes.QuestionOpen);
         CorrectAnswersGiven = correctedAnswers.Count(a => a.QuestionType != ContentBlockTypes.QuestionOpen && a.IsValid == true);
 
         if (submission.SubmissionDate.HasValue) SubmissionDate = submission.SubmissionDate.Value;
-        Lesson = new LessonView(submission.Lesson, enrollment, fileStorageService);
+        Lesson = new LessonView(lesson, enrollment, fileStorageService);
         SubmissionId = submission.Id;
         if (submission.Grade.HasValue) Grade = (float)Math.Round(submission.Grade.Value * 10, 1);
         ResultsStudentVisible = submission.ResultsStudentVisible;

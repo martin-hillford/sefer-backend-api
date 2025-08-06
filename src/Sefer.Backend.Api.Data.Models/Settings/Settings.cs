@@ -26,7 +26,7 @@ public class Settings : Entity
     public byte OptimalAgeDifference { get; set; }
 
     /// <summary>
-    /// The number of days that a student will be counted as active after his last lessons submission
+    /// The number of days that a student will be counted as active after their last lessons submission
     /// </summary>
     [Range(0, short.MaxValue)]
     public short StudentActiveDays { get; set; }
@@ -47,6 +47,11 @@ public class Settings : Entity
     /// </summary>
     public byte? MaxLessonSubmissionsPerDay { get; set; }
 
+    /// <summary>
+    /// Gets / sets if the system should allow multiple active enrollments.
+    /// </summary>
+    public bool AllowMultipleActiveEnrollments { get; set; }
+    
     #endregion
 
     #region Deferred properties

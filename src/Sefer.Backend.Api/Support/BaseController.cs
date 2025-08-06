@@ -19,13 +19,13 @@ public abstract class BaseController(IServiceProvider serviceProvider) : Control
 
     protected T GetService<T>() => ServiceProvider.GetService<T>();
 
-    protected Task<User> GetCurrentUser()
+    protected async Task<User> GetCurrentUser()
     {
         try
         {
-            return _userAuthenticationService.UserId == null
+            return _userAuthenticationService?.UserId == null
                 ? null
-                : Send(new GetUserByIdRequest(_userAuthenticationService.UserId));
+                : await Send(new GetUserByIdRequest(_userAuthenticationService.UserId));
         }
         catch (Exception) { return null; }
     }
@@ -50,7 +50,7 @@ public abstract class BaseController(IServiceProvider serviceProvider) : Control
 
     protected async Task<IFile> UploadFileAsync(IFileStorageService fileStorageService, IFormFile file, string path, bool isPublic)
     {
-        // Check if the path translate to a folder, save the file, create a result in json and return it
+        // Check if the path translates to a folder, save the file, create a result in JSON and return it
         var folder = await fileStorageService.ResolveDirectoryAsync(path, isPublic);
         if (folder == null) return null;
 

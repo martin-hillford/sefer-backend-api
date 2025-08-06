@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Sefer.Backend.Api.Data.Requests.Surveys;
 using Sefer.Backend.Api.Data.Validation;
 using Sefer.Backend.Api.Models.Student.Profile;
@@ -13,12 +12,6 @@ namespace Sefer.Backend.Api.Controllers.Student;
 [Authorize(Roles = "Student,User")]
 public class SubmitLessonController(IServiceProvider serviceProvider) : GrantController(serviceProvider)
 {
-    private readonly IFileStorageService _fileStorageService = serviceProvider.GetService<IFileStorageService>();
-
-    private readonly INotificationService _notificationService = serviceProvider.GetService<INotificationService>();
-    
-    private readonly ILogger<MailService> _logger = serviceProvider.GetService<ILogger<MailService>>();
-
     [HttpPost("/student/lessons/submit")]
     [ProducesResponseType(typeof(BaseSubmissionResultView), 201)]
     [ProducesResponseType(typeof(EnrollmentOverview_CorrectedSubmissionResultView), 202)]
@@ -28,8 +21,9 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();
 
-        // get the current enrollment of the student
-        var active = await Send(new GetActiveEnrollmentOfStudentRequest(student.Id));
+        // Get the active enrollment for the student given the submission
+        var active = await GetActiveEnrollment(student, submission);
+        
         if (active == null) return NotFound();
         if (active.OnPaper) return BadRequest();
         
@@ -37,7 +31,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         await Send(new UpdateUserLastActivityRequest(student.Id));
 
         // gets the current lesson
-        var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id));
+        var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id, active.Id));
         if (lesson == null) return NotFound();
 
         // check if the submission is valid
@@ -57,10 +51,25 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         return await SubmitMentorStudy(student, submission, enrollment, lesson, lessonSubmission);
     }
 
+    private async Task<Enrollment> GetActiveEnrollment(User student, SubmissionPostModel posted)
+    {
+        // get the current enrollments of the student
+        var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id));
+        
+        // When multiple active enrollments are allowed, the client must post the enrollmentId
+        var settings = await Send(new GetSettingsRequest());
+        if (settings.AllowMultipleActiveEnrollments && !posted.EnrollmentId.HasValue) return null;
+
+        // Only one active enrollment
+        return posted.EnrollmentId.HasValue
+            ? enrollments.FirstOrDefault(e => e.Id == posted.EnrollmentId.Value)
+            : enrollments.FirstOrDefault();
+    }
+    
     private async Task<ActionResult> SubmitLessonNotFinal(SubmissionPostModel posted, Enrollment enrollment, Lesson lesson, LessonSubmission current)
     {
         // Convert to a database models
-        if (current is { Imported: true }) return BadRequest();
+        if (current is { Imported: true } || enrollment.Imported) return BadRequest();
         var (submission, answers) = await Convert(posted, enrollment, current, lesson);
 
         // Save the result
@@ -75,7 +84,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
     private async Task<ActionResult> SubmitSelfStudy(SubmissionPostModel postedSubmission, Enrollment enrollment, Lesson lesson, LessonSubmission currentSubmission)
     {
         // Convert to a database models
-        if (currentSubmission is { Imported: true }) return BadRequest();
+        if (currentSubmission is { Imported: true } || enrollment.Imported) return BadRequest();
         var (submission, answers) = await Convert(postedSubmission, enrollment, currentSubmission, lesson);
 
         // Save the result
@@ -107,8 +116,9 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
             }
         }
 
-        // Create the view
-        var view = new EnrollmentOverview_CorrectedSubmissionResultView(submission, correctedAnswers, enrollment, _fileStorageService);
+        // Create the view. There the lesson needs to be loaded
+        var  fileStorageService = ServiceProvider.GetService<IFileStorageService>();
+        var view = new EnrollmentOverview_CorrectedSubmissionResultView(submission, lesson, correctedAnswers, enrollment, fileStorageService);
 
         // check if this is a final submission for the enrollment
         var finished = await CheckIsEnrollmentIsFinished(enrollment);
@@ -128,7 +138,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
     private async Task<ActionResult> SubmitMentorStudy(User student, SubmissionPostModel postedSubmission, Enrollment enrollment, Lesson lesson, LessonSubmission currentSubmission)
     {
         // Check if the student is allowed to submit
-        if (currentSubmission is { Imported: true }) return BadRequest();
+        if (currentSubmission is { Imported: true } || enrollment.Imported) return BadRequest();
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(enrollment.CourseRevisionId));
         if (courseRevision == null) return BadRequest();
 
@@ -156,11 +166,13 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
             try
             {
                 var mentor = await Send(new GetUserByIdRequest(enrollment.MentorId.Value));
-                await _notificationService.SendLessonSubmittedNotificationAsync(submission.Id, mentor, student);
+                var notificationService = ServiceProvider.GetService<INotificationService>();
+                await notificationService.SendLessonSubmittedNotificationAsync(submission.Id, mentor, student);
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Error occurred while sending notifications for submission {SubmissionId}", submission.Id);
+                var logger = ServiceProvider.GetService<ILogger<MailService>>();
+                logger.LogError(exception, "Error occurred while sending notifications for submission {SubmissionId}", submission.Id);
             }
         }
 
@@ -176,8 +188,8 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
 
         return Json(result, 202);
     }
-
-    private static bool IsValidSubmission(Lesson lesson, SubmissionPostModel submission)
+    
+    public static bool IsValidSubmission(Lesson lesson, SubmissionPostModel submission)
     {
         if (submission == null) return false;
         if (submission.Final == false) return true;
@@ -191,9 +203,9 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var answers = submission.Answers.ToLookup(a => a.QuestionId);
         foreach (var question in questions)
         {
-            var contains = answers.Contains(question.Id) &&
-                           answers[question.Id].Any(a => a.QuestionType == question.Type);
+            var contains = answers.Contains(question.Id) && answers[question.Id].Any(a => a.QuestionType == question.Type);
             if (contains == false) return false;
+            
             var answer = answers[question.Id].FirstOrDefault(a => a.QuestionType == question.Type);
             if (answer == null) return false;
 
@@ -234,7 +246,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var content = new Dictionary<ContentBlockTypes, HashSet<int>>();
         foreach (var block in lesson.Content)
         {
-            if (content.ContainsKey(block.Type) == false) content.Add(block.Type, new HashSet<int>());
+            if (content.ContainsKey(block.Type) == false) content.Add(block.Type, []);
             content[block.Type].Add(block.Id);
         }
 
