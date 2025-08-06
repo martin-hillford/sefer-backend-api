@@ -63,17 +63,8 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
             // Get the user
             if (user == null) return;
 
-            // Get the new messages a user has
-            var messages = await _mediator.Send(new GetUnNotifiedMessageOfUserRequest(user.Id, delay));
-            var submissions = await _mediator.Send(new GetSubmissionsForReviewRequest(user.Id));
-            
-            // To prevent a JSON cycle, set some references to null
-            foreach (var submission in submissions)
-            {
-                // The CourseRevisions within a course are causing cycling
-                submission.Enrollment.CourseRevision.Course.CourseRevisions = [];
-                submission.Enrollment.CourseRevision.Enrollments = [];
-            }
+            // Load the data
+            var (messages, submissions) = await GetDigestData(user, delay);
 
             // Note: when a lesson is submitted, a message is also being sent.
             // So only start sending when there are unnotified messages
@@ -96,5 +87,37 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
         {
             _logger.LogError(exception, $"Error occurred while sending notifications to user {user?.Id}");
         }
+    }
+
+    private async Task<(List<Message> messages, List<LessonSubmission> submissions)> GetDigestData(User user, int delay)
+    {
+        // Get the new messages a user has
+        var messages = await _mediator.Send(new GetUnNotifiedMessageOfUserRequest(user.Id, delay));
+        var submissions = await _mediator.Send(new GetSubmissionsForReviewRequest(user.Id));
+            
+        // To prevent a JSON cycle, set some references to null
+        // A better approach might be to create a view at some point or work more
+        // with [JsonIgnore] attributes, but that *may* cause side effects.
+        foreach (var submission in submissions)
+        {
+            submission.Enrollment.CourseRevision.Course.CourseRevisions = [];
+            submission.Enrollment.CourseRevision.Enrollments = [];
+            submission.Enrollment.Student.Enrollments = [];
+            submission.Enrollment.Student.SendMessages = [];
+            submission.Enrollment.Student.PartnerEnrollments = [];
+            submission.Enrollment.LessonSubmissions = [];
+            submission.Enrollment.Mentor.Enrollments = [];
+            submission.Enrollment.Mentor.SendMessages = [];
+            submission.Enrollment.Mentor.PartnerEnrollments = [];
+        }
+
+        foreach (var message in messages)
+        {
+            message.Sender.Enrollments = [];
+            message.Sender.SendMessages = [];
+            message.Sender.PartnerEnrollments = [];
+        }
+        
+        return (messages, submissions);
     }
 }
