@@ -5,9 +5,12 @@ public class RemoveStudentRoleHandler(IServiceProvider serviceProvider)
 {
     public override async Task<bool> Handle(RemoveStudentRoleRequest request, CancellationToken token)
     {
-        var enrollment = await Send(new GetActiveEnrollmentOfStudentRequest(request.StudentId), token);
-        if (enrollment == null) return false;
+        var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(request.StudentId), token);
+        if (enrollments.Count == 0) return false;
         Cache.Remove("database-user-" + request.StudentId);
-        return await Send(new UnEnrollRequest(enrollment.Id), token);
+        
+        var tasks = enrollments.Select(enrollment => Send(new UnEnrollRequest(enrollment.Id), token));
+        var result = await Task.WhenAll(tasks);
+        return !result.Contains(false);
     }
 }

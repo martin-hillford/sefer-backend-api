@@ -4,13 +4,13 @@ using Sefer.Backend.Api.Data.Models.Constants;
 namespace Sefer.Backend.Api.Services.Security.Abstractions;
 
 /// <summary>
-/// The IUserAuthenticationService defines a UserAuthenticationService which is capable in
-/// Authentication of Users, if in the current state a user is authenticated and to retrieve user
+/// The IUserAuthenticationService defines a UserAuthenticationService which is capable of
+/// the authentication of users, and if in the current state, a user is authenticated and to retrieve that user
 /// </summary>
 public interface IUserAuthenticationService
 {
     /// <summary>
-    /// Gets the current user id, if authenticated else null is returned
+    /// Gets the current user id, if authenticated, else null is returned
     /// </summary>
     int? UserId { get; }
 
@@ -22,7 +22,7 @@ public interface IUserAuthenticationService
     /// <summary>
     /// Gets if a user is authenticated
     /// </summary>
-    /// <returns>When a user is authenticated true returned, is all other cases false</returns>
+    /// <returns>When a user is authenticated, true returned, in all other cases false</returns>
     bool IsAuthenticated { get; }
 
     /// <summary>
@@ -30,7 +30,7 @@ public interface IUserAuthenticationService
     /// </summary>
     /// <param name="email">The e-mail provided by the user</param>
     /// <param name="password">The password provided by the user</param>
-    /// <returns>Returns the result of the SingOn. If Success is returned IsAuthenticated should return in requests to come.</returns>
+    /// <returns>Returns the result of the SingOn. If Success is returned, IsAuthenticated should return in requests to come.</returns>
     Task<SignOnResult> SignOn(string email, string password);
 
     /// <summary>
@@ -46,7 +46,7 @@ public interface IUserAuthenticationService
     void SetPrivateFileServiceCookies();
 
     /// <summary>
-    /// This will check is the user is authenticated for viewing private file
+    /// This will check if the user is authenticated for viewing private files
     /// </summary>
     /// <returns></returns>
     bool IsFileAuthenticated();

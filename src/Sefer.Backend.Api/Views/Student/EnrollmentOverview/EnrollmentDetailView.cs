@@ -1,4 +1,4 @@
-// This is view, so property may not be accessed in code
+// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global, UnusedAutoPropertyAccessor.Global
 using Sefer.Backend.Api.Views.Shared.Enrollments;
@@ -42,7 +42,7 @@ public class EnrollmentDetailView : EnrollmentView
         Submissions = Model.LessonSubmissions
             .Where(l => l.IsFinal)
             .OrderByDescending(s => s.SubmissionDate)
-            .Select(submission => CreateView(submission, fileStorageService))
+            .Select(submission => CreateView(submission, submission.Lesson, fileStorageService))
             .Cast<object>()
             .ToList();
     }
@@ -50,7 +50,7 @@ public class EnrollmentDetailView : EnrollmentView
     /// <summary>
     /// Creates a view for the submission. This function will determine if a corrected or uncorrected view should be generated
     /// </summary>
-    private ISubmissionResultView CreateView(LessonSubmission submission, IFileStorageService fileStorageService)
+    private ISubmissionResultView CreateView(LessonSubmission submission, Lesson lesson, IFileStorageService fileStorageService)
     {
         if (!Model.IsSelfStudy && !submission.ResultsStudentVisible) return new UncorrectedSubmissionResultView(submission, Model, fileStorageService);
 
@@ -63,7 +63,7 @@ public class EnrollmentDetailView : EnrollmentView
                 if (answerView != null) answers.Add(answerView);
             }
         }
-        var view = new CorrectedSubmissionResultView(submission, answers, Model, fileStorageService);
+        var view = new CorrectedSubmissionResultView(submission, lesson, answers, Model, fileStorageService);
         return view;
     }
 

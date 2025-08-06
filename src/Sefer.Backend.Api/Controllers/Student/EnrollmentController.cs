@@ -15,24 +15,58 @@ public class EnrollmentController(IServiceProvider serviceProvider) : UserContro
 
     private readonly ICryptographyService _cryptographyService = serviceProvider.GetService<ICryptographyService>();
 
+    /// <summary>
+    /// Returns the current lesson for the student
+    /// </summary>
+    /// <remarks>
+    /// This method will only work in a single active course context. 
+    /// </remarks>>
     [HttpGet("/student/lessons/current")]
     [ProducesResponseType(typeof(CurrentLessonView), 200)]
-    public async Task<ActionResult> CurrentLesson()
+    public async Task<ActionResult> GetCurrentLesson()
     {
         // try to load the student that is updating his profile (404)
         var student = await GetCurrentUser();
-        if (student == null || student.IsMentor) return NotFound();
+        if (student == null || student.IsMentor) return Forbid();
+        
+        // Note this is endpoint can only be used so single enrollment installations
+        var settings = await Send(new GetSettingsRequest());
+        if (settings.AllowMultipleActiveEnrollments) return StatusCode(418);
+        
+        var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id, true));
+        var active = enrollments.FirstOrDefault();
+        if(active == null) return NotFound();
 
+        // The enrolment is determined, get the current lesson
+        return await GetCurrentLesson(student, active.Id);
+    }
+
+    /// <summary>
+    /// Returns the current lesson for the student
+    /// </summary>
+    [HttpGet("/student/enrollments/{enrollmentId:int}/current")]
+    [ProducesResponseType(typeof(CurrentLessonView), 200)]
+    public async Task<ActionResult> GetCurrentLesson(int enrollmentId)
+    {
+        // try to load the student that is updating his profile (404)
+        var student = await GetCurrentUser();
+        if (student == null || student.IsMentor) return Forbid();
+        
+        return await GetCurrentLesson(student, enrollmentId);
+    }
+
+    private async Task<ActionResult> GetCurrentLesson(User student, int enrollmentId)
+    {
         // gets the current lesson
         // To prevent from jumping ahead, the current lesson is always delivered via one api url and not per id.
-        var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id));
+        var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id, enrollmentId));
         if (lesson == null) return NotFound();
 
         // And send the result back to the user
         var view = new CurrentLessonView(lesson, enrollment, lessonSubmission, _fileStorageService);
         return Json(view);
     }
-
+    
     [HttpGet("/student/lessons/suggestion")]
     [ProducesResponseType(typeof(CourseDisplayView), 200)]
     public async Task<ActionResult> GetCourseSuggestion()
@@ -107,7 +141,7 @@ public class EnrollmentController(IServiceProvider serviceProvider) : UserContro
     }
 
     [HttpGet("/student/enrollments/{enrollmentId:int}")]
-    public async Task<ActionResult<EnrollmentDetailView>> GetEnrollment(int enrollmentId)
+    public async Task<ActionResult> GetEnrollmentById(int enrollmentId)
     {
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();

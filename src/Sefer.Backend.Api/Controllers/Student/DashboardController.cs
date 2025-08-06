@@ -39,15 +39,32 @@ public class DashboardController(IServiceProvider serviceProvider) : UserControl
 
     [HttpGet("/student/active-enrollment")]
     [ProducesResponseType(typeof(UserView), 200)]
-    public async Task<IActionResult> GetEnrollment()
+    public async Task<IActionResult> GetActiveEnrollment()
     {
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();
+        
+        // Note this is endpoint can only be used so single enrollment installations
+        var settings = await Send(new GetSettingsRequest());
+        if (settings.AllowMultipleActiveEnrollments) return StatusCode(418);
 
-        var enrollment = await Send(new GetActiveEnrollmentOfStudentRequest(student.Id, true));
+        var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id, true));
+        var enrollment = enrollments.FirstOrDefault();
         if (enrollment == null) return NotFound();
         var view = new Student_EnrollmentView(enrollment, _fileStorageService);
         return Json(view);
+    }
+    
+    [HttpGet("/student/enrollments/active")]
+    [ProducesResponseType(typeof(UserView), 200)]
+    public async Task<IActionResult> GetActiveEnrollments()
+    {
+        var student = await GetCurrentUser();
+        if (student == null || student.IsMentor) return Forbid();
+        
+        var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id, true));
+        var view = enrollments.Select(enrollment => new Student_EnrollmentView(enrollment, _fileStorageService));
+        return Json(view.ToList());
     }
 
     [HttpGet("/student/reward-enrollments/{code}")]

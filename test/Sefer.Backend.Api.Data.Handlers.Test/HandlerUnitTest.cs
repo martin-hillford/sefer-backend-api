@@ -42,7 +42,7 @@ public abstract class HandlerUnitTest : IDataContextProvider
 
     private static DbContextOptions CreateOptions<T>() where T : DbContext
     {
-        // This creates the SQLite connection string to in-memory database
+        // This creates the SQLite connection string to an in-memory database
         var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = ":memory:" };
         var connectionString = connectionStringBuilder.ToString();
 

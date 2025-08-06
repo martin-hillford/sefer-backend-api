@@ -16,12 +16,12 @@ public class BoolQuestion : Question, ILessonQuestion<Lesson, BoolQuestion>
     public bool CorrectAnswerIsTrue { get; set; }
 
     /// <summary>
-    /// The text value for a correct answers
+    /// The text value for a correct answer
     /// </summary>
     public const string Correct = "Correct";
 
     /// <summary>
-    /// The text value for a wrong answers
+    /// The text value for a wrong answer
     /// </summary>
     public const string Wrong = "Wrong";
 
@@ -42,7 +42,7 @@ public class BoolQuestion : Question, ILessonQuestion<Lesson, BoolQuestion>
     public string CorrectAnswerText => CorrectAnswerIsTrue ? Correct : Wrong;
 
     /// <summary>
-    /// The lesson to which the multiple choice question belongs
+    /// The lesson to which this question belongs to
     /// </summary>
     /// <inheritdoc />
     [ForeignKey("LessonId")]
