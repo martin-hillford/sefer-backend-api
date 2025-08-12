@@ -14,31 +14,31 @@ public class ViewRenderService(IServiceProvider serviceProvider) : IViewRenderSe
     private readonly IHttpClient _httpClient = serviceProvider.GetRequiredService<IHttpClient>();
         
     private readonly IMediator _mediator = serviceProvider.GetRequiredService<IMediator>();
-        
-    private readonly ILogger<ViewRenderService> _logger = serviceProvider.GetRequiredService<ILogger<ViewRenderService>>();
-
+    
     private readonly RenderConfigurationOptions _options =
         serviceProvider.GetRequiredService<IOptions<RenderConfigurationOptions>>().Value;
-    
-    /// <summary>
-    /// This method rendering the view
-    /// </summary>
-    /// <param name="viewName">The name of the view - as specified in the database </param>
-    /// <param name="data">The data model to render</param>
-    /// <param name="language">The language to render the content in</param>
-    /// <param name="type">The type of the template (text, HTML)</param>
-    /// <returns>A string with the view</returns>
+
+    /// <inheritdoc cref="IViewRenderService.RenderToStringAsync{T}(string,string,string,T)"/>>
     public async Task<Render> RenderToStringAsync<T>(string viewName, string language, string type, T data)
+    {
+        var logger = serviceProvider.GetRequiredService<ILogger<ViewRenderService>>();
+        return await RenderToStringAsync(viewName, language, type, data, logger);
+    }
+    
+    /// <inheritdoc cref="IViewRenderService.RenderToStringAsync{T}(string,string,string,T,ILogger)"/>>
+    public async Task<Render> RenderToStringAsync<T>(string viewName, string language, string type, T data, ILogger logger)
     {
         try
         {
             // First, get the view from the database
+            logger.LogDebug("Loading template {ViewName} for type {type}", viewName, type);
             var template = await _mediator.Send(new GetTemplateByNameRequest(viewName, language, type));
             var layout = string.Empty;
             
             // If the view has a layout, load the layout from the database
             if (template.HasLayout)
             {
+                logger.LogDebug("Loading layout for template {viewName}", viewName);
                 var layoutTemplate = await _mediator.Send(new GetTemplateByNameRequest(template.LayoutName, language, type));
                 layout = layoutTemplate?.Content;
             }
@@ -50,15 +50,21 @@ public class ViewRenderService(IServiceProvider serviceProvider) : IViewRenderSe
             // Create the post-body and call the render service
             var body = new { accessToken, template = template.Content, layout, data };
             var requestUri = _options.RenderServiceUrl + "/render";
+            
+            logger.LogDebug("Calling render service with url {requestUri}", requestUri);
             var response = await _httpClient.PostAsJsonAsync(requestUri, body);
+            
+            logger.LogDebug("Render service returned with status code {statusCode}", response.StatusCode);
             if(!response.IsSuccessStatusCode) throw new Exception(response.ReasonPhrase);
+            
             var content = await response.Content.ReadAsStringAsync();
+            logger.LogDebug("Rendered template {ViewName} to string with content {content}", viewName, content);
 
             return new Render { Content = content, Title = template.Title };
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not render template {ViewName}", viewName);
+            logger.LogError(exception, "Could not render template {ViewName}", viewName);
             throw;
         }
     }

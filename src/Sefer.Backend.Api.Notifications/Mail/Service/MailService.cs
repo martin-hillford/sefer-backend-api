@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Sefer.Backend.Api.Data;
+
 namespace Sefer.Backend.Api.Notifications.Mail.Service;
 
 public class MailService(IServiceProvider serviceProvider) : IMailService
@@ -7,6 +10,8 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
     private readonly ICryptographyService _cryptographyService = serviceProvider.GetService<ICryptographyService>();
 
     private readonly MailServiceOptions _mailServiceOptions = serviceProvider.GetService<IOptions<MailServiceOptions>>()?.Value;
+    
+    private readonly IViewRenderService _viewRenderService = serviceProvider.GetService<IViewRenderService>();
 
     private readonly ILogger<MailService> _logger = serviceProvider.GetService<ILogger<MailService>>();
     
@@ -161,32 +166,45 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
 
     private async Task SendMessageAsync<T>(string mailView, T model,  MailAddress address) where T : MailModel
     {
-        try
+        var debugId = Guid.NewGuid();
+        using (_logger.BeginScope(debugId))
         {
-            // Please note: the mail service is a scope service
-            using var scope = serviceProvider.GetService<IServiceScopeFactory>().CreateScope();
-            var renderService = scope.ServiceProvider.GetService<IViewRenderService>();
-            
-            if (mailView == null || model == null || string.IsNullOrEmpty(address.Email)) return;
-            var html = await renderService.RenderToStringAsync(mailView, model.Language, "html", model);
-            var text = await renderService.RenderToStringAsync(mailView, model.Language, "text", model);
-            
-            var message = new MailMessage
+            try
             {
-                Html = html.Content,
-                Text = text.Content,
-                Subject = html.Title?.Replace("@site", model.Site.Name),
-                SenderEmail = model.Site.SendEmail,
-                SenderName = model.Site.Name,
-                ViewIdentifier = mailView
-            };
+                _logger.LogDebug("Created a scope for the mail service");
+                _logger.LogDebug("Creating an e-mail for {email} using view {view}", address.Email, mailView);
+                if (mailView == null || model == null || string.IsNullOrEmpty(address.Email)) return;
+                
+                _logger.LogDebug("Rendering views in {language} for data {model} ", model.Language, GetModelJson(model));
+                var html = await _viewRenderService.RenderToStringAsync(mailView, model.Language, "html", model, _logger);
+                var text = await _viewRenderService.RenderToStringAsync(mailView, model.Language, "text", model, _logger);
+                
+                _logger.LogDebug("Views correctly rendered, sending e-mail to {email} with subject {subject}", address.Email, html.GetSiteTitle(model.Site.Name));
+                var message = new MailMessage
+                {
+                    Html = html.Content,
+                    Text = text.Content,
+                    Subject = html.GetSiteTitle(model.Site.Name),
+                    SenderEmail = model.Site.SendEmail,
+                    SenderName = model.Site.Name,
+                    ViewIdentifier = mailView
+                };
 
-            message.To.Add(address);
-            _baseMailService.QueueEmailForSending(message);
+                message.To.Add(address);
+                _logger.LogDebug("Email created, adding to queue for sending.");
+                _baseMailService.QueueEmailForSending(message);
+            }
+            catch (Exception exception)
+            {
+                const string message = "Error Occurred while sending email for model: {MailView} - debugId: {debugId}";
+                _logger.LogError(exception, message, mailView, debugId);
+            }
         }
-        catch (Exception exception)
-        {
-            _logger.LogError(exception, "Error Occurred while sending email for model: {MailView}", mailView);
-        }
+    }
+
+    private string GetModelJson<T>(T data)
+    {
+        var options = DefaultJsonOptions.GetOptions();
+        return JsonSerializer.Serialize(data, options);
     }
 }

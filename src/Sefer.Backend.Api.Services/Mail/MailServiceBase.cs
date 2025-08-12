@@ -73,8 +73,8 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
     {
         try
         {
-            logger.LogInformation($"Sending message for view '{message.ViewIdentifier}'");
-
+            logger.LogInformation("Sending message for view '{MessageViewIdentifier}'", message.ViewIdentifier);
+            
             // Fill all the basic header information
             var mimeMessage = GetMimeMessage(message);
             mimeMessage.From.Add(new MailboxAddress(message.SenderName, message.SenderEmail));
@@ -88,24 +88,30 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
             mimeMessage.Body = builder.ToMessageBody();
             
             // Check if the message does need to be written to a file
+            logger.LogDebug("Writing message to file if required");
             WriteToFile(mimeMessage);
             
             // Check if e-mail delivery is enabled;
+            logger.LogDebug("Check if e-mail delivery is enabled: {enabled}", _mailOptions.Enabled);
             if(!_mailOptions.Enabled) return;
 
             // Connect to the server and send the e-mail
             using var client = new SmtpClient();
             client.AuthenticationMechanisms.Remove("XOAUTH");
             
+            logger.LogDebug("Connecting to server '{Host}'", _mailOptions.Host);
             client.Connect(_mailOptions.Host, _mailOptions.PortInt, _mailOptions.UseSslBoolean);
+            
+            logger.LogDebug("Connected to server '{Host}'", _mailOptions.Host);
             client.Authenticate(_mailOptions.Username, _mailOptions.Password);
 
+            logger.LogDebug("Sending message '{MessageViewIdentifier}'", message.ViewIdentifier);
             client.Send(mimeMessage);
             client.Disconnect(true);
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, $"Error occurred while sending e-mail '{message.ViewIdentifier}'");
+            logger.LogError(exception, "Error occurred while sending e-mail '{MessageViewIdentifier}'", message.ViewIdentifier);
             throw;
         }
     }

@@ -46,4 +46,16 @@ public class Log
     /// </summary>
     [MaxLength(int.MaxValue)]
     public string StackTrace { get; set; }
+
+    /// <summary>
+    /// The scope of the message
+    /// </summary>
+    [MaxLength(255)]
+    public string Scope
+    {
+        get => _scope;
+        set => _scope = value?.Length > 255 ? value[..255] : value ?? string.Empty;
+    }
+    
+    private string _scope;
 }
