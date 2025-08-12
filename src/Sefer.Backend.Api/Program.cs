@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Logging;
 using Sefer.Backend.Api.Data.Algorithms;
 using Sefer.Backend.Api.Notifications;
 using Sefer.Backend.Api.Notifications.Rendering;
@@ -57,7 +56,7 @@ public static class Program
             .AddSingleton<IPasswordService, PasswordService>()
             .AddScoped<IUserAuthenticationService, UserAuthenticationService>()
             .AddSingleton<IMentorAssigningFactory, MentorAssigningFactory>()
-            .AddSingleton<ILoggerProvider, DatabaseLoggerProvider>()
+            .AddDatabaseLogging()
             .AddResponseCaching()
             .AddMemoryCache()
             .AddHttpContextAccessor()
