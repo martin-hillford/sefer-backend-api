@@ -1,0 +1,1 @@
+CREATE USER "growing-faith" WITH PASSWORD 'secure_password' CREATEDB;

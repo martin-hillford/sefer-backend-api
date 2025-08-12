@@ -16,7 +16,7 @@ public static class Extensions
         builder.Services.Configure<FireBaseOptions>(builder.Configuration.GetSection("FireBase"));
 
         // Add depending services
-        builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+        builder.Services.AddSingleton<IViewRenderService, ViewRenderService>();
 
         // Add all internal services
         builder.Services.AddSingleton<IMailService, MailService>();

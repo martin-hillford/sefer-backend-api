@@ -1,14 +1,8 @@
 namespace Sefer.Backend.Api.Data.Requests.Enrollments;
 
-public class GetActiveEnrollmentOfStudentRequest : IRequest<Enrollment>
+public class GetActiveEnrollmentOfStudentRequest(int studentId, bool extensively = false) : IRequest<Enrollment>
 {
-    public readonly int StudentId;
+    public readonly int StudentId = studentId;
 
-    public readonly bool Extensively;
-    
-    public GetActiveEnrollmentOfStudentRequest(int studentId, bool extensively = false)
-    {
-        StudentId = studentId;
-        Extensively = extensively;
-    }
+    public readonly bool Extensively = extensively;
 }

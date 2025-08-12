@@ -3,7 +3,7 @@ namespace Sefer.Backend.Api.Services.Notifications;
 public interface INotificationService
 {
     /// <summary>
-    /// Send notifications when a user update the name in his profile
+    /// Send notifications when a user updates the name in their profile
     /// </summary>
     public Task SendProfileUpdatedNotificationAsync(int userId, string oldName);
 
@@ -13,7 +13,7 @@ public interface INotificationService
     public Task<bool> SendLessonSubmittedNotificationAsync(int submissionId, User mentor, User student);
 
     /// <summary>
-    /// Sends a notification that a new chat message is send
+    /// Sends a notification that a new chat message is sent
     /// </summary>
     public Task SendChatMessageSendNotificationAsync(ChannelMessage message, bool ignoreHasRead = false);
 
@@ -43,22 +43,22 @@ public interface INotificationService
     public Task SendStudentIsInactiveNotificationAsync();
 
     /// <summary>
-    /// Send a notification to user that is just registered.
+    /// Send a notification to the user that is just registered.
     /// </summary>
     Task SendCompleteRegistrationNotificationAsync(User student, string language);
 
     /// <summary>
-    /// Send a notification to user that is just registered.
+    /// Send a notification to the user that is just registered.
     /// </summary>
     Task SendCompleteInAppRegistrationNotificationAsync(User student, string language);
 
     /// <summary>
-    /// Sends a notification to a user to send a password forgot message
+    /// Sends a notification to a user to send a password forgotten message
     /// </summary>
     Task SendPasswordForgotNotificationAsync(User user, string language);
 
     /// <summary>
-    /// Sends a notification to a user to send a password reset message
+    /// Sends a notification to a user to send a password-reset message
     /// </summary>
     Task SendPasswordResetCompletedNotificationAsync(User user, string language);
 
