@@ -1,3 +1,5 @@
+using System.IO;
+using System.IO.Compression;
 using Sefer.Backend.Api.Data.Requests.Resources;
 using Sefer.Backend.Api.Models.Admin.Resources;
 using Sefer.Backend.Api.Notifications.Rendering;
@@ -51,5 +53,34 @@ public class TemplateController(IServiceProvider provider) : BaseController(prov
             return Content(result.Content, body.Type == "html" ? "text/html" : "text/plain");
         }
         catch (Exception) { return StatusCode(500); }
+    }
+    
+    [HttpGet("/admin/templates/download")]
+    public async Task<ActionResult> DownloadTemplates()
+    {
+        // Get the templates from the database
+        var templates = await Send(new GetTemplatesRequest());
+        
+        // Create a memory stream to hold the archive in memory
+        await using var archiveStream = new MemoryStream();
+        using (var zip = new ZipArchive(archiveStream, ZipArchiveMode.Create, true, Encoding.UTF8))
+        {
+            foreach (var template in templates)
+            {
+                var filename = $"{template.Name}.{template.Language}.ejs.{template.Type}";
+                var entry = zip.CreateEntry(filename);
+
+                await using var entryStream = entry.Open();
+                var bytes = Encoding.UTF8.GetBytes(template.Content ?? "");
+                await entryStream.WriteAsync(bytes);
+            }   
+        }
+        
+        // Rewind to the beginning
+        archiveStream.Position = 0;
+        var zipArchive = archiveStream.ToArray();
+        
+        // Return the file as a downloadable response
+        return File( zipArchive, "application/zip", "templates.zip");
     }
 }
