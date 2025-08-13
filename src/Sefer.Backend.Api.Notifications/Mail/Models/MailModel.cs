@@ -47,6 +47,16 @@ public abstract class MailModel
     /// The language of the e-mail to the user
     /// </summary>
     public string Language => Data.Language;
+
+    /// <summary>
+    /// The logo of the website
+    /// </summary>
+    public string LogoUrl => Data.LogoUrl;
+    
+    /// <summary>
+    /// The receiver of the e-mail
+    /// </summary>
+    public UserView Receiver => Data.Receiver;
     
     /// <summary>
     /// A generic mail model

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine as build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
 WORKDIR /app
 COPY . .
 WORKDIR /app/src/Sefer.Backend.Api

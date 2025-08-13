@@ -6,6 +6,8 @@ BEGIN
     ) THEN 
         ALTER TABLE public.logs ADD COLUMN scope VARCHAR(255);
         CREATE INDEX IF NOT EXISTS ix_logs_scope ON public.logs (scope);
+        DROP INDEX IF EXISTS ix_logs_category_name;
+        CREATE INDEX IF NOT EXISTS ix_logs_category_name ON public.logs (category_name ASC, scope ASC, timestamp DESC);
     END IF;
 END$$;
 

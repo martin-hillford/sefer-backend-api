@@ -8,6 +8,7 @@ public class GetNotificationAndMailLogsHandler(IServiceProvider serviceProvider)
         var context = GetDataContext();
         return await context.Logs
             .AsNoTracking()
+            .Where(l => l.LogLevel != "Debug")
             .Where
                 (
                     l =>
