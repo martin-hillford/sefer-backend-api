@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Sefer.Backend.Api.Views.Public.Resources;
 
 namespace Sefer.Backend.Api.Controllers.Public;
@@ -25,5 +26,14 @@ public class ResourceController(IServiceProvider provider) : BaseController(prov
             return Json(new PageView(page));
         }
         catch { return NotFound(); }
+    }
+
+    [HttpGet("/content/audio/{audioReferenceId:guid}/{fileName}")]
+    [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
+    public ActionResult GetAudioFile(Guid audioReferenceId, string fileName)
+    {
+        var audioStorage = ServiceProvider.GetService<IAudioStorageService>();
+        if(audioStorage == null) return NotFound();
+        return audioStorage.GetAudioFile(audioReferenceId, fileName);
     }
 }
