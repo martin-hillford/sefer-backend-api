@@ -13,31 +13,36 @@ public class CurriculumDiploma
     /// <summary>
     /// The student that has the diploma
     /// </summary>
+    [JsonIgnore]
     public User Student { get; set; }
 
     /// <summary>
     /// The curriculum the student completed
     /// </summary>
+    [JsonIgnore]
     public Curriculum Curriculum { get; set; }
 
     /// <summary>
     /// The grant itself
     /// </summary>
+    [JsonIgnore]
     public RewardGrant Grant { get; set; }
 
     /// <summary>
     /// A list of enrollments that the user has completed
     /// </summary>
-    public List<Enrollment> Enrollments { get; set; }
+    public List<CurriculumDiplomaEnrollment> Enrollments { get; set; }
 
     /// <summary>
     /// The site for which the certificate is made
     /// </summary>
+    [JsonIgnore]
     public ISite Site { get; set; }
 
     /// <summary>
     /// The region for which the certificate is made
     /// </summary>
+    [JsonIgnore]
     public IRegion Region { get; set; }
 
     /// <summary>
@@ -61,12 +66,27 @@ public class CurriculumDiploma
     public string WebsiteName => Site.Name;
 
     /// <summary>
-    /// The name of the director of the website
+    /// The director's name managing the website
     /// </summary>
     public string DirectorName => Region.Director;
-
+    
+    /// <summary>
+    /// The name of the student that got this diploma
+    /// </summary>
+    public string StudentName => Student.Name;
+    
+    /// <summary>
+    /// The name of the curriculum
+    /// </summary>
+    public string CurriculumName => Curriculum.Name;
+    
     /// <summary>
     /// The date the curriculum was completed
     /// </summary>
     public string CompletionDate => Grant.Date.ToString("yyyy-MM-dd");
+    
+    /// <summary>
+    /// A code for the object for verification purposes
+    /// </summary>
+    public string GrantCode => Grant.Code;
 }

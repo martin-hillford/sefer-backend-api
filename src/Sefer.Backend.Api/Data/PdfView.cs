@@ -12,10 +12,10 @@ public class PdfView(IServiceProvider serviceProvider)
 
     public async Task<ActionResult> Render(HttpContext context, string view, string language, object model, string fileName)
     {
-        var html = await _renderService.RenderToStringAsync(view, language, "html", model);
+        var result = await _renderService.RenderToStringAsync(view, language, "html", model);
         var client = _httpClientFactory.CreateClient();
 
-        var body = new { apiKey = _pdfOptions.ApiKey, html, fileName };
+        var body = new { apiKey = _pdfOptions.ApiKey, html = result.Content, fileName };
         var response = await client.PostAsJsonAsync(_pdfOptions.Service + "/generate", body);
 
         if (!response.IsSuccessStatusCode) return new StatusCodeResult(500);
