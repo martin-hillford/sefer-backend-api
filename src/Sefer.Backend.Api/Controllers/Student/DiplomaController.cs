@@ -70,12 +70,13 @@ public class DiplomaController(IServiceProvider serviceProvider) : UserControlle
         }
         enrollments = lookup.Values.OrderBy(c => c.ClosureDate).ThenBy(c => c.CourseRevision.Course.Name).ToList();
 
+        
         var model = new CurriculumDiploma
         {
             Curriculum = curriculum,
             Grant = grant,
             Student = student,
-            Enrollments = enrollments,
+            Enrollments = enrollments.Select(e => new CurriculumDiplomaEnrollment(e)).ToList(),
             Site = site,
             Region = region,
             Language = language

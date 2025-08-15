@@ -16,17 +16,18 @@ public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrol
     /// <summary>
     /// The enrollment that the user has completed
     /// </summary>
-    public Enrollment Enrollment { get; set; } = enrollment;
+    [JsonIgnore]
+    private Enrollment Enrollment { get; set; } = enrollment;
 
     /// <summary>
     /// The site for which the certificate is made
     /// </summary>
-    public ISite Site { get; set; } = site;
+    private ISite Site { get; set; } = site;
 
     /// <summary>
     /// The site for which the certificate is made
     /// </summary>
-    public IRegion Region { get; set; } = region;
+    private IRegion Region { get; set; } = region;
 
     /// <summary>
     /// The language of the
@@ -49,7 +50,7 @@ public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrol
     public string WebsiteName => Site.Name;
 
     /// <summary>
-    /// The name of the director of the website
+    /// The director's name of the website
     /// </summary>
     public string DirectorName => Region.Director;
 
@@ -62,4 +63,14 @@ public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrol
     /// The date the enrollment was completed
     /// </summary>
     public string ClosureDate => Enrollment.ClosureDate?.ToString("yyyy-MM-dd");
+
+    /// <summary>
+    /// The name of the student
+    /// </summary>
+    public string StudentName => Enrollment?.Student?.Name;
+    
+    /// <summary>
+    /// The name of the course taken by the user
+    /// </summary>
+    public string CourseName => Enrollment?.CourseRevision?.Course?.Name;
 }
