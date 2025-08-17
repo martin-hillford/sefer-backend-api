@@ -1,10 +1,12 @@
 namespace Sefer.Backend.Api.Services.LessonAudio;
 
-public class AudioStorageService(IOptions<AudioStorageServiceOptions> options) : IAudioStorageService
+public class AudioAzureStorageService(IOptions<AudioStorageServiceOptions> options) : IAudioStorageService
 {
     private readonly string _publicUrl = options?.Value.PublicUrl;
 
     private readonly string _blobSasUrl = options?.Value.BlobSasUrl;
+    
+    private static readonly JsonSerializerOptions JsonOptions = DefaultJsonOptions.GetOptions();
 
     public async Task<bool> StoreAudioAsync(SubtitlesFile file, Guid audioReferenceId)
     {
@@ -18,17 +20,17 @@ public class AudioStorageService(IOptions<AudioStorageServiceOptions> options) :
             var exists = await client.ExistsAsync();
             if (exists) return false;
 
-            // Now upload all the mp3 files in the captions file
+            // Now upload all the mp3 files in the file with subtitles
             foreach (var sequence in file.Sequences)
             {
                 var mp3File = Path.Combine(file.FileDirectory, sequence.AudioFile);
                 var mp3Uri = $"{audioReferenceId}/{sequence.AudioFile}";
                 var mp3Blob = container.GetBlobClient(mp3Uri);
                 await mp3Blob.UploadAsync(mp3File);
-                sequence.AudioUrl = $"{_publicUrl}/{mp3Uri}"; // write the url to the sequence so it gets write to the json later
+                sequence.AudioUrl = $"{_publicUrl}/{mp3Uri}"; // write the url to the sequence so it gets write to the JSON later
             }
 
-            // Write the json of the captions file. Ensure to include the audioReferenceId
+            // Write the JSON of the caption file. Ensure to include the audioReferenceId
             file.AudioReferenceId = audioReferenceId;
             var json = JsonSerializer.Serialize(file, JsonOptions).ToStream();
             await client.UploadAsync(json);
@@ -54,7 +56,7 @@ public class AudioStorageService(IOptions<AudioStorageServiceOptions> options) :
         {
             var (file, container, client) = await GetAudioAsync(audioReferenceId);
 
-            // Delete mp3 files in the captions file
+            // Delete mp3 files in the file with subtitles
             foreach (var sequence in file.Sequences)
             {
                 var mp3Uri = $"{audioReferenceId}/{sequence.AudioFile}";
@@ -80,5 +82,9 @@ public class AudioStorageService(IOptions<AudioStorageServiceOptions> options) :
         return (file, container, client);
     }
 
-    private static readonly JsonSerializerOptions JsonOptions = DefaultJsonOptions.GetOptions();
+    public ActionResult GetAudioFile(Guid audioReferenceId, string fileName)
+    {
+        var mp3Uri = $"{_publicUrl}/{audioReferenceId}/{fileName}";
+        return new RedirectResult(mp3Uri);
+    }
 }
