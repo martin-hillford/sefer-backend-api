@@ -11,9 +11,10 @@ public class CurriculumDiplomaEnrollment(Enrollment enrollment)
     /// A rounded display value of the grade
     /// </summary>
     /// <remarks></remarks>
-    public string GradeRounded
-        => enrollment.GradeRounded?.ToString("0.0", CultureInfo.InvariantCulture) ?? string.Empty;
-    
+    public string GradeRounded => enrollment.GradeRounded.HasValue
+        ? (enrollment.GradeRounded.Value * 10).ToString("0.0", CultureInfo.InvariantCulture)
+        : string.Empty;
+        
     /// <summary>
     /// This contains the final grade for of the course (between 0 and zero)
     /// </summary>

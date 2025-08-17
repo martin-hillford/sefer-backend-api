@@ -78,7 +78,7 @@ public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrol
     /// A rounded display value of the grade
     /// </summary>
     /// <remarks></remarks>
-    public string GradeRounded
-        => enrollment.GradeRounded?.ToString("0.0", CultureInfo.InvariantCulture) ?? string.Empty;
-
+    public string GradeRounded => enrollment.GradeRounded.HasValue
+        ? (enrollment.GradeRounded.Value * 10).ToString("0.0", CultureInfo.InvariantCulture)
+        : string.Empty;
 }
