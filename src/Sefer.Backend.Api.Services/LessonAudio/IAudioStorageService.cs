@@ -7,4 +7,6 @@ public interface IAudioStorageService
     public Task<SubtitlesFile> RetrieveAudioAsync(Guid audioReferenceId);
 
     public Task<bool> DeleteAudioAsync(Guid audioReferenceId);
+    
+    public ActionResult GetAudioFile(Guid audioReferenceId, string fileName);
 }
