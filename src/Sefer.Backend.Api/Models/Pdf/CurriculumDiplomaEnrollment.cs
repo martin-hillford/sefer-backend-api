@@ -6,11 +6,13 @@ public class CurriculumDiplomaEnrollment(Enrollment enrollment)
     /// This of the course
     /// </summary>
     public string CourseName => enrollment.CourseRevision.Course.Name;
-    
+
     /// <summary>
     /// A rounded display value of the grade
     /// </summary>
-    public double? GradeRounded => enrollment.GradeRounded;
+    /// <remarks></remarks>
+    public string GradeRounded
+        => enrollment.GradeRounded?.ToString("0.0", CultureInfo.InvariantCulture) ?? string.Empty;
     
     /// <summary>
     /// This contains the final grade for of the course (between 0 and zero)

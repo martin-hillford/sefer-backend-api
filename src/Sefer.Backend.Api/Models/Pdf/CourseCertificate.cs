@@ -73,4 +73,12 @@ public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrol
     /// The name of the course taken by the user
     /// </summary>
     public string CourseName => Enrollment?.CourseRevision?.Course?.Name;
+    
+    /// <summary>
+    /// A rounded display value of the grade
+    /// </summary>
+    /// <remarks></remarks>
+    public string GradeRounded
+        => enrollment.GradeRounded?.ToString("0.0", CultureInfo.InvariantCulture) ?? string.Empty;
+
 }
