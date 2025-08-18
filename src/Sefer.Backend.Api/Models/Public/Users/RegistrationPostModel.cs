@@ -1,4 +1,8 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+
+using System.Text.Json;
+using Sefer.Backend.Api.Shared.Validation;
+
 namespace Sefer.Backend.Api.Models.Public.Users;
 
 /// <summary>
@@ -13,7 +17,7 @@ public class RegistrationPostModel
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the gender of user
+    /// Gets or sets the gender of the user
     /// </summary>
     [Required]
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -27,7 +31,7 @@ public class RegistrationPostModel
 
     /// <summary>
     /// Gets or sets the year the user was born. Useful to determine (together with gender)
-    /// the mentor to be assigned to the user if he is student
+    /// the mentor to be assigned to the user if he is a student
     /// </summary>
     [Required, Range(1850, 2200)]
     public short YearOfBirth { get; set; }
@@ -39,7 +43,7 @@ public class RegistrationPostModel
     public string Password { get; set; }
 
     /// <summary>
-    /// Gets set the language code of the client, so e-mail are send in proper language
+    /// Gets set the language code of the client, so e-mails are sent in the proper language
     /// </summary>
     [Required, MinLength(2), MaxLength(3)]
     public string Language { get; set; }
@@ -65,9 +69,16 @@ public class RegistrationPostModel
     public bool IsInAppRegistration => Mode == "app";
 
     /// <summary>
-    /// If this is a registration through an invitation of the mentor
-    /// all the required information is in this
+    /// In several sefer applications it is desirable to store more information
+    /// on the user. Like country, location, but this is not needed for all
+    /// applications, so this is build flexibility
+    /// </summary>
+    [JsonDictionary("UserAdditionalInfo",4000)]
+    public Dictionary<string, JsonElement> AdditionalInfo { get; set; }
+    
+    /// <summary>
+    /// If this is a registration through an invitation of a mentor,
+    /// this contains the information of that invitation
     /// </summary>
     public InvitationPostModel Invitation { get; set; }
-
 }

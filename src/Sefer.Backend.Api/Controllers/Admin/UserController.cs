@@ -50,6 +50,15 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
     [ProducesResponseType(typeof(List<MentorListView>), 200)]
     public async Task<IActionResult> GetSupervisor() => await GetMentors(UserRoles.Supervisor);
 
+    [HttpGet("/users/{userId:int}/details")]
+    public async Task<IActionResult> GetUserDetails(int userId)
+    {
+        var user = await Send(new GetExtendedUserByIdRequest(userId));
+        if (user == null) return NotFound();
+        var view = new UserDetailsView(user);
+        return Json(view);
+    }
+    
     [HttpGet("/users")]
     [ProducesResponseType(typeof(List<UserListView>), 200)]
     public async Task<IActionResult> GetUsers()

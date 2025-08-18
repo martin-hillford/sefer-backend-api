@@ -1,5 +1,7 @@
-// This is view, so property may not be accessed in code
+// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global
+
+using System.Text.Json;
 using Sefer.Backend.Api.Data.JsonViews;
 
 namespace Sefer.Backend.Api.Views.Public.Users;
@@ -7,6 +9,8 @@ namespace Sefer.Backend.Api.Views.Public.Users;
 public class UserWithSettingsView(User user, List<UserSetting> settings) : UserView(user)
 {
     private readonly User _user = user;
+
+    public Dictionary<string, JsonElement> AdditionalInfo => _user.AdditionalInfo;
 
     public Dictionary<string, string> Settings {
         get

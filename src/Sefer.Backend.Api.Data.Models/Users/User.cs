@@ -1,5 +1,8 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
+using System.Text.Json;
+using Sefer.Backend.Api.Shared.Validation;
+
 namespace Sefer.Backend.Api.Data.Models.Users;
 
 /// <summary>
@@ -21,7 +24,7 @@ public class User : Entity, IUser
     public UserRoles Role { get; set; }
     
     /// <summary>
-    /// Gets or sets the gender of user
+    /// Gets or sets the gender of the user
     /// </summary>
     [Required]
     public Genders Gender { get; set; }
@@ -34,10 +37,9 @@ public class User : Entity, IUser
 
     /// <summary>
     /// Gets or sets the year the user was born. Useful to determine (together with gender)
-    /// the mentor to be assigned to the user if he is student
+    /// the mentor to be assigned to the user if he is a student
     /// </summary>
-    [Range(1850, 2200)]
-    [Required]
+    [Required, Range(1850, 2200)]
     public short YearOfBirth { get; set; }
 
     /// <summary>
@@ -61,7 +63,8 @@ public class User : Entity, IUser
     public string PasswordSalt { get; set; }
 
     /// <summary>
-    /// Gets the SubscriptionDate of the User, that is the date the user created his account
+    /// Gets the SubscriptionDate of the user;
+    /// that is the date the user created his account
     /// </summary>
     [InsertOnly]
     public DateTime SubscriptionDate { get; set; }
@@ -77,7 +80,7 @@ public class User : Entity, IUser
     public bool Approved { get; set; }
 
     /// <summary>
-    /// Gets if the user is blocked (by the admin)
+    /// Gets if the user is blocked.
     /// </summary>
     public bool Blocked { get; set; }
     
@@ -93,9 +96,9 @@ public class User : Entity, IUser
     public bool Imported { get; set; }
 
     /// <summary>
-    /// Holds the PreferredInterfaceLanguage for the given user. default is Dutch
+    /// Holds the PreferredInterfaceLanguage for the given user. Default is Dutch
     /// </summary>
-    /// <remarks>The preferred languages of user is also used when sending e-mail</remarks>
+    /// <remarks>The preferred language of the user is also used when sending e-mail</remarks>
     [MaxLength(3)]
     public string PreferredInterfaceLanguage { get; set; } = "nl";
 
@@ -105,7 +108,7 @@ public class User : Entity, IUser
     public bool TwoFactorAuthEnabled { get; set; }
 
     /// <summary>
-    /// Holds the secret key that is used for two-factor authentication
+    /// Holds the secret key used for two-factor authentication
     /// </summary>
     [JsonIgnore, MaxLength(64)]
     public string TwoFactorAuthSecretKey { get; set; }
@@ -121,6 +124,26 @@ public class User : Entity, IUser
     /// </summary>
     public bool AllowImpersonation { get; set; }
 
+    /// <summary>
+    /// In several sefer applications it is desirable to store more information
+    /// on the user. Like country, location, but this is not needed for all
+    /// applications, so this is build flexibility
+    /// </summary>
+    [JsonDictionary("UserAdditionalInfo",4000)]
+    public Dictionary<string, JsonElement> AdditionalInfo { get; set; }
+    
+    /// <summary>
+    /// The id of the site this used belongs to
+    /// </summary>
+    [MaxLength(255)]
+    public string PrimarySite { get; set; }
+
+    /// <summary>
+    /// The id of the region this used belongs to
+    /// </summary>
+    [MaxLength(255)]
+    public string PrimaryRegion { get; set; }
+    
     /// <summary>
     /// Returns if the user is a mentor.
     /// </summary>
@@ -152,7 +175,7 @@ public class User : Entity, IUser
     public ICollection<MentorCourse> MentorCourses { get; set; }
 
     /// <summary>
-    /// All the enrollment this is user is being the accountability partner
+    /// All the enrollment of the student for which this user is an accountability partner
     /// </summary>
     [InverseProperty("AccountabilityPartner")]
     public ICollection<Enrollment> PartnerEnrollments { get; set; }
@@ -164,7 +187,7 @@ public class User : Entity, IUser
     public ICollection<Enrollment> Enrollments { get; set; }
 
     /// <summary>
-    /// All the enrollment this user is mentoring
+    /// All the enrollments this user is mentoring
     /// </summary>
     [InverseProperty("Mentor")]
     public ICollection<Enrollment> Mentoring { get; set; }
@@ -188,7 +211,7 @@ public class User : Entity, IUser
     public ICollection<ChannelMessage> ReceivedChannelMessages { get; set; }
 
     /// <summary>
-    /// A collection of all the send messages for the users
+    /// A collection of all the send-messages for the users
     /// </summary>
     [InverseProperty(nameof(Message.Sender))]
     public ICollection<Message> SendMessages { get; set; }
@@ -219,19 +242,7 @@ public class User : Entity, IUser
     /// </summary>
     [InverseProperty("User")]
     public ICollection<UserBackupKey> BackupKeys { get; set; }
-
-    /// <summary>
-    /// The id of the site this used belongs to
-    /// </summary>
-    [MaxLength(255)]
-    public string PrimarySite { get; set; }
-
-    /// <summary>
-    /// The id of the region this used belongs to
-    /// </summary>
-    [MaxLength(255)]
-    public string PrimaryRegion { get; set; }
-
+    
     /// <summary>
     /// A collection of the regions for which this user - if it is a mentor -
     /// is mentoring in.

@@ -1,4 +1,3 @@
-using Sefer.Backend.Api.Data.Algorithms;
 using Sefer.Backend.Api.Data.JsonViews;
 using Sefer.Backend.Api.Services.Extensions;
 using Sefer.Backend.Api.Views.Shared;
@@ -54,7 +53,8 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
             NotificationPreference = NotificationPreference.Direct,
             PreferredInterfaceLanguage = post.Language,
             PrimarySite = site.Hostname,
-            PrimaryRegion = region.Id
+            PrimaryRegion = region.Id,
+            AdditionalInfo = post.AdditionalInfo
         };
         _passwordService.UpdatePassword(user, post.Password);
 

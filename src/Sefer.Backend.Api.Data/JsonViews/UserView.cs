@@ -13,7 +13,7 @@ public class UserView : PrimitiveUserView
     public UserRoles Role { get; init; }
 
     /// <summary>
-    /// Gets or sets the gender of user
+    /// Gets or sets the gender of the user
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Genders Gender { get; init; }
@@ -25,7 +25,7 @@ public class UserView : PrimitiveUserView
 
     /// <summary>
     /// Gets or sets the year the user was born. Useful to determine (together with gender)
-    /// the mentor to be assigned to the user if he is student
+    /// the mentor to be assigned to the user if he is a student
     /// </summary>
     public short YearOfBirth { get; init; }
 
@@ -35,7 +35,8 @@ public class UserView : PrimitiveUserView
     public string Info { get; init; }
 
     /// <summary>
-    /// Gets the SubscriptionDate of the User, that is the date the user created his account
+    /// Gets the SubscriptionDate of the user;
+    /// that is the date the user created his account
     /// </summary>
     public DateTime SubscriptionDate { get; init; }
     

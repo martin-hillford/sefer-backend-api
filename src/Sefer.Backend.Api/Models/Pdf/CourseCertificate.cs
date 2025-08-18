@@ -14,12 +14,6 @@ namespace Sefer.Backend.Api.Models.Pdf;
 public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrollment, string language)
 {
     /// <summary>
-    /// The enrollment that the user has completed
-    /// </summary>
-    [JsonIgnore]
-    private Enrollment Enrollment { get; set; } = enrollment;
-
-    /// <summary>
     /// The site for which the certificate is made
     /// </summary>
     private ISite Site { get; set; } = site;
@@ -57,22 +51,22 @@ public class CourseCertificateModel(ISite site, IRegion region, Enrollment enrol
     /// <summary>
     /// A checksum such that it can easily be checked that the user did not fake the certificate
     /// </summary>
-    public string Checksum => EnrollmentChecksum.GetChecksum(Enrollment);
+    public string Checksum => EnrollmentChecksum.GetChecksum(enrollment);
 
     /// <summary>
     /// The date the enrollment was completed
     /// </summary>
-    public string ClosureDate => Enrollment.ClosureDate?.ToString("yyyy-MM-dd");
+    public string ClosureDate => enrollment.ClosureDate?.ToString("yyyy-MM-dd");
 
     /// <summary>
     /// The name of the student
     /// </summary>
-    public string StudentName => Enrollment?.Student?.Name;
+    public string StudentName => enrollment?.Student?.Name;
     
     /// <summary>
     /// The name of the course taken by the user
     /// </summary>
-    public string CourseName => Enrollment?.CourseRevision?.Course?.Name;
+    public string CourseName => enrollment?.CourseRevision?.Course?.Name;
     
     /// <summary>
     /// A rounded display value of the grade

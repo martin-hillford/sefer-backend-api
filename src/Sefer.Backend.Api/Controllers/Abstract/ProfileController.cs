@@ -23,7 +23,7 @@ public abstract class ProfileController(IServiceProvider serviceProvider) : User
         var validPassword = _passwordService.IsValidPassword(user, profile.Password);
         if (validPassword == false) return Forbid();
 
-        // Check if the changes are valid and is the email is unique (400)
+        // Check if the changes are valid and if the email address is unique (400)
         if (ModelState.IsValid == false) return BadRequest();
         if (!await IsUserEmailUnique(profile.Email, user.Id)) return BadRequest();
 
@@ -33,11 +33,12 @@ public abstract class ProfileController(IServiceProvider serviceProvider) : User
         user.Gender = profile.Gender;
         user.YearOfBirth = profile.YearOfBirth;
         user.Info = profile.Info;
+        user.AdditionalInfo = profile.AdditionalInfo;
 
         var valid = await Send(new UpdateUserRequest(user));
         if (valid == false) return StatusCode(500);
 
-        // If there is a change in the e-mail of the user send a change request to the user
+        // If there is a change in the e-mail of the user, send a change request to the user
         var statusCode = 200;
         var newEmail = profile.Email.ToLower().Trim();
         if (newEmail != user.Email.ToLower().Trim())

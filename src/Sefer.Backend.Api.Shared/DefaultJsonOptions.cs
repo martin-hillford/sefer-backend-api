@@ -1,6 +1,7 @@
-using System.Text.Json.Serialization.Metadata;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Sefer.Backend.Api.Data;
+namespace Sefer.Backend.Api.Shared;
 
 public static class DefaultJsonOptions
 {
@@ -13,13 +14,8 @@ public static class DefaultJsonOptions
         SetOptions(_options);
         return _options;
     }
-
-    public static void SetOptions(JsonOptions options)
-    {
-        SetOptions(options.JsonSerializerOptions);
-    }
-
-    private static void SetOptions(JsonSerializerOptions options)
+    
+    public static void SetOptions(JsonSerializerOptions options)
     {
         options.AllowTrailingCommas = true;
         options.IgnoreReadOnlyFields = false;

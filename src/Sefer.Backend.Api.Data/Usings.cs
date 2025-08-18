@@ -4,7 +4,6 @@ global using System.Linq;
 global using System.Linq.Expressions;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
-global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Sefer.Backend.Api.Data.Models.Abstractions;
