@@ -68,5 +68,5 @@ ON activity.mentor_id = average_messages.mentor_id
 ON rating.mentor_id = average_messages.mentor_id;
 
 INSERT INTO public.__migrations("number", name, date)
-VALUES (105, 'Extended Mentor Performance', CURRENT_DATE)
+VALUES (104, 'Extended Mentor Performance', CURRENT_DATE)
 ON CONFLICT ("number") DO NOTHING;

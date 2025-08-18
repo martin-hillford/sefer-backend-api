@@ -67,7 +67,6 @@ BEGIN
     END IF;
 END$$;
 
-
 INSERT INTO public.__migrations("number", name, date)
 VALUES (101, 'Course with general information', CURRENT_DATE)
 ON CONFLICT ("number") DO NOTHING;

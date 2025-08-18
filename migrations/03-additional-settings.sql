@@ -19,5 +19,5 @@ BEGIN
 END$$;
 
 INSERT INTO public.__migrations("number", name, date)
-VALUES (102, 'Personal Mentor Assignment on Registration', CURRENT_DATE)
+VALUES (103, 'Personal Mentor Assignment on Registration', CURRENT_DATE)
 ON CONFLICT ("number") DO NOTHING;
