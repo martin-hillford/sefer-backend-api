@@ -1,4 +1,4 @@
-// This is an entity framework model so some properties may not be set in code
+// This is an entity framework model, so some properties may not be set in code
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 namespace Sefer.Backend.Api.Data.Models.Logging;
 
@@ -15,7 +15,7 @@ public class MentorPerformance
     public int? AverageMessagePerStudent { get; set; }
 
     /// <summary>
-    /// The average time (in minutes) the mentor takes to review a submitted lessons
+    /// The average time (in minutes) the mentor takes to review submitted lessons
     /// </summary>
     public int? ReviewTimeSpan { get; set; }
 
@@ -28,4 +28,9 @@ public class MentorPerformance
     /// The average rating of the mentor by the students
     /// </summary>
     public double? AverageRating { get; set; }
+    
+    /// <summary>
+    /// The number of ratings given to the mentor
+    /// </summary>
+    public int? RatingCount { get; set; }
 }

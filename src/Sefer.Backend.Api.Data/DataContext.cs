@@ -1,3 +1,4 @@
+using Sefer.Backend.Api.Shared;
 using VersionInfo = Sefer.Backend.Api.Data.Models.VersionInfo;
 
 namespace Sefer.Backend.Api.Data;
@@ -236,7 +237,7 @@ public class DataContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Please note: a database-first approach is used, so there is no need for a full setup here
-        // only that what is required for ef core to be able to deal with database but no migrations
+        // only that what is required for ef core to be able to deal with a database but no migrations
 
         // Deal with triggers in the database
         modelBuilder.Entity<User>().ToTable(tb => tb.HasTrigger("TG_InsertUser"));
@@ -282,6 +283,15 @@ public class DataContext(DbContextOptions options) : DbContext(options)
         // Let ef core also know about the unique indices (for testing purposes)
         modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         modelBuilder.Entity<Survey>().HasIndex(s => s.CourseRevisionId).IsUnique();
+        
+        // Deal with JSON columns 
+        var jsonOptions = DefaultJsonOptions.GetOptions();
+        modelBuilder.Entity<User>().Property(u => u.AdditionalInfo)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(v, jsonOptions)
+            )
+            .HasColumnType("jsonb");
     }
 
     #endregion

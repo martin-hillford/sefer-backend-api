@@ -1,7 +1,8 @@
+// ReSharper disable ConstantConditionalAccessQualifier
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Sefer.Backend.Api.Data;
+using Sefer.Backend.Api.Shared;
 
 namespace Sefer.Backend.Api.Support;
 
@@ -36,7 +37,7 @@ public static class UserSettingsHelper
             }
         }
         
-        // Create again json from the string
+        // Create again JSON from the string
         var json = jsonObject.ToJsonString(options);
         return new ContentResult {  Content = json,  ContentType = "application/json" };
     }

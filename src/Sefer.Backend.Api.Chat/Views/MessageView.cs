@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Sefer.Backend.Api.Data;
+using Sefer.Backend.Api.Shared;
 
 namespace Sefer.Backend.Api.Chat.Views;
 
@@ -11,7 +11,7 @@ namespace Sefer.Backend.Api.Chat.Views;
 public class MessageView : AbstractView<Message>
 {
     /// <summary>
-    /// The Channel this message is send into
+    /// The Channel this message is sent into
     /// </summary>
     public int ChannelId => Model.ChannelId;
 
@@ -31,12 +31,12 @@ public class MessageView : AbstractView<Message>
     public DateTime SenderDate => Model.SenderDate;
 
     /// <summary>
-    /// Holds if the user is sender of this message
+    /// Holds if the user is the sender of this message
     /// </summary>
     public readonly bool? IsSender;
 
     /// <summary>
-    /// The id of message that is being quoted
+    /// The id of the message that is being quoted
     /// </summary>
     public int? QuotedMessageId => Model.QuotedMessageId;
 
@@ -62,7 +62,7 @@ public class MessageView : AbstractView<Message>
     public bool IsDeleted => Model.IsDeleted;
 
     /// <summary>
-    /// Holds a list of receivers of the message
+    /// Holds a list with receivers of the message
     /// </summary>
     public List<ReceiverView> Receivers { get; init; } = [];
 
@@ -78,12 +78,12 @@ public class MessageView : AbstractView<Message>
     public readonly int UserId;
 
     /// <summary>
-    /// The send state of the message. Since the message is in the database that state is delivered
+    /// The send-state of the message. Since the message is in the database, that state is delivered
     /// </summary>
     public string SendState = "delivered";
 
     /// <summary>
-    /// This creates a view for fully loaded channel message
+    /// This creates a view for a fully loaded channel message
     /// (Message, Message.Channel, Message.ChannelMessages)
     /// </summary>
     /// <param name="channelMessage"></param>

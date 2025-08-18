@@ -64,7 +64,7 @@ global using Sefer.Backend.Api.Support;
 global using Sefer.Backend.Api.Support.Extensions;
 global using Sefer.Backend.Api.Support.Logging;
 global using Sefer.Backend.Api.Support.Security;
-global using Sefer.Backend.Api.Views.Admin.User;
+global using Sefer.Backend.Api.Views.Admin.Users;
 global using Sefer.Backend.Api.Views.Public.Courses;
 global using Sefer.Backend.Api.Views.Public.Users;
 global using Sefer.Backend.Api.Views.Shared.Users.Chat;
