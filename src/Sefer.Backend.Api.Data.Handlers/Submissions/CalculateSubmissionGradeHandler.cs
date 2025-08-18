@@ -17,9 +17,7 @@ public class CalculateSubmissionGradeHandler(IServiceProvider serviceProvider)
         if (lesson == null) throw new NullReferenceException();
 
         var context = GetDataContext();
-        var answers = await context.Answers
-            .Where(a => a.SubmissionId == request.SubmissionId)
-            .ToDictionaryAsync(a => a.QuestionId, a => a, token);
+        var answers = await context.Answers.Where(a => a.SubmissionId == request.SubmissionId).ToListAsync(token);
         
         // Check the number of questions and answers if either one of them is zero, no grade can be calculated
         var totalQuestions = lesson.Content.Count(c => c.IsQuestion);
@@ -38,18 +36,21 @@ public class CalculateSubmissionGradeHandler(IServiceProvider serviceProvider)
         var gradableQuestions = totalQuestions - ungradableQuestions.Count;
 
         // Check if for each answer a question can be found and create pairs
+        var boolAnswers = answers.Where(a => a.QuestionType == ContentBlockTypes.QuestionBoolean).ToDictionary(a => a.QuestionId);
         var correctBoolAnswers = lesson.Content
-            .Where(c => c.Type == ContentBlockTypes.QuestionBoolean && answers.ContainsKey(c.Id))
-            .Count(c => answers[c.Id].IsCorrectBoolQuestion(c));
+            .Where(c => c.Type == ContentBlockTypes.QuestionBoolean && boolAnswers.ContainsKey(c.Id))
+            .Count(c => boolAnswers[c.Id].IsCorrectBoolQuestion(c));
 
+        var multipleChoiceAnswers = answers.Where(a => a.QuestionType == ContentBlockTypes.QuestionMultipleChoice).ToDictionary(a => a.QuestionId);
         var correctMultipleChoiceAnswers = lesson.Content
-            .Where(c => c.Type == ContentBlockTypes.QuestionMultipleChoice && answers.ContainsKey(c.Id))
-            .Count(c => answers[c.Id].IsCorrectMultipleChoiceQuestion(c));
+            .Where(c => c.Type == ContentBlockTypes.QuestionMultipleChoice && multipleChoiceAnswers.ContainsKey(c.Id))
+            .Count(c => multipleChoiceAnswers[c.Id].IsCorrectMultipleChoiceQuestion(c));
 
+        var openAnswers = answers.Where(a => a.QuestionType == ContentBlockTypes.QuestionOpen).ToDictionary(a => a.QuestionId);
         var correctExactAnswers = lesson.Content
-            .Where(c => c.Type == ContentBlockTypes.QuestionOpen && answers.ContainsKey(c.Id) )
+            .Where(c => c.Type == ContentBlockTypes.QuestionOpen && openAnswers.ContainsKey(c.Id) )
             .Cast<OpenQuestion>()
-            .Count(c => c.ExactAnswer != null && answers[c.Id].TextAnswer.Trim().ToLower() == c.ExactAnswer?.ToLower().Trim());
+            .Count(c => c.ExactAnswer != null && openAnswers[c.Id].TextAnswer.Trim().ToLower() == c.ExactAnswer?.ToLower().Trim());
 
         // Save the grade of the submission
         var totalCorrect = correctBoolAnswers + correctMultipleChoiceAnswers + correctExactAnswers;

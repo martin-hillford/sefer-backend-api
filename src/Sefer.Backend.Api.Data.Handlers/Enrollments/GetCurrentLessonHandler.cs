@@ -9,7 +9,8 @@ public class GetCurrentLessonHandler(IServiceProvider serviceProvider)
         var student = await Send(new GetUserByIdRequest(request.StudentId), token);
         if (student?.IsStudent != true) return default;
 
-        var enrollment = await Send(new GetActiveEnrollmentOfStudentRequest(student.Id), token);
+        var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id), token);
+        var enrollment = enrollments.FirstOrDefault(enrollment => enrollment.Id == request.EnrollmentId);
         if (enrollment == null) return default;
 
         // Get the last submission of the student in that enrollment
@@ -19,7 +20,7 @@ public class GetCurrentLessonHandler(IServiceProvider serviceProvider)
             .OrderByDescending(s => s.Lesson.SequenceId)
             .FirstOrDefaultAsync(token);
 
-        // There are three situation:
+        // There are three situations:
         // 1) The student has not yet submitted a lesson in this enrollment
         if (lastSubmission == null)
         {

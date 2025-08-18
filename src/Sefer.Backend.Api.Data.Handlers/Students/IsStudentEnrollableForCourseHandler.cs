@@ -13,8 +13,8 @@ public class IsStudentEnrollableForCourseHandler(IServiceProvider serviceProvide
         var courseRevision = await Send(new GetPublishedCourseRevisionRequest(request.CourseId), token);
         if (courseRevision == null) return false;
 
-        // First check if the student has already an active course
-        var activeEnrollment = await Send(new GetActiveEnrollmentOfStudentRequest(request.StudentId), token);
+        // First, check if the student already has an active course
+        var activeEnrollment = await Send(new GetActiveEnrollmentsOfStudentRequest(request.StudentId), token);
         if (activeEnrollment != null) return false;
 
         // check if the student has a retake for this course
