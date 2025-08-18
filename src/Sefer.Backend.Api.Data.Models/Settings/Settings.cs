@@ -58,6 +58,11 @@ public class Settings : Entity
     /// </summary>
     public bool AssignPersonalMentorOnRegistration  { get; set; }
 
+    /// <summary>
+    /// Gets / sets if the system should allow multiple active enrollments.
+    /// </summary>
+    public bool AllowMultipleActiveEnrollments { get; set; }
+    
     #endregion
 
     #region Deferred properties

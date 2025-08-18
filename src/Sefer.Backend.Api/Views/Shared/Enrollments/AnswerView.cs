@@ -1,4 +1,4 @@
-// This is view, so property may not be accessed in code
+// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global, UnusedAutoPropertyAccessor.Global
 using Sefer.Backend.Api.Data.JsonViews;
 
@@ -16,17 +16,17 @@ public class AnswerView : AbstractView<QuestionAnswer>
     public int QuestionId => Model.QuestionId;
 
     /// <summary>
-    /// This is submitted version of the text
+    /// This is the submitted version of the text
     /// </summary>
     public readonly string GivenAnswer;
 
     /// <summary>
-    /// Contains the header of question this answer is about
+    /// Contains the number of the question this answer is about
     /// </summary>
     public readonly string QuestionNumber;
 
     /// <summary>
-    /// Contains the header of question this answer is about
+    /// Contains the header of the question this answer is about
     /// </summary>
     public readonly string QuestionHeading;
 
@@ -45,12 +45,12 @@ public class AnswerView : AbstractView<QuestionAnswer>
     }
 
     /// <summary>
-    /// Contains the text of question this answer is about
+    /// Contains the text of the question this answer is about
     /// </summary>
     public readonly string QuestionText;
 
     /// <summary>
-    /// Holds if the content is mark down content
+    /// Holds if the content is mark-down content
     /// </summary>
     public bool IsMarkDownContent;
 
@@ -63,7 +63,7 @@ public class AnswerView : AbstractView<QuestionAnswer>
 
     /// <summary>
     /// In the cases of a multiple choices question, the choices are set.
-    /// So that javascript can match the id's to the choices
+    /// So that JavaScript can match the id's to the choices
     /// </summary>
     public readonly IReadOnlyDictionary<int, string> QuestionChoices;
 
