@@ -61,12 +61,26 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
         // Check if the user is valid and save it
         var isValid = await Send(new AddUserRequest(user));
         if (isValid == false) return BadRequest();
+        
+        // Load the website settings, later required to determine if a mentor must be assigned
+        var settings = await Mediator.Send(new GetSettingsRequest());
 
         // Check if this registration is from a personal mentor invitation
         if (IsRegisteringWithMentorInvitation(post))
         {
             var mentorId = post.Invitation.GetMentorId();
             await Send(new SetPersonalMentorRequest(user.Id, mentorId));
+        }
+        
+        // The framework can run in such a way that a student gets a personal mentor assigned at registration.
+        // It is a bit harder to manage the work-load of mentors in this way, but there is a more personal connection
+        // possible.
+        else if (settings.AssignPersonalMentorOnRegistration)
+        {
+            var factory = new PersonalMentorAssigningFactory(Mediator);
+            var assigner = await factory.PrepareAlgorithmAsync(user);
+            var mentor = assigner.GetMentor();
+            if(mentor != null) await Send(new SetPersonalMentorRequest(user.Id, mentor.Id));
         }
         
         // Now send an e-mail to the user to confirm his/hers account
@@ -188,6 +202,5 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
 
     private async Task<bool> IsEmailUnique(string email)
         => await Send(new GetUserByEmailRequest(email)) == null;
-
-    private bool SetPersonalMentorAtRegistration() => true;
+    
 }

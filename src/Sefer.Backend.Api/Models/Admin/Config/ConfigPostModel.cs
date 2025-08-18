@@ -44,6 +44,17 @@ public class ConfigPostModel
     /// Get/set the number of lessons per day a student is allowed to submit
     /// </summary>
     public byte? MaxLessonSubmissionsPerDay { get; set; }
+    
+    /// <summary>
+    /// Get/set if during (personal) mentor assignment the mentor must have the same gender as the student.
+    /// This is required is some contexts 
+    /// </summary>
+    public bool StrictGenderAssignment { get; set; }
+    
+    /// <summary>
+    /// Gets/sets if a personal mentor must be assigned at the registration of the user.
+    /// </summary>
+    public bool AssignPersonalMentorOnRegistration  { get; set; }
 
     /// <summary>
     /// Converts the model to a data model
@@ -59,7 +70,9 @@ public class ConfigPostModel
             OptimalAgeDifference = OptimalAgeDifference,
             SameMentorDays = SameMentorDays,
             StudentActiveDays = StudentActiveDays,
-            StudentReminderDays = StudentReminderDays
+            StudentReminderDays = StudentReminderDays,
+            StrictGenderAssignment = StrictGenderAssignment,
+            AssignPersonalMentorOnRegistration = AssignPersonalMentorOnRegistration
         };
     }
 }
