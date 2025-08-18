@@ -54,6 +54,17 @@ public class ConfigView : AbstractView<Settings>
     public bool IsLessonSubmissionsLimited => Model.IsLessonSubmissionsLimited;
     
     /// <summary>
+    /// Get/set if during (personal) mentor assignment the mentor must have the same gender as the student.
+    /// This is required is some contexts 
+    /// </summary>
+    public bool StrictGenderAssignment => Model.StrictGenderAssignment;
+    
+    /// <summary>
+    /// Gets/sets if a personal mentor must be assigned at the registration of the user.
+    /// </summary>
+    public bool AssignPersonalMentorOnRegistration => Model.AssignPersonalMentorOnRegistration;
+    
+    /// <summary>
     /// Creates a new View
     /// </summary>
     /// <param name="model">The model of the view</param>

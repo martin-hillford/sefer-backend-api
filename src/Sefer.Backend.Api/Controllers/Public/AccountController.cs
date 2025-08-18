@@ -54,9 +54,9 @@ public class AccountController(IServiceProvider serviceProvider) : Support.UserC
     }
 
     /// <summary>
-    /// To set up two-factor auth in the second step the user has to provide proof that setup is correct
+    /// To set up two-factor auth in the second step, the user has to provide proof that the setup is correct
     /// </summary>
-    /// <response code="200">Two-factor auth is enabled and backup keys are provided</response>
+    /// <response code="200">Two-factor auth is enabled, and backup keys are provided</response>
     /// <response code="400">Two-factor auth could not be enabled</response>
     /// <response code="401">User could not be found</response>
     /// <response code="403">The provided code is missing or invalid</response>
