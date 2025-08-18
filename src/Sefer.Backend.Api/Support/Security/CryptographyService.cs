@@ -99,7 +99,7 @@ public sealed class CryptographyService : ICryptographyService
     /// <summary>
     /// A strong salt to use (256 bit)
     /// </summary>
-    /// <returns>A salt for usage in strong cryptography function</returns>
+    /// <returns>A salt for usage in strong cryptography functions</returns>
     /// <inheritdoc />
     public string Salt() { return Salt(64); }
 
@@ -107,7 +107,7 @@ public sealed class CryptographyService : ICryptographyService
     /// A strong salt to use
     /// </summary>
     /// <param name="length">The length of the string in bytes (hex value is returned)</param>
-    /// <returns>A salt for usage in strong cryptography function</returns>
+    /// <returns>A salt for usage in strong cryptography functions</returns>
     /// <inheritdoc />
     public string Salt(int length)
     {
@@ -119,7 +119,7 @@ public sealed class CryptographyService : ICryptographyService
     /// </summary>
     /// <param name="length">The length of the string in bytes (hex value is returned)</param>
     /// <param name="converter">A byte to string converter to make a representation of the bytes</param>
-    /// <returns>A salt for usage in strong cryptography function</returns>
+    /// <returns>A salt for usage in strong cryptography functions</returns>
     private static string Salt(int length, Func<byte[], string> converter)
     {
         var bytes = new byte[length];
@@ -131,8 +131,8 @@ public sealed class CryptographyService : ICryptographyService
     }
 
     /// <summary>
-    /// Encrypts a string, decrypt will be able to decrypt but only during the lifetime of the running of the application
-    ///  Thus do not use for permanent encryption!
+    /// Encrypts a string, decrypt will be able to decrypt but only during the lifetime of the application
+    /// Thus do not use for permanent encryption!
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
@@ -165,7 +165,7 @@ public sealed class CryptographyService : ICryptographyService
     #region Url Hashing
 
     /// <summary>
-    /// More low level hasher, return a hex string of data provided a hashing algorithm and bytes
+    /// More low-level hasher, return a hex string of data provided a hashing algorithm and bytes
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
@@ -194,7 +194,7 @@ public sealed class CryptographyService : ICryptographyService
     /// </summary>
     /// <param name="hash">The hash the check</param>
     /// <param name="data">The data that was used for hashing</param>
-    /// <returns>True when it is valid hash, else false</returns>
+    /// <returns>True when it is a valid hash, else false</returns>
     /// <inheritdoc />
     public bool IsValidUrlHash(string hash, string data) => hash == UrlHash(data);
 
@@ -233,7 +233,7 @@ public sealed class CryptographyService : ICryptographyService
     }
 
     /// <summary>
-    /// Test if the provided information represent a correct query string
+    /// Test if the provided information represents a correct query string
     /// </summary>
     /// <param name="data">The data to hash and included in the query string</param>
     /// <param name="random">The random salt used during generation</param>
@@ -272,7 +272,7 @@ public sealed class CryptographyService : ICryptographyService
     }
 
     /// <summary>
-    /// Test if the provided information represent a correct query string
+    /// Test if the provided information represents a correct query string
     /// </summary>
     /// <param name="data">The data to hash and included in the query string</param>
     /// <param name="random">The random salt used during generation</param>
@@ -284,7 +284,7 @@ public sealed class CryptographyService : ICryptographyService
         => IsTimeProtectedQueryString(data, random, date, hash, _options.TokenDurationInt * 3600);
 
     /// <summary>
-    /// Test if the provided information represent a correct query string
+    /// Test if the provided information represents a correct query string
     /// </summary>
     /// <param name="data">The data to hash and included in the query string</param>
     /// <param name="random">The random salt used during generation</param>
@@ -303,7 +303,7 @@ public sealed class CryptographyService : ICryptographyService
     }
 
     /// <summary>
-    /// Test if the provided information represent a correct query string
+    /// Test if the provided information represents a correct query string
     /// </summary>
     /// <param name="model">The model captured in the query string</param>
     /// <returns>True when correct else false</returns>

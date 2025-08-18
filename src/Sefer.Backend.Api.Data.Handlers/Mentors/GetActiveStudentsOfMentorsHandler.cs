@@ -9,14 +9,13 @@ public class GetActiveStudentsOfMentorsHandler(IServiceProvider serviceProvider)
         if (days == null) return null;
 
         var context = GetDataContext();
-        var activeDate = DateTime.UtcNow.AddDays(-1 * days.Value);
-        
         if (context.Database.IsSqlCapableServer())
         {
             var activeUsingSql = await context.Set<ActiveStudentsPerMentor>().ToDictionaryAsync(g => g.MentorId, g => g.ActiveStudents, token);
             return new MentorActiveStudentsDictionary(activeUsingSql);
         }
 
+        var activeDate = DateTime.UtcNow.AddDays(-1 * days.Value);
         var active = await context.UserLastActivities
             .Join(context.Enrollments, a => a.UserId, e => e.StudentId, (a, e) => new { e.MentorId, e.StudentId, a.ActivityDate, e.ClosureDate })
             .Where(e => e.ClosureDate == null && e.MentorId != null && e.ActivityDate >= activeDate)

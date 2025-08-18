@@ -2,6 +2,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
 using Sefer.Backend.Api.Data;
+using Sefer.Backend.Api.Shared;
 
 namespace Sefer.Backend.Api.Support;
 

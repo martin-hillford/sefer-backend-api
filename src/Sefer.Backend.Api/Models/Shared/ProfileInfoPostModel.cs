@@ -1,4 +1,10 @@
-﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+﻿// This is a model, so the constructor or some setter may not be used explicitly.
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable ClassNeverInstantiated.Global
+
+using System.Text.Json;
+using Sefer.Backend.Api.Shared.Validation;
+
 namespace Sefer.Backend.Api.Models.Shared;
 
 /// <summary>
@@ -13,7 +19,7 @@ public class ProfileInfoPostModel
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the gender of user
+    /// Gets or sets the gender of the user
     /// </summary>
     [Required, JsonConverter(typeof(JsonStringEnumConverter))]
     public Genders Gender { get; set; }
@@ -38,7 +44,7 @@ public class ProfileInfoPostModel
     public string Password { get; set; }
 
     /// <summary>
-    /// Gets set the language code of the client, so e-mail are send in proper language
+    /// Gets set the language code of the client, so e-mails are sent in the proper language
     /// </summary>
     [Required, MinLength(2)]
     public string Language { get; set; }
@@ -47,4 +53,13 @@ public class ProfileInfoPostModel
     /// some personal information provided by users about himself
     /// </summary>
     public string Info { get; set; }
+    
+
+    /// <summary>
+    /// In several sefer applications it is desirable to store more information
+    /// on the user. Like country, location, but this is not needed for all
+    /// applications, so this is build flexibility
+    /// </summary>
+    [JsonDictionary("UserAdditionalInfo",4000)]
+    public Dictionary<string, JsonElement> AdditionalInfo { get; set; }
 }

@@ -1,6 +1,6 @@
-// This is view, so property may not be accessed in code
+// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global, UnusedAutoPropertyAccessor.Global
-namespace Sefer.Backend.Api.Views.Admin.User;
+namespace Sefer.Backend.Api.Views.Admin.Users;
 
 /// <summary>
 /// Holds a view on the student of a mentor
