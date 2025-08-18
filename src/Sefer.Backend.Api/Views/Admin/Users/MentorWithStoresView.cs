@@ -1,8 +1,8 @@
-﻿// This is view, so property may not be accessed in code
+﻿// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global, UnusedAutoPropertyAccessor.Global
 using Sefer.Backend.Api.Data.JsonViews;
 
-namespace Sefer.Backend.Api.Views.Admin.User;
+namespace Sefer.Backend.Api.Views.Admin.Users;
 
 /// <summary>
 /// A view on mentors with regions
@@ -27,7 +27,7 @@ public class MentorWithRegionsView : UserView
     /// <param name="regions">The list of regions that is mentor is mentoring in </param>
     /// <param name="availableRegions">The list of regions that are available for mentoring</param>
     /// <inheritdoc />
-    public MentorWithRegionsView(Data.Models.Users.User model, IEnumerable<IRegion> regions, IEnumerable<IRegion> availableRegions) : base(model)
+    public MentorWithRegionsView(User model, IEnumerable<IRegion> regions, IEnumerable<IRegion> availableRegions) : base(model)
     {
         Regions = regions.ToList().AsReadOnly();
         AvailableRegions = availableRegions.ToList().AsReadOnly();

@@ -6,13 +6,12 @@
 /// <remarks>
 /// Creates a new View
 /// </remarks>
-/// <param name="model">The model of the view</param>
 public class AbstractView<TDataContract> where TDataContract : IEntity
 {
     /// <summary>
     /// The model
     /// </summary>
-    protected TDataContract Model;
+    protected readonly TDataContract Model;
 
     /// <summary>
     /// The id of the model

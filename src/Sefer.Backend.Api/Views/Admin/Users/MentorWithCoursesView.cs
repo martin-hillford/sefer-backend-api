@@ -1,8 +1,8 @@
-﻿// This is view, so property may not be accessed in code
+﻿// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global, UnusedAutoPropertyAccessor.Global
 using Sefer.Backend.Api.Data.JsonViews;
 
-namespace Sefer.Backend.Api.Views.Admin.User;
+namespace Sefer.Backend.Api.Views.Admin.Users;
 
 /// <summary>
 /// A view on mentors with courses
@@ -33,7 +33,7 @@ public class MentorWithCoursesView : UserView
     /// <param name="courses">The list of courses that is mentor is mentoring</param>
     /// <param name="availableCourses">The list of courses that are available for mentoring</param>
     /// <inheritdoc />
-    public MentorWithCoursesView(Data.Models.Users.User model, List<Data.Models.Courses.Course> courses, List<Data.Models.Courses.Course> availableCourses) : base(model)
+    public MentorWithCoursesView(User model, List<Data.Models.Courses.Course> courses, List<Data.Models.Courses.Course> availableCourses) : base(model)
     {
         var coursesList = new List<CourseView>();
         courses?.ForEach(c => coursesList.Add(new CourseView(c)));

@@ -1,6 +1,6 @@
-﻿// This is view, so property may not be accessed in code
+﻿// This is a view, so property may not be accessed in code
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global, UnusedAutoPropertyAccessor.Global
-namespace Sefer.Backend.Api.Views.Admin.User;
+namespace Sefer.Backend.Api.Views.Admin.Users;
 
 /// <summary>
 /// A base view for a mentor for usage in lists for the admin
@@ -16,7 +16,7 @@ public class MentorListView : UserListView
     public readonly int Rating;
 
     /// <summary>
-    /// Gets the number of rating of the mentor
+    /// Gets the number of ratings this mentor has received 
     /// </summary>
     public readonly int RatingCount;
 
@@ -47,7 +47,7 @@ public class MentorListView : UserListView
     /// <param name="ratingCount">The rating count for the mentor</param>
     /// <param name="rating">The rating of the mentor (will be between 0 and 10) (inclusive)</param>
     /// <inheritdoc />
-    public MentorListView(Data.Models.Users.User model, int activeStudents, int ratingCount, int rating) : base(model)
+    public MentorListView(User model, int activeStudents, int ratingCount, int rating) : base(model)
     {
         // Deal with the mentor settings
         if (model.MentorSettings == null)

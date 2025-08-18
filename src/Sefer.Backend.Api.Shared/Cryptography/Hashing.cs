@@ -21,8 +21,7 @@ public static class Hashing
 
     private static string Sha512(byte[] data)
     {
-        var managed = SHA512.Create();
-        var bytes = managed.ComputeHash(data);
+        var bytes = SHA512.HashData(data);
         return Convert.ToBase64String(bytes);
     }
 }

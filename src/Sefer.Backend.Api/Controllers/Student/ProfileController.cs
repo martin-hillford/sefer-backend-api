@@ -17,8 +17,8 @@ public class ProfileController(IServiceProvider provider, IHttpContextAccessor a
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();
 
-        // In order to support both the old and the new api scheme.
-        // the profile helper will inject the settings so that the old scheme is matched
+        // To support both the old and the new api scheme.
+        // The profile helper will inject the settings so that the old scheme is matched
         var settings = await Send(new GetUserSettingsRequest(student.Id));
         var view = new ProfileInfoView(student, settings, _avatarService);
         return UserSettingsHelper.ToJson(view, settings, null);

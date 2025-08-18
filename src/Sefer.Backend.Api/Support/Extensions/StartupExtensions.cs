@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Sefer.Backend.Api.Data;
 using Sefer.Backend.Api.Data.Handlers;
 using Sefer.Backend.Api.Services.FileStorage.AzureStorage;
+using Sefer.Backend.Api.Shared;
 
 namespace Sefer.Backend.Api.Support.Extensions;
 
@@ -95,7 +96,7 @@ public static class StartupExtensions
 
     public static IServiceCollection AddControllersAndPages(this IServiceCollection services)
     {
-        services.AddControllers().AddJsonOptions(DefaultJsonOptions.SetOptions);
+        services.AddControllers().AddJsonOptions(options => DefaultJsonOptions.SetOptions(options.JsonSerializerOptions));
         return services;
     }
 

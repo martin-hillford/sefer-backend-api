@@ -2,7 +2,7 @@
 // ReSharper disable UnusedMember.Global MemberCanBePrivate.Global NotAccessedField.Global 
 // ReSharper disable MemberCanBeProtected.Global UnusedAutoPropertyAccessor.Global
 using System.Text.Json;
-using Sefer.Backend.Api.Data;
+using Sefer.Backend.Api.Shared;
 
 namespace Sefer.Backend.Api.Notifications.Mail.Models;
 

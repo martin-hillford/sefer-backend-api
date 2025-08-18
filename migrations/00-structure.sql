@@ -1278,7 +1278,7 @@ WHERE l.is_final = TRUE AND e.mentor_id IS NOT NULL AND l.submission_date IS NOT
 
 -- create a view with mentor performance --
 CREATE OR REPLACE VIEW mentor_performance AS
-SELECT average_messages.mentor_id, average_message_per_student, review_time_span, days_active, rating.average_rating
+SELECT average_messages.mentor_id, average_message_per_student, review_time_span, days_active, rating.average_rating, rating.rating_count
 FROM
 (
     SELECT sender_id AS mentor_id, AVG(message_count) AS average_message_per_student
@@ -1329,7 +1329,7 @@ LEFT JOIN
 ON activity.mentor_id = average_messages.mentor_id
 LEFT JOIN
 (
-    SELECT AVG(CAST(rating as Float)) AS average_rating, mentor_id
+    SELECT AVG(CAST(rating as Float)) AS average_rating, COUNT(id) AS rating_count,  mentor_id
     FROM mentor_ratings
     GROUP BY mentor_id
 ) AS rating

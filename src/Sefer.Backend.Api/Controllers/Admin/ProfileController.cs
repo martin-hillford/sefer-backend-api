@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Sefer.Backend.Api.Data.JsonViews;
 
 namespace Sefer.Backend.Api.Controllers.Admin;
