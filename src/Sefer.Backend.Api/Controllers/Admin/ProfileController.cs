@@ -1,10 +1,10 @@
-using System.Text.Json.Nodes;
 using Sefer.Backend.Api.Data.JsonViews;
 
 namespace Sefer.Backend.Api.Controllers.Admin;
 
 [Authorize(Roles = "Admin")]
-public class ProfileController(IServiceProvider provider, IHttpContextAccessor accessor) : Abstract.ProfileController(provider)
+public class ProfileController(IServiceProvider provider, IPasswordService passwordService, IHttpContextAccessor accessor)
+    : Abstract.ProfileController(provider, passwordService)
 {
     [HttpGet("/admin/profile-info")]
     public async Task<ActionResult<UserView>> GetAdminInformation()

@@ -12,7 +12,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
     public async Task<ActionResult<List<Blog>>> GetBlogs()
     {
         var blogs = await Send(new GetBlogsWithoutContentRequest());
-        return Json(blogs);
+        return Ok(blogs);
     }
 
     [HttpGet("/admin/content/blogs/{id:int}")]
@@ -21,7 +21,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
         var blog = await Send(new GetBlogWithAuthorRequest(id));
         if (blog == null) return NotFound();
         var view = new BlogView(blog);
-        return Json(view);
+        return Ok(view);
     }
 
     [HttpDelete("/admin/content/blogs/{id:int}")]
@@ -31,7 +31,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
         if (blog == null) return NotFound();
 
         var deleted = await Send(new DeleteBlogRequest(blog));
-        return (deleted) ? StatusCode(204) : StatusCode(500);
+        return deleted ? StatusCode(204) : Problem("There was a problem with deleting the blog.");
     }
 
     [HttpPut("/admin/content/blogs/{id:int}/publish")]
@@ -44,8 +44,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
         blog.PublicationDate ??= DateTime.UtcNow;
 
         var updated = await Send(new UpdateBlogRequest(blog));
-        if (updated) return Json(blog, 200);
-        return StatusCode(500);
+        return updated ? Ok(blog) : Problem("There was a problem with publishing the blog.");
     }
 
     [HttpPut("/admin/content/blogs/{id:int}/take-offline")]
@@ -56,8 +55,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
         blog.IsPublished = false;
 
         var updated = await Send(new UpdateBlogRequest(blog));
-        if (updated) return Json(blog, 200);
-        return StatusCode(500);
+        return updated ? Ok(blog) : Problem("There was a problem with retracting the blog.");
     }
 
     [HttpPost("/admin/content/blogs")]
@@ -71,7 +69,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
 
         // Insert it into the database
         var added = await Send(new AddBlogRequest(blog));
-        if (added == false) return StatusCode(500);
+        if (added == false) return Problem("Adding the blog failed.");
 
         // Return the result to the user
         var view = new BlogView(blog);
@@ -91,7 +89,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
 
         // Update the database
         var updated = await Send(new UpdateBlogRequest(blog));
-        return (updated) ? StatusCode(200) : StatusCode(500);
+        return updated ? Ok() : Problem("Updating the blog failed.");
     }
 
     [HttpPost("/admin/content/blogs/permalink")]
@@ -100,7 +98,7 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
         if (post == null) return Json(new BooleanView { Response = true });
         var isUnique = await Send(new IsBlogPermalinkUniqueRequest(post.Id, post.Permalink));
         var view = new BooleanView(isUnique);
-        return Json(view);
+        return Ok(view);
     }
 
     [HttpPost("/admin/content/blogs/name")]
@@ -109,6 +107,6 @@ public class BlogController(IServiceProvider provider) : BaseController(provider
         if (post == null) return Json(new BooleanView { Response = true });
         var isUnique = await Send(new IsBlogNameUniqueRequest(post.Id, post.Name));
         var view = new BooleanView(isUnique);
-        return Json(view);
+        return Ok(view);
     }
 }

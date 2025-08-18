@@ -6,7 +6,8 @@ using Sefer.Backend.Api.Views.Shared.Users;
 namespace Sefer.Backend.Api.Controllers.Student;
 
 [Authorize(Roles = "Student,User")]
-public class ProfileController(IServiceProvider provider, IHttpContextAccessor accessor) : Abstract.ProfileController(provider)
+public class ProfileController(IServiceProvider provider, IPasswordService passwordService, IHttpContextAccessor accessor)
+    : Abstract.ProfileController(provider, passwordService)
 {
     private readonly IAvatarService _avatarService = provider.GetService<IAvatarService>();
     
@@ -17,7 +18,7 @@ public class ProfileController(IServiceProvider provider, IHttpContextAccessor a
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();
 
-        // In order to support both the old and the new api scheme.
+        // To support both the old and the new api scheme,
         // the profile helper will inject the settings so that the old scheme is matched
         var settings = await Send(new GetUserSettingsRequest(student.Id));
         var view = new ProfileInfoView(student, settings, _avatarService);
