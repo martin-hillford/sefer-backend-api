@@ -33,4 +33,10 @@ public abstract class AbstractControllerTest
         
         return new SubmissionPostModel { Answers = answers, Final = final }; 
     }
+
+    protected static T EmptyMock<T>() where T : class
+    {
+        var mock = new Mock<T>();
+        return mock.Object;
+    }
 }

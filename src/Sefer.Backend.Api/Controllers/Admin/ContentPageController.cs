@@ -13,7 +13,7 @@ public class ContentPageController(IServiceProvider provider) : BaseController(p
     {
         var pages = await Send(new GetContentPagesRequest());
         var view = pages.Select(p => new ContentPageView(p)).ToList();
-        return Json(view);
+        return Ok(view);
     }
 
     [HttpGet("/admin/content/pages/{id:int}")]
@@ -22,7 +22,7 @@ public class ContentPageController(IServiceProvider provider) : BaseController(p
         var page = await Send(new GetContentPageByIdRequest(id));
         if (page == null) return NotFound();
         var view = new ContentPageView(page);
-        return Json(view);
+        return Ok(view);
     }
 
     [HttpPost("/admin/content/pages")]

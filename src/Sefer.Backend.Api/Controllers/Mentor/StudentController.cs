@@ -4,7 +4,8 @@ using Sefer.Backend.Api.Views.Mentor;
 namespace Sefer.Backend.Api.Controllers.Mentor;
 
 [Authorize(Roles = "Mentor")]
-public class StudentController(IServiceProvider provider) : Abstract.ProfileController(provider)
+public class StudentController(IServiceProvider provider, IPasswordService passwordService)
+    : Abstract.ProfileController(provider, passwordService)
 {
     private readonly IFileStorageService _fileStorageService = provider.GetService<IFileStorageService>();
 
@@ -15,7 +16,7 @@ public class StudentController(IServiceProvider provider) : Abstract.ProfileCont
     private readonly ICryptographyService _cryptographyService = provider.GetService<ICryptographyService>();
 
     /// <summary>
-    /// Returns an overview of all the students of the mentor
+    /// Returns an overview with all students of the given mentor
     /// </summary>
     /// <response code="403">The current user is not a mentor</response>
     [HttpGet("/mentor/students")]
@@ -79,7 +80,7 @@ public class StudentController(IServiceProvider provider) : Abstract.ProfileCont
         if (mentor is not { Role: UserRoles.Mentor }) return Forbid();
         var (_, mentorSite) = await Send(new GetPrimaryRegionAndSiteRequest(mentor.Id));
 
-        // Create a url and qr-code for the mentor to share
+        // Create the url and qr-code for the mentor to share
         var expires = DateTime.UtcNow.AddHours(24);
         var queryString = _cryptographyService.TimeProtectedQueryString("pm", mentor.Id.ToString());
         var fullUrl = $"{mentorSite.SiteUrl}/register?{queryString}";
@@ -110,7 +111,7 @@ public class StudentController(IServiceProvider provider) : Abstract.ProfileCont
         var mentor = await GetCurrentUser();
         if (mentor is not { Role: UserRoles.Mentor }) return (false, mentor);
 
-        // Check if the student is student of the mentor
+        // Check if the user is a student of a mentor
         var isStudent = await Send(new IsStudentOfMentorRequest(mentor.Id, studentId));
         return (isStudent, mentor);
     }

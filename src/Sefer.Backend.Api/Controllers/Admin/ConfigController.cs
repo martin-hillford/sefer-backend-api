@@ -12,7 +12,7 @@ public class ConfigController(IServiceProvider provider) : BaseController(provid
     {
         var settings = await Send(new GetSettingsRequest());
         var view = new ConfigView(settings);
-        return Json(view);
+        return Ok(view);
     }
 
     [HttpPost("/settings")]
@@ -21,6 +21,6 @@ public class ConfigController(IServiceProvider provider) : BaseController(provid
     {
         if (config == null || ModelState.IsValid == false) return BadRequest();
         var valid = await Send(new UpdateSettingsRequest(config.ToModel()));
-        return (valid) ? StatusCode(202) : BadRequest();
+        return valid ? Accepted() : BadRequest();
     }
 }

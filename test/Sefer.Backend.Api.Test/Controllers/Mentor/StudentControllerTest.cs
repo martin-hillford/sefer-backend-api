@@ -13,7 +13,7 @@ public class StudentControllerTest : AbstractControllerTest
         var user = new User { Role = UserRoles.Student, Id = 13 };
         var provider = GetServiceProvider(user);
 
-        var controller = new StudentController(provider.Object);
+        var controller = new StudentController(provider.Object, EmptyMock<IPasswordService>());
 
         var result = await controller.CreatePersonalInvitation();
 
@@ -46,7 +46,7 @@ public class StudentControllerTest : AbstractControllerTest
         provider.AddService(shortUrlService);
         provider.AddRequestResult<GetPrimaryRegionAndSiteRequest, (IRegion, ISite)>((mentorRegion.Object, mentorSite.Object));
 
-        var controller = new StudentController(provider.Object);
+        var controller = new StudentController(provider.Object, EmptyMock<IPasswordService>());
         var result = await controller.CreatePersonalInvitation() as JsonResult;
         var value = result?.Value as PersonalInvitationView;
 

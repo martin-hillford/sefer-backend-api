@@ -4,7 +4,8 @@ using Sefer.Backend.Api.Models.Users;
 namespace Sefer.Backend.Api.Controllers.Users;
 
 [Authorize(Roles = "Student,User,Admin,Mentor,Supervisor")]
-public class UserSettingsController(IServiceProvider provider) : Abstract.ProfileController(provider)
+public class UserSettingsController(IServiceProvider provider, IPasswordService passwordService)
+    : Abstract.ProfileController(provider, passwordService)
 {
     private readonly IConfiguration _configuration = provider.GetService<IConfiguration>();
 
