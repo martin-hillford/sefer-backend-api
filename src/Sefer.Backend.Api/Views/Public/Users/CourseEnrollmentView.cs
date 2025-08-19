@@ -11,7 +11,7 @@ namespace Sefer.Backend.Api.Views.Public.Users;
 /// </remarks>
 /// <param name="course">The model of the view</param>
 /// <param name="canEnroll">True when the student can enroll else false</param>
-/// <param name="hasIssue">True when the student has a personal mentor that is not teaching is course else false</param>
+/// <param name="hasIssue">True when the student has a personal mentor that is not teaching the course else false</param>
 /// <inheritdoc />
 public sealed class CourseEnrollmentView(Course course, bool canEnroll, bool hasIssue) : CourseView(course)
 {
