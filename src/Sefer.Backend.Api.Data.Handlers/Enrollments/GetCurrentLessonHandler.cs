@@ -8,7 +8,8 @@ public class GetCurrentLessonHandler(IServiceProvider serviceProvider)
         // Get the current enrollment of the student
         var student = await Send(new GetUserByIdRequest(request.StudentId), token);
         if (student?.IsStudent != true) return default;
-
+        
+        // Note: while enrollments are plural, they are filtered using the enrollmentId
         var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id), token);
         var enrollment = enrollments.FirstOrDefault(enrollment => enrollment.Id == request.EnrollmentId);
         if (enrollment == null) return default;

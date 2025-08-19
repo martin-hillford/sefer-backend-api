@@ -8,6 +8,7 @@ public class EnrollmentController(IServiceProvider serviceProvider) : BaseContro
 
     [ProducesResponseType(typeof(CourseEnrollmentView), 200)]
     [HttpGet("/public/user/enroll/{courseId:int}")]
+    [HttpGet("/public/user/is-enrollable-for/{courseId:int}")]
     [Authorize(Roles = "Student,User")]
     public async Task<IActionResult> IsEnrollableFor(int courseId)
     {
