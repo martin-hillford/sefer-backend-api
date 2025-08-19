@@ -19,8 +19,8 @@ public class IsStudentEnrollableForCourseHandler(IServiceProvider serviceProvide
         // First, check if the student already has an active course
         if (!settings.AllowMultipleActiveEnrollments)
         {
-            var activeEnrollment = await Send(new GetActiveEnrollmentsOfStudentRequest(request.StudentId), token);
-            if (activeEnrollment.Count != 0) return false;
+            var activeEnrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(request.StudentId), token);
+            if (activeEnrollments.Count != 0) return false;
         }
 
         // check if the student has a retake for this course

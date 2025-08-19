@@ -48,6 +48,7 @@ public class DashboardController(IServiceProvider serviceProvider) : UserControl
         var settings = await Send(new GetSettingsRequest());
         if (settings.AllowMultipleActiveEnrollments) return StatusCode(418);
 
+        // This endpoint should only return one single enrollment, so just get the first 
         var enrollments = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id, true));
         var enrollment = enrollments.FirstOrDefault();
         if (enrollment == null) return NotFound();
