@@ -103,7 +103,7 @@ public class SubmissionController(IServiceProvider serviceProvider) : GrantContr
         if(active == null) return BadRequest();
 
         // gets the current lesson
-        var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(active.Id, student.Id));
+        var (lesson, lessonSubmission, enrollment) = await Send(new GetCurrentLessonRequest(student.Id, active.Id));
         if (lesson == null) return BadRequest();
         
         // Update the user took some action
