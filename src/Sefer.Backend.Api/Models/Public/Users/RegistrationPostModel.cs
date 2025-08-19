@@ -19,8 +19,7 @@ public class RegistrationPostModel
     /// <summary>
     /// Gets or sets the gender of the user
     /// </summary>
-    [Required]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [Required, JsonConverter(typeof(JsonStringEnumConverter))]
     public Genders Gender { get; set; }
 
     /// <summary>
@@ -81,4 +80,25 @@ public class RegistrationPostModel
     /// this contains the information of that invitation
     /// </summary>
     public InvitationPostModel Invitation { get; set; }
+
+    public User Create(ISite site, IRegion region, bool approved = false)
+    {
+        return new User
+        {
+            Active = false,
+            Approved = approved,
+            Blocked = false,
+            Email = Email,
+            Gender = Gender,
+            Name = Name,
+            Role = UserRoles.User,
+            YearOfBirth = YearOfBirth,
+            SubscriptionDate = DateTime.UtcNow,
+            NotificationPreference = NotificationPreference.Direct,
+            PreferredInterfaceLanguage = Language,
+            PrimarySite = site.Hostname,
+            PrimaryRegion = region.Id,
+            AdditionalInfo = AdditionalInfo
+        };
+    }
 }

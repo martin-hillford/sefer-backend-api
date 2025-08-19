@@ -40,23 +40,7 @@ public class UserController(IServiceProvider serviceProvider) : BaseController(s
         if (!site.ContainsRegion(region)) return StatusCode(500);
 
         // Create a new user and use the password service to set the password
-        var user = new User
-        {
-            Active = false,
-            Approved = false,
-            Blocked = false,
-            Email = post.Email,
-            Gender = post.Gender,
-            Name = post.Name,
-            Role = UserRoles.User,
-            YearOfBirth = post.YearOfBirth,
-            SubscriptionDate = DateTime.UtcNow,
-            NotificationPreference = NotificationPreference.Direct,
-            PreferredInterfaceLanguage = post.Language,
-            PrimarySite = site.Hostname,
-            PrimaryRegion = region.Id,
-            AdditionalInfo = post.AdditionalInfo
-        };
+        var user = post.Create(site, region);
         _passwordService.UpdatePassword(user, post.Password);
 
         // Check if the user is valid and save it
