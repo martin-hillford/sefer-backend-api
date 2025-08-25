@@ -36,4 +36,10 @@ public static class ServiceCollectionExtensions
             database.IsSqlServer() ||
             database.ProviderName?.Contains("Npgsql.EntityFrameworkCore.PostgreSQL") == true;
     }
+
+    public static bool IsPostgreSQLServer(this DatabaseFacade database)
+    {
+        return
+            database.ProviderName?.Contains("Npgsql.EntityFrameworkCore.PostgreSQL") == true; 
+    }
 }

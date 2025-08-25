@@ -17,19 +17,17 @@ public partial class SearchChatMessagesHandler(IServiceProvider serviceProvider)
             if (string.IsNullOrEmpty(request.SearchTerm)) return [];
             var term = Clean.Replace(request.SearchTerm, string.Empty);
             if (string.IsNullOrEmpty(term)) return [];
-
+            
             var context = GetDataContext();
-            var query = context.Database.IsSqlCapableServer()
-                ? context.ChatMessages.Where(m => EF.Functions.Contains(m.ContentString, $"\"{term}*\""))
+            var query = context.Database.IsPostgreSQLServer()
+                ? context.ChatMessages.Where(m => EF.Functions.ToTsVector(m.ContentString).Matches(EF.Functions.ToTsQuery(request.SearchTerm)))
                 : context.ChatMessages.Where(m => m.ContentString.Contains(request.SearchTerm));
-
+            
             return await query
                 .Where(m => m.Type == MessageTypes.Text && m.ChannelMessages.Any(c => c.ReceiverId == request.UserId))
                 .Select(m => new ChatSearchResult { ChannelId = m.ChannelId, MessageId = m.Id, Content = m.ContentString })
                 .ToListAsync(cancellationToken: token);
         }
-        catch (Exception) { return new(); }
+        catch (Exception exp) { return []; }
     }
-
-    
 }

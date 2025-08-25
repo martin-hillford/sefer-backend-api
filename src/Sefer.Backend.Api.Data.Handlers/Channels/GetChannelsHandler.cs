@@ -21,14 +21,7 @@ public class GetChannelsHandler(IServiceProvider serviceProvider)
                 c.Receivers.Any(r => r.UserId == request.UserId && r.Deleted == false && r.Archived == false)
             )
             .Include(c => c.Receivers).ThenInclude(r => r.User)
-            .Select(c =>
-                new
-                {
-                    Channel = c,
-                    LastMessageDate = c.Messages.Max(m => m.SenderDate)
-                })
-            .OrderByDescending(c => c.LastMessageDate)
-            .Select(c => c.Channel)
+            .OrderByDescending(c => c.Messages.Max(m => m.SenderDate))
             .ToListAsync(token);
     }
 
