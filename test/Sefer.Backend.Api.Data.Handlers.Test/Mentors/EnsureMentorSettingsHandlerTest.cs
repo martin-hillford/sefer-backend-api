@@ -9,7 +9,7 @@ public class EnsureMentorSettingsHandlerTest : MentorUnitTest
     public async Task Handle_MentorNull()
     {
         var settings = await Handle(null);
-        settings.Should().BeNull();
+        Assert.IsNull(settings);
     }
 
     [TestMethod]
@@ -18,7 +18,7 @@ public class EnsureMentorSettingsHandlerTest : MentorUnitTest
         var context = GetDataContext();
         var student = await context.GetStudent();
         var settings = await Handle(student);
-        settings.Should().BeNull();
+        Assert.IsNull(settings);
     }
 
     [TestMethod]
@@ -28,7 +28,7 @@ public class EnsureMentorSettingsHandlerTest : MentorUnitTest
         var mentor = await context.GetMentor();
         await InsertAsync(new MentorSettings { MentorId = mentor.Id });
         var settings = await Handle(mentor);
-        settings.Should().NotBeNull();
+        Assert.IsNotNull(settings);
         await VerifyMentorSettings();
     }
 
@@ -38,7 +38,7 @@ public class EnsureMentorSettingsHandlerTest : MentorUnitTest
         var context = GetDataContext();
         var mentor = await context.GetMentor();
         var settings = await Handle(mentor);
-        settings.Should().NotBeNull();
+        Assert.IsNotNull(settings);
         await VerifyMentorSettings();
     }
 
@@ -65,9 +65,9 @@ public class EnsureMentorSettingsHandlerTest : MentorUnitTest
     {
         var context = GetDataContext();
         var mentor = await context.GetMentor();
-        mentor.Should().NotBeNull();
+        Assert.IsNotNull(mentor);
 
         var settings = await context.MentorSettings.SingleOrDefaultAsync();
-        settings.Should().NotBeNull();
+        Assert.IsNotNull(settings);
     }
 }

@@ -14,7 +14,7 @@ public class AddChannelReceiverHandlerTest  : HandlerUnitTest
         var channel = await handler.Handle(request, CancellationToken.None);
         
         // Assert
-        channel.Should().BeNull();
+        Assert.IsNull(channel);
     }
 
     [TestMethod]

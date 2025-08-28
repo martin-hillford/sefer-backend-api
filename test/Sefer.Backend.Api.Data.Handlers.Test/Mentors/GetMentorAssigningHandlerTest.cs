@@ -7,7 +7,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
     public async Task Handle_SettingsNull()
     {
         var assigned = await Handle(null, null, null, null);
-        assigned.Should().BeNull();
+        Assert.IsNull(assigned);
     }
 
     [TestMethod]
@@ -15,7 +15,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
     {
         var settings = new WebsiteSettings();
         var assigned = await Handle(settings, null, null, null);
-        assigned.Should().BeNull();
+        Assert.IsNull(assigned);
     }
 
     [TestMethod]
@@ -25,7 +25,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
         var student = await context.GetStudent();
         var settings = new WebsiteSettings();
         var assigned = await Handle(settings, student, null, null);
-        assigned.Should().BeNull();
+        Assert.IsNull(assigned);
     }
 
     [TestMethod]
@@ -35,7 +35,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
         var mentor = await context.GetMentor();
         var settings = new WebsiteSettings();
         var assigned = await Handle(settings, mentor, null, null);
-        assigned.Should().BeNull();
+        Assert.IsNull(assigned);
     }
 
     [TestMethod]
@@ -46,7 +46,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
         var student = await context.GetStudent();
         var settings = new WebsiteSettings();
         var assigned = await Handle(settings, mentor, student, null);
-        assigned.Should().BeNull();
+        Assert.IsNull(assigned);
     }
 
     [TestMethod]
@@ -58,7 +58,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
         var settings = new WebsiteSettings();
         var course = new Course();
         var assigned = await Handle(settings, mentor, student, course);
-        assigned.Should().Be(mentor);
+        Assert.AreEqual(mentor, assigned);
     }
 
     [TestMethod]
@@ -74,7 +74,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
             .AddRequestException<GetUserByIdRequest, User>();
 
         var assigned = await Handle(provider);
-        assigned.Should().Be(mentor);
+        Assert.AreEqual(mentor, assigned);
     }
 
     [TestMethod]
@@ -87,7 +87,7 @@ public class GetMentorAssigningHandlerTest : MentorUnitTest
             .AddRequestResult<GetPersonalMentorForCourseRequest, User?>(mentor);
 
         var assigned = await Handle(provider);
-        assigned.Should().Be(mentor);
+        Assert.AreEqual(mentor, assigned);
     }
 
 

@@ -73,7 +73,7 @@ public class MentorAvailabilityCalculatorTest
         var mentor = scores.GetMentorGivenPreferredScore(true);
 
         // NB: Mentor 3 should be select since he has the optimal age diff of 0 years
-        mentor.Should().BeNull();
+        Assert.IsNull(mentor);
     }
 
     private static MentorAssigningInput Create(List<MentorTestData> mentors, short studentYear, double ageFactor)

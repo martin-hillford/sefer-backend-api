@@ -27,6 +27,8 @@ public class IntegrationServices : ServiceCollection
             .AddMemoryCache();
     }
 
+    public static IntegrationServices Create() => [];
+
     private static DataContextProvider SetUpDatabase()
     {
         var connection = new SqliteConnection("DataSource=:memory:");
@@ -126,7 +128,7 @@ public static class Extensions
         return enrollment;
     }
 
-    private static void Insert<T>(this DataContext context, T entity)
+    public static void Insert<T>(this DataContext context, T entity)
     {
         context.Add(entity);
         context.SaveChanges();

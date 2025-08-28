@@ -89,7 +89,7 @@ public class NotificationServiceTest
         var result = await service.SendLessonSubmittedNotificationAsync(13, null, null);
 
         // Assert
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -105,7 +105,7 @@ public class NotificationServiceTest
         var result = await service.SendLessonSubmittedNotificationAsync(13, mentor, null);
 
         // Assert
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -121,7 +121,7 @@ public class NotificationServiceTest
         var result = await service.SendLessonSubmittedNotificationAsync(13, null, student);
 
         // Assert
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]

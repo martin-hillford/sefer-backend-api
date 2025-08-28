@@ -9,7 +9,7 @@ namespace Sefer.Backend.Api.Controllers.Admin;
 public class BlogController(IServiceProvider provider) : BaseController(provider)
 {
     [HttpGet("/admin/content/blogs/base")]
-    public async Task<ActionResult<List<Blog>>> GetBlogs()
+    public async Task<ActionResult<List<BlogBase>>> GetBlogs()
     {
         var blogs = await Send(new GetBlogsWithoutContentRequest());
         return Ok(blogs);

@@ -11,15 +11,15 @@ public class GetBackupMentorHandlerTest : MentorUnitTest
         var request = new GetBackupMentorRequest();
 
         var backup = await handler.Handle(request, CancellationToken.None);
-
-        backup.Should().BeNull();
+        
+        Assert.IsNull(backup);
     }
 
     [TestMethod]
     public async Task Handle_NoBackupMentor()
     {
         var backup = await Handle(null);
-        backup.Should().BeNull();
+        Assert.IsNull(backup);
     }
 
     [TestMethod]
@@ -28,7 +28,7 @@ public class GetBackupMentorHandlerTest : MentorUnitTest
         var context = GetDataContext();
         var student = await context.GetStudent();
         var backup = await Handle(student);
-        backup.Should().BeNull();
+        Assert.IsNull(backup);
     }
 
     [TestMethod]
@@ -37,7 +37,7 @@ public class GetBackupMentorHandlerTest : MentorUnitTest
         var context = GetDataContext();
         var mentor = await context.GetMentor();
         var backup = await Handle(mentor);
-        backup?.Id.Should().Be(mentor.Id);
+        Assert.AreEqual(mentor.Id, backup?.Id);
     }
 
     private async Task<User?> Handle(User? backup)

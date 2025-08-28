@@ -10,7 +10,7 @@ public class GetEditingCurriculumRevisionHandlerTest : CurriculumUnitTest
     public async Task Handle_NoCurriculum()
     {
         var retrieved = await Handle(-1);
-        retrieved.Should().BeNull();
+        Assert.IsNull(retrieved);
     }
 
     [TestMethod]

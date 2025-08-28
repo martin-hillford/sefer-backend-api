@@ -7,14 +7,14 @@ public class PostReviewChatMessageHandlerTest : PostChatMessageHandlerTest
     public async Task Handle_InValid()
     {
         var messages = await Handle(13, false, null, null);
-        messages.Should().BeNull();
+        Assert.IsNull(messages);
     }
 
     [TestMethod]
     public async Task Handle_NoObjectView()
     {
         var messages = await Handle(13, true, null, null);
-        messages.Should().BeNull();
+        Assert.IsNull(messages);
     }
 
     [TestMethod]
@@ -22,7 +22,8 @@ public class PostReviewChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var (_, submission) = await InitializeSubmission(true);
         var messages = await Handle(submission.Id, true, submission, null);
-        messages.Should().BeNull();
+        Assert.IsNull(messages);
+        
     }
 
     [TestMethod]
@@ -30,8 +31,8 @@ public class PostReviewChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var (channel, submission) = await InitializeSubmission(true);
         var messages = await Handle(submission.Id, true, submission, channel);
-        messages.Should().NotBeNull();
-        messages.Count.Should().Be(1);
+        Assert.IsNotNull(messages);
+        Assert.AreEqual(1, messages.Count);
     }
 
     [TestMethod]
@@ -59,7 +60,7 @@ public class PostReviewChatMessageHandlerTest : PostChatMessageHandlerTest
         var (channel, submission) = await InitializeSubmission(true, "review");
         submission.Enrollment.MentorId = null;
         var messages = await Handle(submission.Id, true, submission, channel);
-        messages.Should().BeNull();
+        Assert.IsNull(messages);
     }
 
     [TestMethod]

@@ -10,7 +10,7 @@ public class GetCurriculumByIdHandlerTest : CurriculumUnitTest
     public async Task Handle_NotFound()
     {
         var curriculum = await Handle(-1, true);
-        curriculum.Should().BeNull();
+        Assert.IsNull(curriculum);
     }
 
     [TestMethod]
@@ -19,8 +19,8 @@ public class GetCurriculumByIdHandlerTest : CurriculumUnitTest
         var context = GetDataContext();
         var curriculum = context.Curricula.Single();
         var retrieved = await Handle(curriculum.Id, false);
-        retrieved.Should().NotBeNull();
-        retrieved.Revisions.Should().BeNull();
+        Assert.IsNotNull(retrieved);
+        Assert.IsNull(retrieved.Revisions);
     }
 
     [TestMethod]
@@ -29,8 +29,8 @@ public class GetCurriculumByIdHandlerTest : CurriculumUnitTest
         var context = GetDataContext();
         var curriculum = context.Curricula.Single();
         var retrieved = await Handle(curriculum.Id, true);
-        retrieved.Should().NotBeNull();
-        retrieved.Revisions.Count.Should().Be(1);
+        Assert.IsNotNull(retrieved);
+        Assert.AreEqual(1, retrieved.Revisions.Count);
     }
 
     private async Task<Curriculum> Handle(int curriculumId, bool includeRevisions)

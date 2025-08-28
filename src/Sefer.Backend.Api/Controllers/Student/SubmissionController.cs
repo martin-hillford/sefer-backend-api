@@ -56,7 +56,7 @@ public class SubmissionController(IServiceProvider serviceProvider) : GrantContr
     internal async Task<bool> IsStudentAllowedToSubmit(User student, Course course)
     {
         var settings = await Send(new GetSettingsRequest());
-        if (settings.IsLessonSubmissionsLimited == false) return true;
+        if (!settings.IsLessonSubmissionsLimited) return true;
         var submitted = await Send(new GetNumberOfSubmittedLessonsTodayRequest(student.Id));
 
         var courseSubmitted = course.MaxLessonSubmissionsPerDay;

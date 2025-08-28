@@ -25,8 +25,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.CreateChannel(channel);
 
         // Assert - Channel should not be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<ForbidResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<ForbidResult>();
     }
     
     [TestMethod]
@@ -46,8 +45,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.CreateChannel(channel);
         
         // Assert - Channel should not be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<BadRequestResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<BadRequestResult>();
     }
     
     [TestMethod]
@@ -70,8 +68,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.CreateChannel(body);
 
         // Assert - Channel should be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<JsonResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<JsonResult>();
         var view = ((result as JsonResult)?.Value as ChannelView);
         view.Should().NotBeNull();
         if (view == null) return;
@@ -97,8 +94,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.AddStudentToChannel(body);
         
         // Assert - Channel should be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<BadRequestResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<BadRequestResult>();
     }
 
     [TestMethod]
@@ -115,8 +111,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.AddStudentToChannel(body);
         
         // Assert - Channel should be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<BadRequestResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<BadRequestResult>();
     }
     
     [TestMethod]
@@ -134,8 +129,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.AddStudentToChannel(body);
         
         // Assert - Student should be added
-        result.Should().NotBeNull();
-        result.Should().BeOfType<JsonResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<JsonResult>();
     }
 
     private static MockedServiceProvider AddStudentToChannel_GetServiceProvider(bool isStudentOfMentorRequest, Channel channel)
@@ -166,8 +160,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.RemoveStudentFromChannel(body);
         
         // Assert - Channel should be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<BadRequestResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<BadRequestResult>();
     }
     
     [TestMethod]
@@ -184,8 +177,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.RemoveStudentFromChannel(body);
         
         // Assert - Channel should be created
-        result.Should().NotBeNull();
-        result.Should().BeOfType<BadRequestResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<BadRequestResult>();
     }
     
     [TestMethod]
@@ -203,7 +195,7 @@ public class ChatManagementControllerTest : AbstractControllerTest
         var result = await controller.RemoveStudentFromChannel(body);
         
         // Assert - Student should be removed
-        result.Should().NotBeNull();
+        Assert.IsNotNull(result);
         result.Should().BeOfType<JsonResult>();
     }
     

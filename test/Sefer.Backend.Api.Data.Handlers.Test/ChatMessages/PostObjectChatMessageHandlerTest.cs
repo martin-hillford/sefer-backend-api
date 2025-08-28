@@ -9,7 +9,7 @@ public class PostObjectChatMessageHandlerTest : PostChatMessageHandlerTest
         var request = new PostObjectChatMessageRequest { ReferenceId = 1 };
         var channel = new Channel();
         var message = await Handle(request, true, channel);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -17,7 +17,7 @@ public class PostObjectChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var request = new PostObjectChatMessageRequest { ReferenceId = 0 };
         var message = await Handle(request, true, null);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -25,7 +25,7 @@ public class PostObjectChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var request = new PostObjectChatMessageRequest { ReferenceId = 1 };
         var message = await Handle(request, false, null);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -33,7 +33,7 @@ public class PostObjectChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var request = new PostObjectChatMessageRequest { ReferenceId = 1 };
         var message = await Handle(request, true, null);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -59,8 +59,8 @@ public class PostObjectChatMessageHandlerTest : PostChatMessageHandlerTest
         context.ChatChannelMessages.Count().Should().Be(2);
 
         var sender = context.ChatChannelMessages.Single(c => c.ReceiverId == student.Id);
-        sender.Should().NotBeNull();
-        sender.ReadDate.Should().NotBeNull();
+        Assert.IsNotNull(sender);
+        Assert.IsNotNull(sender.ReadDate);
         sender.ReadDate.Should().BeAfter(DateTime.UtcNow.AddMinutes(-1));
     }
 

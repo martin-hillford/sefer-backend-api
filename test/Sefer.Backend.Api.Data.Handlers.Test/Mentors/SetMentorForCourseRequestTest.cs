@@ -7,7 +7,7 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
     public async Task Handle_MentorNull()
     {
         var result = await Handle(null, null);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -16,7 +16,7 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
         var context = GetDataContext();
         var student = await context.GetStudent();
         var result = await Handle(null, student);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -25,14 +25,14 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
         var context = GetDataContext();
         var mentor = await context.GetMentor();
         var result = await Handle(null, mentor);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
     public async Task Handle_MentorInvalidId()
     {
         var result = await Handle(null, new User { Id = -1 });
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -41,7 +41,7 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
         var context = GetDataContext();
         var mentor = await context.GetMentor();
         var result = await Handle(new Course { Id = -1 }, mentor);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -57,7 +57,7 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
 
         var result = await Handle(course, mentor);
 
-        result.Should().BeTrue();
+        Assert.IsTrue(result);
         context.MentorCourses.Count().Should().Be(1);
     }
 
@@ -70,7 +70,7 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
         var request = new SetMentorForCourseRequest(1, 1);
         var handler = new SetMentorForCourseHandler(provider.Object);
         var result = await handler.Handle(request, CancellationToken.None);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
@@ -83,7 +83,7 @@ public class SetMentorForCourseRequestTest : MentorUnitTest
 
         var result = await Handle(course, mentor);
 
-        result.Should().BeTrue();
+        Assert.IsTrue(result);
         context.MentorCourses.Count().Should().Be(1);
     }
 

@@ -4,24 +4,21 @@ namespace Sefer.Backend.Api.Data.Handlers.Test.Submissions;
 public class CalculateSubmissionGradeHandlerTest : SubmissionUnitTest
 {
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
     public async Task Handle_No_Submission()
     {
-        await Handle(19, GetServiceProvider());
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(async () => await Handle(19, GetServiceProvider()));
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
     public async Task Handle_No_Enrollment()
     {
         var submission = new LessonSubmission();
         var provider = new MockedServiceProvider();
         provider.AddRequestResult<GetSubmissionByIdRequest, LessonSubmission>(submission);
-        await Handle(submission.Id, provider);
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(async () => await Handle(submission.Id, provider));
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
     public async Task Handle_No_Lesson()
     {
         var submission = new LessonSubmission();
@@ -29,7 +26,7 @@ public class CalculateSubmissionGradeHandlerTest : SubmissionUnitTest
         var provider = new MockedServiceProvider();
         provider.AddRequestResult<GetSubmissionByIdRequest, LessonSubmission>(submission);
         provider.AddRequestResult<GetEnrollmentByIdRequest, Enrollment>(enrollment);
-        await Handle(submission.Id, provider);
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(async () => await Handle(submission.Id, provider));
     }
 
     [TestMethod]

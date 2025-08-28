@@ -15,7 +15,7 @@ public class GetSubmissionForReviewByIdHandlerTest : SubmissionUnitTest
     public async Task Handle_SubmissionIdNotMatching()
     {
         var submission = await HandleRequest(null, -1);
-        submission.Should().BeNull();
+        Assert.IsNull(submission);
     }
 
     [TestMethod]
@@ -24,7 +24,7 @@ public class GetSubmissionForReviewByIdHandlerTest : SubmissionUnitTest
         var context = GetDataContext();
         var student = await context.GetStudent();
         var submission = await HandleRequest(student.Id);
-        submission.Should().BeNull();
+        Assert.IsNull(submission);
     }
 
     [TestMethod]
@@ -32,7 +32,7 @@ public class GetSubmissionForReviewByIdHandlerTest : SubmissionUnitTest
     {
         await SetValues(false, false, false);
         var submission = await HandleRequest();
-        submission.Should().BeNull();
+        Assert.IsNull(submission);
     }
 
     [TestMethod]
@@ -40,7 +40,7 @@ public class GetSubmissionForReviewByIdHandlerTest : SubmissionUnitTest
     {
         await SetValues(true, true, false);
         var submission = await HandleRequest();
-        submission.Should().BeNull();
+        Assert.IsNull(submission);
     }
 
     [TestMethod]
@@ -48,7 +48,7 @@ public class GetSubmissionForReviewByIdHandlerTest : SubmissionUnitTest
     {
         await SetValues(true, true, false);
         var submission = await HandleRequest();
-        submission.Should().BeNull();
+        Assert.IsNull(submission);
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ public class GetSubmissionForReviewByIdHandlerTest : SubmissionUnitTest
     {
         await SetValues(true, false, false);
         var submission = await HandleRequest();
-        submission.Should().NotBeNull();
+        Assert.IsNotNull(submission);
     }
 
     private async Task SetValues(bool final, bool visible, bool imported)

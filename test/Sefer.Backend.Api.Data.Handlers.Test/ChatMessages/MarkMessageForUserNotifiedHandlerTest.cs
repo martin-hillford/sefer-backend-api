@@ -10,21 +10,21 @@ public class MarkMessageForUserNotifiedHandlerTest : PostChatMessageHandlerTest
         var request = new MarkMessageForUserNotifiedRequest(19, 13);
         var handler = new MarkMessageForUserNotifiedHandler(provider.Object);
         var result = await handler.Handle(request, CancellationToken.None);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     [TestMethod]
     public async Task Handle()
     {
         var result = await Handle(null);
-        result.Should().BeTrue();
+        Assert.IsTrue(result);
     }
 
     [TestMethod]
     public async Task Handle_DifferentMessage()
     {
         var result = await Handle(13);
-        result.Should().BeFalse();
+        Assert.IsFalse(result);
     }
 
     private async Task<bool> Handle(int? messageToMark)

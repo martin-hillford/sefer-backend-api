@@ -9,7 +9,7 @@ public class GetMentorSettingsHandlerTest : MentorUnitTest
         var context = GetDataContext();
         var mentor = await context.GetMentor();
         var settings = await Handle(mentor.Id);
-        settings.Should().BeNull();
+        Assert.IsNull(settings);
     }
 
     [TestMethod]
@@ -19,7 +19,7 @@ public class GetMentorSettingsHandlerTest : MentorUnitTest
         var mentor = await context.GetMentor();
         await InsertAsync(new MentorSettings { MentorId = mentor.Id });
         var settings = await Handle(mentor.Id);
-        settings.Should().NotBeNull();
+        Assert.IsNotNull(settings);
     }
 
     private async Task<MentorSettings> Handle(int mentorId)

@@ -17,8 +17,7 @@ public class StudentControllerTest : AbstractControllerTest
 
         var result = await controller.CreatePersonalInvitation();
 
-        result.Should().NotBeNull();
-        result.Should().BeOfType<ForbidResult>();
+        Assert.IsNotNull(result);result.Should().BeOfType<ForbidResult>();
     }
 
     [TestMethod]
@@ -50,8 +49,7 @@ public class StudentControllerTest : AbstractControllerTest
         var result = await controller.CreatePersonalInvitation() as JsonResult;
         var value = result?.Value as PersonalInvitationView;
 
-        result.Should().NotBeNull();
-        value.Should().NotBeNull();
+        Assert.IsNotNull(result);value.Should().NotBeNull();
         value?.ShortUrl.Should().Be("shortUrl");
         value?.QRCode.Should().Be("qrCode");
         value?.FullUrl.Should().Be(fullUrl);

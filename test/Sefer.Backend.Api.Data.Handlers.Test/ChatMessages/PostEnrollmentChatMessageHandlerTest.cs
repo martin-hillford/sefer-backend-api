@@ -7,7 +7,7 @@ public class PostEnrollmentChatMessageHandlerTest : PostChatMessageHandlerTest
     public async Task Handle_EnrollmentNull()
     {
         var message = await Handle(null, null);
-        message.Should().BeNull();
+        Assert.IsNull(message);
 
     }
     
@@ -16,7 +16,7 @@ public class PostEnrollmentChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var enrollment = new Enrollment { MentorId = null }; 
         var message = await Handle(enrollment, null);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -24,7 +24,7 @@ public class PostEnrollmentChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var enrollment = new Enrollment { MentorId = 1 }; 
         var message = await Handle(enrollment, null);
-        message.Should().BeNull(); 
+        Assert.IsNull(message); 
     }
 
     [TestMethod]

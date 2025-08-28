@@ -2,6 +2,9 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Sefer.Backend.Api.Controllers.Student;
+using Sefer.Backend.Api.Data.Handlers.Entities;
+using Sefer.Backend.Api.Data.Models.Courses.Lessons;
+using Sefer.Backend.Api.Data.Models.Enrollments;
 using Sefer.Backend.Api.Data.Models.Settings;
 
 namespace Sefer.Backend.Api.Test.Controllers.Students;
@@ -107,5 +110,41 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
 
         Assert.IsInstanceOfType(result, expectedType);
         Assert.IsInstanceOfType<JsonResult>(submitResult);
+    }
+
+    [TestMethod]
+    public async Task Integration_SingleEnrollment()
+    {
+        var services = IntegrationServices.Create();
+        IntegrationSetup(services);
+        var provider = services.BuildServiceProvider();
+        var controller = new SubmissionController(provider);
+        
+        var result = await controller.IsStudentAllowedToSubmit();
+        Assert.IsInstanceOfType<OkResult>(result);
+    }
+    
+    [TestMethod]
+    public async Task Integration_NotAllowed()
+    {
+        var services = new IntegrationServices();
+        var (enrollment, lesson) = IntegrationSetup(services);
+        var provider = services.BuildServiceProvider();
+        var controller = new SubmissionController(provider);
+        var submission = new LessonSubmission { EnrollmentId = enrollment.Id, IsFinal = true, LessonId = lesson.Id, CreationDate = DateTime.UtcNow, SubmissionDate = DateTime.UtcNow };
+        services.Provider.GetContext().Insert(submission);
+        
+        var result = await controller.IsStudentAllowedToSubmit();
+        Assert.IsInstanceOfType<NoContentResult>(result);
+    }
+    
+    private static (Enrollment, Lesson) IntegrationSetup(IntegrationServices services)
+    {
+        var student = services.CreateStudentAndSetAsCurrent();
+        var  (revision, lesson) = services.CreateCourse("course");
+        var mentor = services.CreateMentor();
+        var enrollment = services.AddEnrollment(student, revision, mentor);
+        services.SetSettings(new Settings { AllowMultipleActiveEnrollments = false, MaxLessonSubmissionsPerDay = 1 });
+        return (enrollment, lesson);
     }
 }

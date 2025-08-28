@@ -9,7 +9,7 @@ public class PostTextChatMessageHandlerTest : PostChatMessageHandlerTest
         var provider = GetServiceProvider(new Exception());
         var request = new PostTextChatMessageRequest();
         var message = await Handle(request, provider);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -17,7 +17,7 @@ public class PostTextChatMessageHandlerTest : PostChatMessageHandlerTest
     {
         var request = new PostTextChatMessageRequest();
         var message = await Handle(request);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -33,7 +33,7 @@ public class PostTextChatMessageHandlerTest : PostChatMessageHandlerTest
         };
         var provider = GetProviderWithInChannel();
         var message = await Handle(request, provider);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]
@@ -50,7 +50,7 @@ public class PostTextChatMessageHandlerTest : PostChatMessageHandlerTest
         };
         var provider = GetProviderWithInChannel();
         var message = await Handle(request, provider);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
 
     [TestMethod]

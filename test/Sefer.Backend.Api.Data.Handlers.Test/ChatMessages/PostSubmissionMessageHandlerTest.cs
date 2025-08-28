@@ -7,14 +7,14 @@ public class PostSubmissionMessageHandlerTest : PostChatMessageHandlerTest
     public async Task Handle_InvalidSubmission()
     {
         var message = await Handle(13, false, null, null);
-        message.Should().BeNull();
+        Assert.IsNull(message);
     }
     
     [TestMethod]
     public async Task Handle_SubmissionNull()
     {
         var message = await Handle(13, true, null, null);
-        message.Should().BeNull();  
+        Assert.IsNull(message);  
     }
     
     [TestMethod]
@@ -22,7 +22,7 @@ public class PostSubmissionMessageHandlerTest : PostChatMessageHandlerTest
     {
         var submission = new LessonSubmission { ResultsStudentVisible = true };
         var message = await Handle(13, true, submission, null);
-        message.Should().BeNull();  
+        Assert.IsNull(message);  
     }
     
     [TestMethod]
@@ -30,7 +30,7 @@ public class PostSubmissionMessageHandlerTest : PostChatMessageHandlerTest
     {
         var submission = new LessonSubmission { ResultsStudentVisible = false };
         var message = await Handle(13, true, submission, null);
-        message.Should().BeNull();  
+        Assert.IsNull(message);  
     }
     
     [TestMethod]
@@ -39,7 +39,7 @@ public class PostSubmissionMessageHandlerTest : PostChatMessageHandlerTest
         var enrollment = new Enrollment();
         var submission = new LessonSubmission { ResultsStudentVisible = false, Enrollment = enrollment };
         var message = await Handle(13, true, submission, null);
-        message.Should().BeNull();     
+        Assert.IsNull(message);     
     }
 
     [TestMethod]

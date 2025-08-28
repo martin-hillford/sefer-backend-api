@@ -11,8 +11,8 @@ public class GetShortUrlByIdHandlerTest : HandlerUnitTest
         var request = new GetShortUrlByIdRequest("not-to-be-found");
 
         var result = await handler.Handle(request, CancellationToken.None);
-
-        result.Should().BeNull();
+        
+        Assert.IsNull(result);
     }
 
     [TestMethod]
@@ -40,8 +40,8 @@ public class GetShortUrlByIdHandlerTest : HandlerUnitTest
         var request = new GetShortUrlByIdRequest(shortUrl.Id + "_not");
 
         var result = await handler.Handle(request, CancellationToken.None);
-
-        result.Should().BeNull();
+        
+        Assert.IsNull(result);
     }
 
     private ShortUrl PrepareContext()

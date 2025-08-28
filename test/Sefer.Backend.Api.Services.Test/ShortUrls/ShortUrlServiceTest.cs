@@ -11,8 +11,8 @@ public class ShortUrlServiceTest
         var service = CreateService(null);
 
         var destination = await service.GetDestination(null);
-
-        destination.Should().BeNull();
+        
+        Assert.IsNull(destination);
     }
 
     [TestMethod]
@@ -23,8 +23,8 @@ public class ShortUrlServiceTest
         var service = CreateService(shortUrl);
 
         var destination = await service.GetDestination(null);
-
-        destination.Should().Be("fallback");
+        
+        Assert.AreEqual("fallback", destination);
     }
 
     [TestMethod]
@@ -35,8 +35,8 @@ public class ShortUrlServiceTest
         var service = CreateService(shortUrl);
 
         var destination = await service.GetDestination(null);
-
-        destination.Should().Be("dest");
+        
+        Assert.AreEqual("dest", destination);
     }
 
     private static ShortUrlService CreateService(ShortUrl? shortUrl)
@@ -56,7 +56,7 @@ public class ShortUrlServiceTest
         var destination = "https://dest.to";
 
         var (shortUrl, qrCode) = await service.Create(destination);
-
+        
         qrCode.Should().NotBeNullOrEmpty();
         shortUrl.Should().NotBeNullOrEmpty();
         shortUrl.StartsWith("https://t.nl/").Should().BeTrue();

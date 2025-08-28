@@ -25,8 +25,7 @@ public class GetSubmissionWithEnrollmentByIdHandlerTest : SubmissionUnitTest
         var submission = await context.LessonSubmissions.FirstAsync();
 
         var result = await Handle(submission.Id);
-        result.Should().NotBeNull();
-        result.Enrollment.Should().NotBeNull();
+        Assert.IsNotNull(result);result.Enrollment.Should().NotBeNull();
     }
 
     private async Task<LessonSubmission> Handle(int submissionId)

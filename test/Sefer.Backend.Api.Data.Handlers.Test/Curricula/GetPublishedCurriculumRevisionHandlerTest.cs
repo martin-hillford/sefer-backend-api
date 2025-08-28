@@ -10,7 +10,7 @@ public class GetPublishedCurriculumRevisionHandlerTest : CurriculumUnitTest
     public async Task Handle_CurriculumNull()
     {
         var retrieved = await Handle(-1);
-        retrieved.Should().BeNull();
+        Assert.IsNull(retrieved);
     }
 
     [TestMethod]
@@ -19,7 +19,7 @@ public class GetPublishedCurriculumRevisionHandlerTest : CurriculumUnitTest
         var context = GetDataContext();
         var curriculum = context.Curricula.Single();
         var retrieved = await Handle(curriculum.Id);
-        retrieved.Should().BeNull();
+        Assert.IsNull(retrieved);
     }
 
     [TestMethod]
@@ -31,7 +31,7 @@ public class GetPublishedCurriculumRevisionHandlerTest : CurriculumUnitTest
         revision.Stage = Stages.Published;
         context.UpdateSingleProperty(revision, nameof(revision.Stage));
         var retrieved = await Handle(curriculum.Id);
-        retrieved.Should().NotBeNull();
+        Assert.IsNotNull(retrieved);
     }
 
     private async Task<CurriculumRevision> Handle(int curriculumId)
