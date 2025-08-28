@@ -9,7 +9,7 @@ public static class SupportedLanguages
 {
     private const string DefaultLanguage = "nl";
 
-    private static readonly ImmutableHashSet<string> Languages = ImmutableHashSet.Create("nl");
+    private static readonly ImmutableHashSet<string> Languages = ImmutableHashSet.Create("nl","en");
 
     public static string GetLanguage(string language)
     {
