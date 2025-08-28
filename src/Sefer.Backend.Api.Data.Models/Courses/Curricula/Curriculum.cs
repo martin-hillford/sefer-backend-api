@@ -113,7 +113,7 @@ public class Curriculum : ModifyDateLogEntity, IRevisionable, IPermaLinkable
     {
         get
         {
-            if (Revisions.Any() == false) return Stages.Edit;
+            if (Revisions.Count == 0) return Stages.Edit;
             if (PublishedCurriculumRevision != null) return Stages.Published;
             if (ClosedRevisions.Any()) return Stages.Closed;
             return EditingCurriculumRevision?.Stage ?? Stages.Edit;

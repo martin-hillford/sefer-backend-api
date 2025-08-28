@@ -1,8 +1,5 @@
 // ReSharper disable InconsistentNaming
-
-using Microsoft.Extensions.DependencyInjection;
 using Sefer.Backend.Api.Controllers.Student;
-using Sefer.Backend.Api.Data.Handlers.Entities;
 using Sefer.Backend.Api.Data.Models.Courses.Lessons;
 using Sefer.Backend.Api.Data.Models.Enrollments;
 using Sefer.Backend.Api.Data.Models.Settings;
@@ -10,10 +7,10 @@ using Sefer.Backend.Api.Data.Models.Settings;
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
 [TestClass]
-public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractControllerTest
+public partial class SubmitLessonControllerTest : AbstractControllerTest
 {
     [TestMethod]
-    public async Task NoUser()
+    public async Task IsStudentAllowedToSubmit_NoUser()
     {
         var mocked = GetServiceProvider();
         var controller = new SubmissionController(mocked.Object);
@@ -23,7 +20,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
     
     [TestMethod]
-    public async Task Mentor()
+    public async Task IsStudentAllowedToSubmit_Mentor()
     {
         var mentor = new User { Id = 1, Role = UserRoles.Mentor};
         var mocked = GetServiceProvider(mentor);
@@ -35,7 +32,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
 
     [TestMethod]
-    public async Task AllowMultipleActiveEnrollmentsError()
+    public async Task IsStudentAllowedToSubmit_AllowMultipleActiveEnrollmentsError()
     {
         var services = new IntegrationServices();
         services.CreateStudentAndSetAsCurrent();
@@ -50,7 +47,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
     
     [TestMethod]
-    public async Task Ok_NoSubmissions()
+    public async Task IsStudentAllowedToSubmit_Ok_NoSubmissions()
     {
         var services = new IntegrationServices();
         services.CreateStudentAndSetAsCurrent();
@@ -63,7 +60,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
     
     [TestMethod]
-    public async Task Ok_NoSubmissions_SpecificEnrollment()
+    public async Task IsStudentAllowedToSubmit_Ok_NoSubmissions_SpecificEnrollment()
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -78,7 +75,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
     
     [TestMethod]
-    public async Task NotFound_SpecificEnrollment()
+    public async Task IsStudentAllowedToSubmit_NotFound_SpecificEnrollment()
     {
         var services = new IntegrationServices();
         services.CreateStudentAndSetAsCurrent();
@@ -92,7 +89,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     
     [TestMethod]
     [DataRow(false, typeof(OkResult)), DataRow(true, typeof(NoContentResult))]
-    public async Task ExistingSubmission(bool final, Type expectedType)
+    public async Task IsStudentAllowedToSubmit_ExistingSubmission(bool final, Type expectedType)
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -113,10 +110,10 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
 
     [TestMethod]
-    public async Task Integration_SingleEnrollment()
+    public async Task IsStudentAllowedToSubmit_Integration_SingleEnrollment()
     {
         var services = IntegrationServices.Create();
-        IntegrationSetup(services);
+        IsStudentAllowedToSubmit_IntegrationSetup(services);
         var provider = services.BuildServiceProvider();
         var controller = new SubmissionController(provider);
         
@@ -125,10 +122,10 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
     }
     
     [TestMethod]
-    public async Task Integration_NotAllowed()
+    public async Task IsStudentAllowedToSubmit_Integration_NotAllowed()
     {
         var services = new IntegrationServices();
-        var (enrollment, lesson) = IntegrationSetup(services);
+        var (enrollment, lesson) = IsStudentAllowedToSubmit_IntegrationSetup(services);
         var provider = services.BuildServiceProvider();
         var controller = new SubmissionController(provider);
         var submission = new LessonSubmission { EnrollmentId = enrollment.Id, IsFinal = true, LessonId = lesson.Id, CreationDate = DateTime.UtcNow, SubmissionDate = DateTime.UtcNow };
@@ -138,7 +135,7 @@ public class SubmitLessonController_IsStudentAllowedToSubmit_Test : AbstractCont
         Assert.IsInstanceOfType<NoContentResult>(result);
     }
     
-    private static (Enrollment, Lesson) IntegrationSetup(IntegrationServices services)
+    private static (Enrollment, Lesson) IsStudentAllowedToSubmit_IntegrationSetup(IntegrationServices services)
     {
         var student = services.CreateStudentAndSetAsCurrent();
         var  (revision, lesson) = services.CreateCourse("course");

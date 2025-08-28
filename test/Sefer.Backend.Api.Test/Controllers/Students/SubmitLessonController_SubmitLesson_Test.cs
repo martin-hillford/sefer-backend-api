@@ -1,5 +1,4 @@
 // ReSharper disable InconsistentNaming
-using Microsoft.Extensions.DependencyInjection;
 using Sefer.Backend.Api.Data.Models.Enrollments;
 using Sefer.Backend.Api.Data.Models.Settings;
 using Sefer.Backend.Api.Data.Requests.CourseRevisions;
@@ -14,11 +13,10 @@ using SubmitLessonController = Sefer.Backend.Api.Controllers.Student.SubmitLesso
 
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
-[TestClass]
-public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
+public partial class SubmitLessonControllerTest
 {
     [TestMethod]
-    public async Task NoUser()
+    public async Task SubmitLesson_NoUser()
     {
         var mocked = GetServiceProvider();
         var controller = new SubmitLessonController(mocked.Object);
@@ -29,7 +27,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task Mentor()
+    public async Task SubmitLesson_Mentor()
     {
         var mentor = new User { Id = 1, Role = UserRoles.Mentor};
         var mocked = GetServiceProvider(mentor);
@@ -41,10 +39,10 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
 
     [TestMethod]
-    public async Task EnrollmentIdMissing()
+    public async Task SubmitLesson_EnrollmentIdMissing()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
-        var provider = Create(student, true);
+        var provider = SubmitLesson_Create(student, true);
         var controller = new SubmitLessonController(provider.Object);
         
         var result = await controller.SubmitLesson(new SubmissionPostModel());
@@ -53,10 +51,10 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task NoActiveEnrollments()
+    public async Task SubmitLesson_NoActiveEnrollments()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
-        var provider = Create(student, false);
+        var provider = SubmitLesson_Create(student, false);
         provider.AddRequestResult<GetActiveEnrollmentsOfStudentRequest, List<Enrollment>>([]);
         var controller = new SubmitLessonController(provider.Object);
         
@@ -66,11 +64,11 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
 
     [TestMethod]
-    public async Task OnPaper()
+    public async Task SubmitLesson_OnPaper()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
-        var provider = Create(student, false);
-        var enrollment = DashboardController_GetEnrollment_Test.CreateEnrollment(13);
+        var provider = SubmitLesson_Create(student, false);
+        var enrollment = DashboardControllerTest.CreateEnrollment(13);
         enrollment.OnPaper = true;
         provider.AddRequestResult<GetActiveEnrollmentsOfStudentRequest, List<Enrollment>>([ enrollment ]);
         var controller = new SubmitLessonController(provider.Object);
@@ -81,11 +79,11 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task NoLesson()
+    public async Task SubmitLesson_NoLesson()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
-        var provider = Create(student, false);
-        var enrollment = DashboardController_GetEnrollment_Test.CreateEnrollment(13);
+        var provider = SubmitLesson_Create(student, false);
+        var enrollment = DashboardControllerTest.CreateEnrollment(13);
         provider.AddRequestResult<GetActiveEnrollmentsOfStudentRequest, List<Enrollment>>([ enrollment ]);
         var controller = new SubmitLessonController(provider.Object);
         
@@ -95,10 +93,10 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
 
     [TestMethod]
-    public async Task SelfStudyMissingCourseRevision()
+    public async Task SubmitLesson_SelfStudyMissingCourseRevision()
     {
         var data = new SubmissionCreation { SaveSubmission = false };
-        var (provider, submission, enrollment) = CreateValidSubmission(data);
+        var (provider, submission, enrollment) = SubmitLesson_CreateValidSubmission(data);
         enrollment.MentorId = null;
 
         provider.AddRequestResult<GetSubmissionAnswersRequest, List<QuestionAnswer>>([]);
@@ -112,7 +110,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     
     [TestMethod]
     [DataRow(false), DataRow(true)]
-    public async Task ValidFinalSubmission(bool selfStudy)
+    public async Task SubmitLesson_ValidFinalSubmission(bool selfStudy)
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -129,7 +127,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task ExistingNonFinal()
+    public async Task SubmitLesson_ExistingNonFinal()
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -152,7 +150,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task NonFinal()
+    public async Task SubmitLesson_NonFinal()
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -171,7 +169,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     
     [TestMethod]
     [DataRow(false, false), DataRow(true, false), DataRow(false, true), DataRow(true, true)]
-    public async Task Imported(bool useMentor, bool final)
+    public async Task SubmitLesson_Imported(bool useMentor, bool final)
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -190,7 +188,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
     
     [TestMethod]
     [DataRow((byte)1), DataRow((byte)10)]
-    public async Task MultipleLesson(byte maxLessonSubmissionsPerDay)
+    public async Task SubmitLesson_MultipleLesson(byte maxLessonSubmissionsPerDay)
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -222,12 +220,8 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
             Assert.IsInstanceOfType(resultB, typeof(BadRequestObjectResult));
         }
     }
-
     
-    
-    #region Helper
-    
-    private static MockedServiceProvider Create(User user, bool allowMultipleActiveEnrollments)
+    private static MockedServiceProvider SubmitLesson_Create(User user, bool allowMultipleActiveEnrollments)
     {
         var settings = new Settings { AllowMultipleActiveEnrollments = allowMultipleActiveEnrollments };
         var mocked = GetServiceProvider(user);
@@ -242,7 +236,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
         public bool SaveSubmission { get; init; } = true;
     }
     
-    private static (MockedServiceProvider, SubmissionPostModel, Enrollment) CreateValidSubmission(SubmissionCreation data)
+    private static (MockedServiceProvider, SubmissionPostModel, Enrollment) SubmitLesson_CreateValidSubmission(SubmissionCreation data)
     {
         var course = new Data.Models.Courses.Course { Id = 29 };
         var courseRevision = new Data.Models.Courses.CourseRevision { Id = 13, Course = course, CourseId = 29 };
@@ -253,7 +247,7 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
         var enrollment = new Enrollment { Id = 23 };
 
         var student = new User { Id = 1, Role = UserRoles.Student };
-        var provider = Create(student, false);
+        var provider = SubmitLesson_Create(student, false);
         
         provider.AddRequestResult<GetActiveEnrollmentsOfStudentRequest, List<Enrollment>>([ enrollment ]);
         provider.AddRequestResult<GetCurrentLessonRequest,(Lesson, LessonSubmission, Enrollment)>((lesson, null, enrollment));
@@ -263,7 +257,4 @@ public class SubmitLessonController_SubmitLesson_Test : AbstractControllerTest
         
         return (provider, submission, enrollment);
     }
-    
-
-    #endregion
 }

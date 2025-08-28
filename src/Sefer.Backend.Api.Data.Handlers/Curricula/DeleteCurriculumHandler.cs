@@ -5,9 +5,24 @@ public class DeleteCurriculumHandler(IServiceProvider serviceProvider)
 {
     public override async Task<bool> Handle(DeleteCurriculumRequest request, CancellationToken token)
     {
-        var curriculum = await Send(new GetCurriculumByIdRequest(request.EntityId), token);
-        if (curriculum?.IsEditable != true) return false;
+        var context = GetDataContext();
+        await using var transaction = context.BeginTransaction();
+        try
+        {
+            var curriculum = await context.Curricula
+                .Where(c => c.Id == request.EntityId).Include(c => c.Revisions)
+                .SingleOrDefaultAsync(token);
 
-        return await base.Handle(request, token);
+            if (curriculum?.IsEditable != true) return false;
+            context.Curricula.Remove(curriculum);
+            await context.SaveChangesAsync(token);
+            await transaction.CommitAsync(token);
+            return true;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(token);
+            return false;
+        }
     }
 }

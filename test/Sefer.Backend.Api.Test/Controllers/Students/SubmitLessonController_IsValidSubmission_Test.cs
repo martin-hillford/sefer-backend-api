@@ -9,8 +9,7 @@ using SubmitLessonController = Sefer.Backend.Api.Controllers.Student.SubmitLesso
 
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
-[TestClass]
-public class SubmitLessonController_IsValidSubmission_Test : AbstractControllerTest
+public partial class SubmitLessonControllerTest
 {
     [TestMethod]
     public void IsValidSubmission_Null()
@@ -117,7 +116,7 @@ public class SubmitLessonController_IsValidSubmission_Test : AbstractControllerT
     [TestMethod]
     public void IsValidSubmission_InvalidMultipleChoice()
     {
-        var lesson = CreateMultipleChoiceQuestionLesson();
+        var lesson = IsValidSubmission_CreateMultipleChoiceQuestionLesson();
         var answer = new QuestionAnswerPostModel { QuestionId = 3, Answer = "19", QuestionType = ContentBlockTypes.QuestionMultipleChoice};
         var submission = new SubmissionPostModel { Final = true, Answers = [answer] };
         var isValid = SubmitLessonController.IsValidSubmission(lesson, submission);
@@ -127,7 +126,7 @@ public class SubmitLessonController_IsValidSubmission_Test : AbstractControllerT
     [TestMethod]
     public void IsValidSubmission_NoAnswerGiven()
     {
-        var lesson = CreateMultipleChoiceQuestionLesson();
+        var lesson = IsValidSubmission_CreateMultipleChoiceQuestionLesson();
         var answer = new QuestionAnswerPostModel { QuestionId = 3, Answer = string.Empty, QuestionType = ContentBlockTypes.QuestionMultipleChoice};
         var submission = new SubmissionPostModel { Final = true, Answers = [answer] };
         var isValid = SubmitLessonController.IsValidSubmission(lesson, submission);
@@ -137,14 +136,14 @@ public class SubmitLessonController_IsValidSubmission_Test : AbstractControllerT
     [TestMethod]
     public void IsValidSubmission_AnswerGiven()
     {
-        var lesson = CreateMultipleChoiceQuestionLesson();
+        var lesson = IsValidSubmission_CreateMultipleChoiceQuestionLesson();
         var answer = new QuestionAnswerPostModel { QuestionId = 3, Answer = "19,17", QuestionType = ContentBlockTypes.QuestionMultipleChoice};
         var submission = new SubmissionPostModel { Final = true, Answers = [answer] };
         var isValid = SubmitLessonController.IsValidSubmission(lesson, submission);
         Assert.IsFalse(isValid);
     }
 
-    private static Lesson CreateMultipleChoiceQuestionLesson()
+    private static Lesson IsValidSubmission_CreateMultipleChoiceQuestionLesson()
     {
         var choiceA = new MultipleChoiceQuestionChoice { Id = 13, QuestionId = 3, IsCorrectAnswer = true };
         var choiceB = new MultipleChoiceQuestionChoice { Id = 17, QuestionId = 3, IsCorrectAnswer = true };

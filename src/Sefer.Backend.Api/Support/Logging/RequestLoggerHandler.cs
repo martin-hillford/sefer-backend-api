@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Sefer.Backend.Api.Support.Logging;
 
 public class RequestLoggerHandler(RequestDelegate next)

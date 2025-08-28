@@ -2,10 +2,10 @@
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
 [TestClass]
-public class DashboardController_GetActivityLog_Test : AbstractControllerTest
+public partial class DashboardControllerTest
 {
     [TestMethod]
-    public async Task NoUser()
+    public async Task GetActivityLog_NoUser()
     {
         var mocked = GetServiceProvider();
         var controller = new Api.Controllers.Student.DashboardController(mocked.Object);
@@ -17,7 +17,7 @@ public class DashboardController_GetActivityLog_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task Mentor()
+    public async Task GetActivityLog_Mentor()
     {
         var mentor = new User { Id = 1, Role = UserRoles.Mentor};
         var mocked = GetServiceProvider(mentor);

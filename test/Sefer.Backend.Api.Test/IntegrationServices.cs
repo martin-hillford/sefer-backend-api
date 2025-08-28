@@ -1,6 +1,5 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Sefer.Backend.Api.Data;
 using Sefer.Backend.Api.Data.Handlers;
 using Sefer.Backend.Api.Data.Models.Courses;

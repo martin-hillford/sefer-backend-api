@@ -1,6 +1,4 @@
 // ReSharper disable InconsistentNaming
-
-using Microsoft.Extensions.DependencyInjection;
 using Sefer.Backend.Api.Data.Models.Enrollments;
 using Sefer.Backend.Api.Data.Models.Settings;
 using Sefer.Backend.Api.Data.Requests.Enrollments;
@@ -9,10 +7,10 @@ using Sefer.Backend.Api.Data.Requests.Settings;
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
 [TestClass]
-public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
+public partial class EnrollmentControllerTest : AbstractControllerTest
 {
     [TestMethod]
-    public async Task NoUser()
+    public async Task GetCurrentLesson_NoUser()
     {
         var mocked = GetServiceProvider();
         var controller = new Api.Controllers.Student.EnrollmentController(mocked.Object);
@@ -21,7 +19,7 @@ public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
     } 
     
     [TestMethod]
-    public async Task Mentor()
+    public async Task GetCurrentLesson_Mentor()
     {
         var mentor = new User { Id = 1, Role = UserRoles.Mentor};
         var mocked = GetServiceProvider(mentor);
@@ -31,7 +29,7 @@ public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task MultipleActiveEnrollmentsEnabled()
+    public async Task GetCurrentLesson_MultipleActiveEnrollmentsEnabled()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
         var mocked = Create(student, true);
@@ -44,7 +42,7 @@ public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task NotFound()
+    public async Task GetCurrentLesson_NotFound()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
         var mocked = Create(student, false);
@@ -57,7 +55,7 @@ public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task NoLesson()
+    public async Task GetCurrentLesson_NoLesson()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
         var mocked = Create(student, false);
@@ -70,7 +68,7 @@ public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
     }
 
     [TestMethod]
-    public async Task NoEnrollment()
+    public async Task GetCurrentLesson_NoEnrollment()
     {
         var services = new IntegrationServices();
         services.CreateCourse("course");
@@ -83,7 +81,7 @@ public class EnrollmentController_GetCurrentLesson_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task Ok()
+    public async Task GetCurrentLesson_Ok()
     {
         var services = new IntegrationServices();
         var (revision, _ ) = services.CreateCourse("course");

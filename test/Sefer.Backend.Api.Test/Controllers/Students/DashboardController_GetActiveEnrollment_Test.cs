@@ -7,11 +7,10 @@ using Student_EnrollmentView = Sefer.Backend.Api.Views.Student.EnrollmentView;
 
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
-[TestClass]
-public class DashboardController_GetEnrollment_Test : AbstractControllerTest
+public partial class DashboardControllerTest : AbstractControllerTest
 {
     [TestMethod]
-    public async Task GetEnrollment_NoUser()
+    public async Task GetActiveEnrollment_NoUser()
     {
         var mocked = GetServiceProvider();
         var controller = new Api.Controllers.Student.DashboardController(mocked.Object);
@@ -22,7 +21,7 @@ public class DashboardController_GetEnrollment_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task GetEnrollment_Mentor()
+    public async Task GetActiveEnrollment_Mentor()
     {
         var mentor = new User { Id = 1, Role = UserRoles.Mentor};
         var mocked = GetServiceProvider(mentor);
@@ -34,7 +33,7 @@ public class DashboardController_GetEnrollment_Test : AbstractControllerTest
     }
 
     [TestMethod]
-    public async Task GetEnrollment_MultipleActiveEnrollmentsEnabled()
+    public async Task GetActiveEnrollment_MultipleActiveEnrollmentsEnabled()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
         var mocked = Create(student, true);
@@ -47,7 +46,7 @@ public class DashboardController_GetEnrollment_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task GetEnrollment_NoEnrollments()
+    public async Task GetActiveEnrollment_NoEnrollments()
     {
         var student = new User { Id = 1, Role = UserRoles.Student };
         var mocked = Create(student, false);
@@ -60,7 +59,7 @@ public class DashboardController_GetEnrollment_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task GetEnrollment_Ok()
+    public async Task GetActiveEnrollment_Ok()
     {
         var enrollment = CreateEnrollment(13);
         var student = new User { Id = 1, Role = UserRoles.Student };
@@ -77,7 +76,7 @@ public class DashboardController_GetEnrollment_Test : AbstractControllerTest
     }
     
     [TestMethod]
-    public async Task GetEnrollment_Ok_WithMultipleEnrollments()
+    public async Task GetActiveEnrollment_Ok_WithMultipleEnrollments()
     {
         var enrollmentOne = CreateEnrollment(7);
         var enrollmentTwo = CreateEnrollment(13);

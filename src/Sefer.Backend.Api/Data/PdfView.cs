@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Sefer.Backend.Api.Notifications.Rendering;
 
 namespace Sefer.Backend.Api.Data;

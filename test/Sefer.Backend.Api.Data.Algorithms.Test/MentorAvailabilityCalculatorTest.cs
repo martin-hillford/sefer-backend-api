@@ -1,5 +1,3 @@
-using Sefer.Backend.Api.Data.Models.Constants;
-
 namespace Sefer.Backend.Api.Data.Algorithms.Test;
 
 [TestClass]

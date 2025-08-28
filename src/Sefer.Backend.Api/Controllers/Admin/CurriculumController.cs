@@ -33,7 +33,7 @@ public class CurriculumController(IServiceProvider provider) : BaseController(pr
     {
         var curriculum = await Send(new GetCurriculumByIdRequest(id, true));
         if (curriculum == null) return NotFound();
-        if (curriculum.EditingCurriculumRevision == null || curriculum.EditingCurriculumRevision.IsEditable == false) return StatusCode(500);
+        if (curriculum.EditingCurriculumRevision is not { IsEditable: true }) return StatusCode(500);
         curriculum.EditingCurriculumRevision.Blocks = await Send(new GetCurriculumBlocksRequest(curriculum.EditingCurriculumRevision.Id));
         var view = new CurriculumRevisionsView(curriculum);
         return Json(view);
@@ -63,10 +63,10 @@ public class CurriculumController(IServiceProvider provider) : BaseController(pr
     [ProducesResponseType(typeof(Views.Shared.Courses.Curricula.CurriculumView), 201)]
     public async Task<ActionResult> InsertCurriculum([FromBody] CurriculumPostModel curriculum)
     {
-        if (curriculum == null || ModelState.IsValid == false) return BadRequest(ModelState.ValidationState);
+        if (curriculum == null || !ModelState.IsValid) return BadRequest(ModelState.ValidationState);
         var model = curriculum.ToModel();
         var added = await Send(new AddCurriculumRequest(model));
-        if (added == false) return BadRequest();
+        if (!added) return BadRequest();
         var view = new Views.Shared.Courses.Curricula.CurriculumView(model);
         return Json(view, 201);
     }
@@ -75,10 +75,10 @@ public class CurriculumController(IServiceProvider provider) : BaseController(pr
     [ProducesResponseType(202)]
     public async Task<ActionResult> UpdateCurriculum([FromBody] CurriculumPostModel curriculum, int id)
     {
-        if (curriculum == null || ModelState.IsValid == false) return BadRequest();
+        if (curriculum == null || !ModelState.IsValid) return BadRequest();
         var model = await Send(new GetCurriculumByIdRequest(id, true));
         if (model == null) return NotFound();
-        if (model.IsEditable == false) return BadRequest();
+        if (!model.IsEditable) return BadRequest();
 
         model.Level = curriculum.Level;
         model.Name = curriculum.Name;
@@ -95,8 +95,8 @@ public class CurriculumController(IServiceProvider provider) : BaseController(pr
     {
         var curriculum = await Send(new GetCurriculumByIdRequest(id, true));
         if (curriculum == null) return NotFound();
-        if (curriculum.IsEditable == false) return BadRequest();
+        if (!curriculum.IsEditable) return BadRequest();
         var deleted = await Send(new DeleteCurriculumRequest(curriculum));
-        return deleted ? StatusCode(204) : BadRequest();
+        return deleted ? NoContent() : BadRequest();
     }
 }

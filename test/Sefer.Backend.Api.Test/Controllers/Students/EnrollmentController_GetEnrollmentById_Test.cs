@@ -1,14 +1,10 @@
 // ReSharper disable InconsistentNaming
-
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Sefer.Backend.Api.Test.Controllers.Students;
 
-[TestClass]
-public class EnrollmentController_GetEnrollmentById_Test : AbstractControllerTest
+public partial class EnrollmentControllerTest
 {
     [TestMethod]
-    public async Task NoUser()
+    public async Task GetEnrollmentById_NoUser()
     {
         var mocked = GetServiceProvider();
         var controller = new Api.Controllers.Student.EnrollmentController(mocked.Object);
@@ -16,7 +12,7 @@ public class EnrollmentController_GetEnrollmentById_Test : AbstractControllerTes
     } 
     
     [TestMethod]
-    public async Task Mentor()
+    public async Task GetEnrollmentById_Mentor()
     {
         var mentor = new User { Id = 1, Role = UserRoles.Mentor};
         var mocked = GetServiceProvider(mentor);
@@ -25,7 +21,7 @@ public class EnrollmentController_GetEnrollmentById_Test : AbstractControllerTes
     }
 
     [TestMethod]
-    public async Task EnrollmentNotFound()
+    public async Task GetEnrollmentById_EnrollmentNotFound()
     {
         var services = new IntegrationServices();
         services.CreateStudentAndSetAsCurrent();
@@ -35,7 +31,7 @@ public class EnrollmentController_GetEnrollmentById_Test : AbstractControllerTes
     }
 
     [TestMethod]
-    public async Task EnrollmentNotOfStudent()
+    public async Task GetEnrollmentById_EnrollmentNotOfStudent()
     {
         var services = new IntegrationServices();
         services.CreateStudentAndSetAsCurrent();
@@ -48,7 +44,7 @@ public class EnrollmentController_GetEnrollmentById_Test : AbstractControllerTes
     }
 
     [TestMethod]
-    public async Task Ok()
+    public async Task GetEnrollmentById_Ok()
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();
@@ -60,7 +56,7 @@ public class EnrollmentController_GetEnrollmentById_Test : AbstractControllerTes
     }
     
     [TestMethod]
-    public async Task WithExistingSubmission()
+    public async Task GetEnrollmentById_WithExistingSubmission()
     {
         var services = new IntegrationServices();
         var student = services.CreateStudentAndSetAsCurrent();

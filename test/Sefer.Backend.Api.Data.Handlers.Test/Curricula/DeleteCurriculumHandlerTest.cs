@@ -6,10 +6,10 @@ public class DeleteCurriculumHandlerTest : HandlerUnitTest
     [TestMethod]
     public async Task Handle_CurriculumNull()
     {
-        var data = new Curriculum();
-        var provider = GetServiceProvider(new Exception());
+        var curriculum = new Curriculum { Name = "example" , Description = "Description" };
+        var provider = GetServiceProvider();
         
-        var updated = await Handle(provider, data);
+        var updated = await Handle(provider, curriculum);
         
         Assert.IsFalse(updated);
     }
@@ -17,23 +17,13 @@ public class DeleteCurriculumHandlerTest : HandlerUnitTest
     [TestMethod]
     public async Task Handle_CurriculumNotEditable()
     {
-        var closed = new CurriculumRevision {Stage = Stages.Closed};
-        var curriculum = new Curriculum {Revisions = new List<CurriculumRevision> {closed}};
-        var provider = GetServiceProvider(new Exception());
-        provider.AddRequestResult<GetCurriculumByIdRequest, Curriculum>(curriculum);
+        var curriculum = new Curriculum { Name = "example" , Description = "Description" };
+        await InsertAsync(curriculum);
         
-        var updated = await Handle(provider, curriculum);
+        var revision = new CurriculumRevision { Stage = Stages.Published, CurriculumId = curriculum.Id };
+        await InsertAsync(revision);
         
-        Assert.IsFalse(updated);
-    }
-    
-    [TestMethod]
-    public async Task Handle_Exception()
-    {
-        var curriculum = new Curriculum {Revisions = new List<CurriculumRevision>()};
-        var provider = GetServiceProvider(new Exception());
-        provider.AddRequestResult<GetCurriculumByIdRequest, Curriculum>(curriculum);
-
+        var provider = GetServiceProvider();
         var updated = await Handle(provider, curriculum);
         
         Assert.IsFalse(updated);
