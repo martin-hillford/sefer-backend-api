@@ -5,22 +5,24 @@ using Sefer.Backend.Api.Data.Requests.Submissions;
 
 namespace Sefer.Backend.Api.Notifications.Push;
 
-public class FireBaseService(IMediator mediator, IFireBase push) : IFireBaseService
+// NB. A logger is for the NotificationService is used as the firebase is part of the notifications service
+//     and the debug scoping will be correct
+public class FireBaseService(IMediator mediator, IFireBase push, ILogger<NotificationService> logger) : IFireBaseService
 {
-    private Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken token = default)
-        => mediator.Send(request, token);
-
     public async Task SendLessonSubmittedNotificationToMentor(int submissionId, User mentor, User student)
     {
         try
         {
+            logger.LogDebug("Checking if the mentor can be send push notifications");
             if (!await HasPushNotificationCapableDevice(mentor.Id)) return;
 
+            logger.LogDebug("loading data for the push notification");
             var submission = await Send(new GetSubmissionWithEnrollmentByIdRequest(submissionId));
             var lesson = await Send(new GetLessonByIdRequest(submission.LessonId));
             var courseRevision = await Send(new GetCourseRevisionByIdRequest(submission.Enrollment.CourseRevisionId));
             var course = await Send(new GetCourseByIdRequest(courseRevision.CourseId));
             var language = mentor.GetPreferredInterfaceLanguage();
+            logger.LogDebug("Creating the push notification in language '{language}'", language);
             var content = await Localization.GetContent(mediator, language, "LessonSubmitted");
             var vars = new Dictionary<string, string>
             {
@@ -28,10 +30,14 @@ public class FireBaseService(IMediator mediator, IFireBase push) : IFireBaseServ
             };
             var (title, body) = ReplaceVars(content, vars);
 
+            logger.LogDebug("Sending the notification: {body} ", body);
             await push.SendMessage(mentor.Id, title, body);
         }
         // ReSharper disable once EmptyGeneralCatchClause
-        catch (Exception) { }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "An exception occured while sending lesson submission notification to mentor.");
+        }
     }
 
     public async Task SendLessonReviewedNotificationToStudent(int submissionId, User student)
@@ -51,7 +57,10 @@ public class FireBaseService(IMediator mediator, IFireBase push) : IFireBaseServ
             await push.SendMessage(student.Id, title, body);
         }
         // ReSharper disable once EmptyGeneralCatchClause
-        catch (Exception) { }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "An exception occured while sending lesson reviewed notification to student.");
+        }
     }
 
     public async Task<bool> SendChatTextMessageNotification(int userId, string title, string body, bool throwExceptions)
@@ -100,4 +109,7 @@ public class FireBaseService(IMediator mediator, IFireBase push) : IFireBaseServ
         }
         return content;
     }
+    
+    private Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken token = default)
+        => mediator.Send(request, token);
 }

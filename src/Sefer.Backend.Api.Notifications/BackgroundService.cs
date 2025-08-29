@@ -31,14 +31,12 @@ public class BackgroundService(IEmailDigestService digestService, INotificationS
     /// <param name="cancellationToken"></param>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        if(EnvVar.GetEnvironmentVariable("DIGEST_SERVICE_DISABLED") != "true")
-        {
-            var timeSpan = DateTime.UtcNow.Date.AddDays(1) - DateTime.UtcNow;
-            _dailyTimer = new Timer(SendDailyNotifications, null, timeSpan, TimeSpan.FromDays(1));
-            _weeklyTimer = new Timer(SendWeeklyNotifications, null, timeSpan, TimeSpan.FromDays(7));
-            _directTimer = new Timer(SendDirectNotifications, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
-        }
-
+        if (EnvVar.GetEnvironmentVariable("DIGEST_SERVICE_DISABLED") == "true") return Task.CompletedTask;
+        
+        var timeSpan = DateTime.UtcNow.Date.AddDays(1) - DateTime.UtcNow;
+        _dailyTimer = new Timer(SendDailyNotifications, null, timeSpan, TimeSpan.FromDays(1));
+        _weeklyTimer = new Timer(SendWeeklyNotifications, null, timeSpan, TimeSpan.FromDays(7));
+        _directTimer = new Timer(SendDirectNotifications, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
 
         return Task.CompletedTask;
     }

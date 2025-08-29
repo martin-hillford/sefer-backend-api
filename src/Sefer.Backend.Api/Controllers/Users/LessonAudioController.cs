@@ -28,7 +28,7 @@ public class LessonAudioController(IServiceProvider provider) : BaseController(p
         // Retrieve and return the subtitle file
         var subtitlesFile = await _audioStorageService.RetrieveAudioAsync(lesson.AudioReferenceId.Value);
         if (subtitlesFile == null) return NotFound();
-        return Json(subtitlesFile);
+        return Ok(subtitlesFile);
     }
 
     [Authorize(Roles = "Admin")]

@@ -35,14 +35,13 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         if (lesson == null) return NotFound();
 
         // check if the submission is valid
-        if (IsValidSubmission(lesson, submission) == false) return BadRequest("Invalid submission");
+        if (!IsValidSubmission(lesson, submission)) return BadRequest("Invalid submission");
 
         // There are (currently) three options: not-final, final for self-study and final for guided-study
         // For readability those three options have separate function
 
         // 1) not-final post: the answers of the users should be saved
-        if (submission.Final == false)
-            return await SubmitLessonNotFinal(submission, enrollment, lesson, lessonSubmission);
+        if (!submission.Final) return await SubmitLessonNotFinal(submission, enrollment, lesson, lessonSubmission);
 
         // 2) self-study-post: the answers should be graded and send to the user
         if (enrollment.IsSelfStudy) return await SubmitSelfStudy(submission, enrollment, lesson, lessonSubmission);
@@ -145,20 +144,21 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var course = await Send(new GetCourseByIdRequest(courseRevision.CourseId));
         if (course == null) return BadRequest();
         var isAllowed = await IsStudentAllowedToSubmit(student, course);
-        if (isAllowed == false) return BadRequest(new { SubmissionLimitReached = true });
+        if (!isAllowed) return BadRequest(new { SubmissionLimitReached = true });
 
         // Convert to a database models
         var (submission, answers) = await Convert(postedSubmission, enrollment, currentSubmission, lesson);
 
         // Save the result
         var saved = await Send(new SaveSubmissionRequest(submission, answers));
-        if (saved == false) return StatusCode(500);
+        if (!saved) return StatusCode(500);
 
         // Determine the correctness of all the answers
         var result = new MentorSubmissionResultView(enrollment.Id) { SubmissionId = submission.Id, };
 
         // check if this is the final submission for the enrollment
         var finished = await CheckIsEnrollmentIsFinished(enrollment);
+        var logger = ServiceProvider.GetService<ILogger<MailService>>();
 
         // Notify the mentor and check if the course is finished
         if (postedSubmission.Final && enrollment.MentorId.HasValue)
@@ -171,7 +171,6 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
             }
             catch (Exception exception)
             {
-                var logger = ServiceProvider.GetService<ILogger<MailService>>();
                 logger.LogError(exception, "Error occurred while sending notifications for submission {SubmissionId}", submission.Id);
             }
         }
@@ -192,7 +191,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
     public static bool IsValidSubmission(Lesson lesson, SubmissionPostModel submission)
     {
         if (submission == null) return false;
-        if (submission.Final == false) return true;
+        if (!submission.Final) return true;
         if (submission.Answers == null) return false;
         var questions = lesson.Content.Where(c => c.IsQuestion).ToList();
 

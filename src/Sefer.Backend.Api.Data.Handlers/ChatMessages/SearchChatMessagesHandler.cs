@@ -28,6 +28,6 @@ public partial class SearchChatMessagesHandler(IServiceProvider serviceProvider)
                 .Select(m => new ChatSearchResult { ChannelId = m.ChannelId, MessageId = m.Id, Content = m.ContentString })
                 .ToListAsync(cancellationToken: token);
         }
-        catch (Exception exp) { return []; }
+        catch (Exception) { return []; }
     }
 }

@@ -11,6 +11,8 @@ public class NotificationService(IServiceProvider serviceProvider) : INotificati
     private readonly IFireBaseService _push = serviceProvider.GetService<IFireBaseService>();
 
     private readonly IMailService _email = serviceProvider.GetService<IMailService>();
+    
+    private readonly ILogger<NotificationService> _logger = serviceProvider.GetService<ILogger<NotificationService>>();
 
     #endregion
 
@@ -49,20 +51,24 @@ public class NotificationService(IServiceProvider serviceProvider) : INotificati
 
     public async Task<bool> SendLessonSubmittedNotificationAsync(int submissionId, User mentor, User student)
     {
-        // The mentor needs to receive a message in his inbox
-        var message = await Send(new PostSubmissionMessageRequest(submissionId));
-        if (message == null || mentor == null || student == null) return false;
+        using (_logger.BeginScope(Guid.NewGuid()))
+        {
+            // The mentor needs to receive a message in his inbox
+            var message = await Send(new PostSubmissionMessageRequest(submissionId));
+            if (message == null || mentor == null || student == null) return false;
 
-        // Post a message into the message chat of the mentor and student
-        var mentorView = new MessageView(message, message.Channel.Type, mentor.Id);
-        await _webSocket.SendMessage(mentorView);
+            // Post a message into the message chat of the mentor and student
+            var mentorView = new MessageView(message, message.Channel.Type, mentor.Id);
+            await _webSocket.SendMessage(mentorView);
 
-        var studentView = new MessageView(message, message.Channel.Type, student.Id);
-        await _webSocket.SendMessage(studentView);
+            var studentView = new MessageView(message, message.Channel.Type, student.Id);
+            await _webSocket.SendMessage(studentView);
 
-        // Also send a push notification to the mentor
-        await _push.SendLessonSubmittedNotificationToMentor(submissionId, mentor, student);
-        return true;
+            // Also send a push notification to the mentor
+            await _push.SendLessonSubmittedNotificationToMentor(submissionId, mentor, student);
+
+            return true;
+        }
     }
 
     public async Task<bool> SendSubmissionReviewedNotificationAsync(LessonSubmission submission)
