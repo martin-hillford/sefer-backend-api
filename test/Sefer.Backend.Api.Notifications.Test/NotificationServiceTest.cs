@@ -134,7 +134,7 @@ public class NotificationServiceTest
     [TestMethod]
     [DataRow(NotificationPreference.Direct, 1)]
     [DataRow(NotificationPreference.None, 0)]
-    public async Task SendLessonSubmittedNotificationAsync(NotificationPreference pref, int times)
+    public async Task SendLessonSubmittedNotificationAsync_Correct(NotificationPreference pref, int times)
     {
         // Arrange
         var student = new User { Id = 13, Name = "student" };
@@ -167,7 +167,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendChatMessageIsReadNotificationAsync()
+    public async Task SendChatMessageIsReadNotificationAsync_Correct()
     {
         // Arrange
         var socket = new Mock<IWebSocketProvider>();
@@ -184,7 +184,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendStudentIsInactiveNotificationAsync()
+    public async Task SendStudentIsInactiveNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -201,7 +201,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendCompleteRegistrationNotificationAsync()
+    public async Task SendCompleteRegistrationNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -215,7 +215,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendPasswordForgotNotificationAsync()
+    public async Task SendPasswordForgotNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -229,7 +229,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendPasswordResetCompletedNotificationAsync()
+    public async Task SendPasswordResetCompletedNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -243,7 +243,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendEmailUpdateRequestedNotificationAsync()
+    public async Task SendEmailUpdateRequestedNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -258,7 +258,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendEmailUpdateCompleteNotificationAsync()
+    public async Task SendEmailUpdateCompleteNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -273,7 +273,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendAccountDeleteConfirmationNotificationAsync()
+    public async Task SendAccountDeleteConfirmationNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -287,7 +287,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendRewardReceivedNotificationAsync()
+    public async Task SendRewardReceivedNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -302,7 +302,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendTwoFactorAuthDisabledNotificationAsync()
+    public async Task SendTwoFactorAuthDisabledNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -316,7 +316,7 @@ public class NotificationServiceTest
     }
 
     [TestMethod]
-    public async Task SendTwoFactorAuthEnabledNotificationAsync()
+    public async Task SendTwoFactorAuthEnabledNotificationAsync_Correct()
     {
         // Arrange
         var (serviceProvider, mailService, user) = GetMockedMailService();
@@ -337,7 +337,9 @@ public class NotificationServiceTest
         site.SetupGet(s => s.Hostname).Returns("test.tld");
         var serviceProvider = new MockedServiceProvider()
             .AddService(mailService)
-            .AddRequestResult<GetSiteByNameRequest, ISite>(site.Object);
+            .AddRequestResult<GetSiteByNameRequest, ISite>(site.Object)
+            .AddService(new Mock<ILogger<NotificationService>>());
+        
         var user = new User { Id = 13, PrimaryRegion = "nl", PrimarySite = "test.tld" };
         return (serviceProvider, mailService, user);
     }

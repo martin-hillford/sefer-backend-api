@@ -6,7 +6,7 @@ public class GetSubmissionsForReviewHandler(IServiceProvider serviceProvider)
     public override async Task<List<LessonSubmission>> Handle(GetSubmissionsForReviewRequest request, CancellationToken token)
     {
         var mentor = await Send(new GetUserByIdRequest(request.MentorId), token);
-        if (mentor == null) return new List<LessonSubmission>();
+        if (mentor == null) return [];
 
         var context = GetDataContext();
         return await context.LessonSubmissions

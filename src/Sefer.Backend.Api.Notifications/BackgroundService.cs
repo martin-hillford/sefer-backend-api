@@ -1,5 +1,3 @@
-
-
 namespace Sefer.Backend.Api.Notifications;
 
 /// <summary>

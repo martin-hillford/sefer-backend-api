@@ -106,6 +106,9 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
             submission.Enrollment.Student.SendMessages = [];
             submission.Enrollment.Student.PartnerEnrollments = [];
             submission.Enrollment.LessonSubmissions = [];
+
+            if (submission.Enrollment.Mentor == null) continue;
+            
             submission.Enrollment.Mentor.Enrollments = [];
             submission.Enrollment.Mentor.SendMessages = [];
             submission.Enrollment.Mentor.PartnerEnrollments = [];
@@ -113,6 +116,8 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
 
         foreach (var message in messages)
         {
+            if (message.Sender == null) continue;
+            
             message.Sender.Enrollments = [];
             message.Sender.SendMessages = [];
             message.Sender.PartnerEnrollments = [];

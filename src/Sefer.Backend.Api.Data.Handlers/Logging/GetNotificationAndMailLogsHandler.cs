@@ -14,7 +14,10 @@ public class GetNotificationAndMailLogsHandler(IServiceProvider serviceProvider)
                     l =>
                         l.CategoryName == "Sefer.Backend.Api.Notifications.Mail.NotificationServiceProcessor" ||
                         l.CategoryName == "Sefer.Backend.Api.Services.Mail.MailServiceBase" ||
-                        l.CategoryName == "Sefer.Backend.Api.Notifications.Mail.Service.MailService"
+                        l.CategoryName == "Sefer.Backend.Api.Notifications.Mail.Service.MailService" ||
+                        l.CategoryName == "Sefer.Backend.Api.Notifications.Mail.EmailDigestService" ||
+                        l.CategoryName == "Sefer.Backend.Api.Notifications.NotificationService" ||
+                        l.CategoryName == "Sefer.Backend.Api.Notifications.Push.FireBase"
                 )
             .OrderByDescending(log => log.Timestamp)
             .Skip(request.Skip)
@@ -22,3 +25,4 @@ public class GetNotificationAndMailLogsHandler(IServiceProvider serviceProvider)
             .ToListAsync(token);
     }
 }
+
