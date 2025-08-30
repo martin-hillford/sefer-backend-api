@@ -110,7 +110,7 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
         var model = new VoucherRewardModel(data, reward);
         var task = new List<Task>
         {
-                SendMessageAsync("voucher_reward_student_email", model, data.Receiver),
+            SendMessageAsync("voucher_reward_student_email", model, data.Receiver),
             SendMessageAsync("voucher_reward_admin_email", model, new MailAddress(_mailServiceOptions.AdminEmail, _mailServiceOptions.AdminEmail))
         };
 

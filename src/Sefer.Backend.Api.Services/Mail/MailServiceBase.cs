@@ -8,9 +8,9 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
 {
     private readonly MailServiceOptions _mailOptions = mailOptions.Value;
 
-    private int _isRunning;
+    private static int _isRunning;
 
-    private readonly ConcurrentQueue<MailMessage> _queue = new();
+    private static readonly ConcurrentQueue<MailMessage> Queue = new();
 
     /// <summary>
     /// Sends the e-mail as given in the message asynchronously using a queuing system
@@ -19,7 +19,7 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
     public void QueueEmailForSending(MailMessage message)
     {
         // Add the message to the queue
-        _queue.Enqueue(message);
+        Queue.Enqueue(message);
 
         // Check if the queue is being processed
         if (!IsQueueRunning()) StartQueueAsync();
@@ -31,9 +31,9 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
     {
         SetRunning(true);
 
-        while (!_queue.IsEmpty)
+        while (!Queue.IsEmpty)
         {
-            var dequeued = _queue.TryDequeue(out var message);
+            var dequeued = Queue.TryDequeue(out var message);
             if (dequeued) SendEmail(message);
             Thread.Sleep(100);
         }
@@ -41,13 +41,15 @@ public class MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<M
         SetRunning(false);
     }
 
-    private void SetRunning(bool running)
+    private static void SetRunning(bool running)
     {
+        // use a thread safe, none locking method
         Interlocked.Exchange(ref _isRunning, running ? 1 : 0);
     }
 
-    private bool IsQueueRunning()
+    private static bool IsQueueRunning()
     {
+        // use a thread safe, none locking method
         return Interlocked.CompareExchange(ref _isRunning, 0, 0) == 1;
     }
 
