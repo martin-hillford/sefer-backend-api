@@ -1,3 +1,5 @@
+using Sefer.Backend.Api.Services.Rendering;
+
 namespace Sefer.Backend.Api.Notifications;
 
 /// <summary>
@@ -10,12 +12,13 @@ public static class Extensions
     /// The following dependencies must be added as wel
     /// ICryptographyService, IRepositoryProvider, IOptions[MailServiceOptions], IServiceProvider, IMailServiceBase
     /// </summary>
-    public static IHostApplicationBuilder AddNotificationServices(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddNotificationServices(this IHostApplicationBuilder builder, string section = "RenderService")
     {
         // Add the options
         builder.Services.Configure<FireBaseOptions>(builder.Configuration.GetSection("FireBase"));
 
         // Add depending services
+        builder.Services.Configure<RenderConfigurationOptions>(builder.Configuration.GetSection(section));
         builder.Services.AddSingleton<IViewRenderService, ViewRenderService>();
 
         // Add all internal services

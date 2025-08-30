@@ -8,6 +8,7 @@
     <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
     <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="Sefer.Backend.Authentication.Lib" Version="1.1.14" />
     <PackageReference Include="Sefer.Backend.SharedConfig.Lib" Version="1.2.0" />
     <PackageReference Include="Sefer.Backend.GeoIP.Lib" Version="1.1.9" />
   </ItemGroup>

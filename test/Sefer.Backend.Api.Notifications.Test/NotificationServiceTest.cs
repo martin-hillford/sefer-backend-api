@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Sefer.Backend.Api.Data.JsonViews;
 using Sefer.Backend.Api.Shared;
 
@@ -82,7 +83,9 @@ public class NotificationServiceTest
     public async Task SendLessonSubmittedNotificationAsync_MessageNull()
     {
         // Arrange
-        var serviceProvider = new MockedServiceProvider();
+        var serviceProvider = MockedServiceProvider
+            .Create()
+            .AddService(new Mock<ILogger<NotificationService>>());
 
         // Act
         var service = new NotificationService(serviceProvider.Object);
@@ -96,8 +99,10 @@ public class NotificationServiceTest
     public async Task SendLessonSubmittedNotificationAsync_StudentNull()
     {
         // Arrange
-        var serviceProvider = new MockedServiceProvider();
-        serviceProvider.AddRequestResult<PostSubmissionMessageRequest, Message>(new Message());
+        var serviceProvider = MockedServiceProvider
+            .Create()
+            .AddService(new Mock<ILogger<NotificationService>>())
+            .AddRequestResult<PostSubmissionMessageRequest, Message>(new Message());
         var mentor = new User();
 
         // Act
@@ -113,7 +118,9 @@ public class NotificationServiceTest
     {
         // Arrange
         var serviceProvider = new MockedServiceProvider();
+        var logger = new Mock<ILogger<NotificationService>>();
         serviceProvider.AddRequestResult<PostSubmissionMessageRequest, Message>(new Message());
+        serviceProvider.AddService(logger);
         var student = new User();
 
         // Act
@@ -139,11 +146,13 @@ public class NotificationServiceTest
         var mailService = new Mock<IEmailDigestService>();
         var socketService = new Mock<IWebSocketProvider>();
         var pushService = new Mock<IFireBaseService>();
+        var logger = new Mock<ILogger<NotificationService>>();
         var serviceProvider = new MockedServiceProvider()
             .AddRequestResult<PostSubmissionMessageRequest, Message>(message)
             .AddService(pushService)
             .AddService(socketService)
-            .AddService(mailService);
+            .AddService(mailService)
+            .AddService(logger);
 
         // Act
         var service = new NotificationService(serviceProvider.Object);

@@ -1,8 +1,8 @@
-using Sefer.Backend.Api.Notifications.Rendering;
+using Sefer.Backend.Api.Services.Rendering;
 
-namespace Sefer.Backend.Api.Data;
+namespace Sefer.Backend.Api.Services.Pdf;
 
-public class PdfView(IServiceProvider serviceProvider)
+public class PdfRenderService(IServiceProvider serviceProvider) : IPdfRenderService
 {
     private readonly IViewRenderService _renderService = serviceProvider.GetService<IViewRenderService>();
 
@@ -10,9 +10,9 @@ public class PdfView(IServiceProvider serviceProvider)
 
     private readonly PdfOptions _pdfOptions = serviceProvider.GetService<IOptions<PdfOptions>>().Value;
     
-    private readonly ILogger<PdfView> _logger = serviceProvider.GetService<ILogger<PdfView>>();
+    private readonly ILogger<PdfRenderService> _logger = serviceProvider.GetService<ILogger<PdfRenderService>>();
 
-    public async Task<ActionResult> Render(HttpContext context, string view, string language, object model, string fileName)
+    public async Task<ActionResult> Render(string view, string language, object model, string fileName)
     {
         try
         {
@@ -28,8 +28,7 @@ public class PdfView(IServiceProvider serviceProvider)
                 _logger.LogError("Error while rendering pdf - could not connect with pdf service");
                 return new StatusCodeResult(500);
             }
-
-            context.Response.Headers.CacheControl = "private, max-age=31536000";
+            
             var stream = await response.Content.ReadAsStreamAsync();
             return new FileStreamResult(stream, "application/pdf");
         }

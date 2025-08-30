@@ -1,5 +1,5 @@
 // ReSharper disable PropertyCanBeMadeInitOnly.Global, UnusedAutoPropertyAccessor.Global
-namespace Sefer.Backend.Api.Support;
+namespace Sefer.Backend.Api.Services.Pdf;
 
 /// <summary>
 /// Class to contain the options to contact the pdf service

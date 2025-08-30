@@ -26,7 +26,6 @@ global using Sefer.Backend.Api.Notifications.Mail;
 global using Sefer.Backend.Api.Notifications.Mail.Models;
 global using Sefer.Backend.Api.Notifications.Mail.Service;
 global using Sefer.Backend.Api.Notifications.Push;
-global using Sefer.Backend.Api.Notifications.Rendering;
 global using Sefer.Backend.Api.Notifications.WebSocket;
 global using Sefer.Backend.Api.Services.Mail.Abstractions;
 global using Sefer.Backend.Api.Services.Notifications;

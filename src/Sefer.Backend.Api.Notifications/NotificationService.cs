@@ -84,11 +84,8 @@ public class NotificationService(IServiceProvider serviceProvider) : INotificati
         if (student == null) return false;
 
         // Post the messages through the web socket
-        foreach (var message in messages)
-        {
-            var view = new MessageView(message, message.Channel.Type, student.Id);
-            await _webSocket.SendMessage(view);
-        }
+        var views = messages.Select(message => new MessageView(message, message.Channel.Type, student.Id));
+        foreach (var view in views) { await _webSocket.SendMessage(view); }
 
         // Notify the student via the push notifications
         await _push.SendLessonReviewedNotificationToStudent(submission.Id, student);

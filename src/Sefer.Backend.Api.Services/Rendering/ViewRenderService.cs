@@ -1,9 +1,8 @@
-using Sefer.Backend.Api.Data.Requests.Resources;
 using Sefer.Backend.Api.Services.HttpConnection;
 using Random = Sefer.Backend.Authentication.Lib.Cryptography.Random;
 using Hashing = Sefer.Backend.Authentication.Lib.Cryptography.Hashing;
 
-namespace Sefer.Backend.Api.Notifications.Rendering;
+namespace Sefer.Backend.Api.Services.Rendering;
 
 /// <summary>
 /// This class is capable of rendering a razor view to a string.

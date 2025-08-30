@@ -1,5 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Sefer.Backend.Api.Notifications.Rendering;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+namespace Sefer.Backend.Api.Services.Rendering;
 
 public class RenderConfigurationOptions
 {

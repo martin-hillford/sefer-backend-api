@@ -1,4 +1,4 @@
-namespace Sefer.Backend.Api.Notifications.Rendering;
+namespace Sefer.Backend.Api.Services.Rendering;
 
 public class Render
 {

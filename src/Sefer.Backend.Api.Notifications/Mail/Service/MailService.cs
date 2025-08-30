@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Sefer.Backend.Api.Services.Rendering;
 using Sefer.Backend.Api.Shared;
 
 namespace Sefer.Backend.Api.Notifications.Mail.Service;

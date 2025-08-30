@@ -16,6 +16,20 @@ public class MockedServiceProvider
 
         return this;
     }
+    
+    public MockedServiceProvider AddRequestResult<TRequest, TResponse>(dynamic parameters, string property)
+        where TRequest : IRequest<TResponse>
+        where TResponse : class 
+    {
+        var response = Extensions.GetValueOrNull(parameters, property);
+        if (response is null) return this;
+        
+        _mediator
+            .Setup(m => m.Send(It.IsAny<TRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(response  as TResponse);
+
+        return this;
+    }
 
     public MockedServiceProvider AddRequestResults<TRequest, TResponse>(List<TResponse> responses)
         where TRequest : IRequest<TResponse>

@@ -2,7 +2,7 @@ using System.IO;
 using System.IO.Compression;
 using Sefer.Backend.Api.Data.Requests.Resources;
 using Sefer.Backend.Api.Models.Admin.Resources;
-using Sefer.Backend.Api.Notifications.Rendering;
+using Sefer.Backend.Api.Services.Rendering;
 using Sefer.Backend.Api.Views.Admin.Resources;
 
 namespace Sefer.Backend.Api.Controllers.Admin;

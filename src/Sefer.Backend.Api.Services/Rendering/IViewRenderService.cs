@@ -1,4 +1,4 @@
-namespace Sefer.Backend.Api.Notifications.Rendering;
+namespace Sefer.Backend.Api.Services.Rendering;
 
 /// <summary>
 /// The interface that defines the render view service that is capable of rendering to a string

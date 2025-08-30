@@ -141,4 +141,10 @@ public static class Extensions
         context.Add(settings);
         context.SaveChanges();
     }
+    
+    public static object GetValueOrNull(this object dyn, string name)
+    {
+        try {  return dyn.GetType().GetProperty(name)?.GetValue(dyn); }
+        catch (Exception) { return null; }
+    }
 }
