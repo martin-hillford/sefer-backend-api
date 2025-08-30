@@ -204,7 +204,7 @@ public class NotificationService(IServiceProvider serviceProvider) : INotificati
         await _email.SendTwoFactorAuthEnabledEmailAsync(mailData);
     }
 
-    public string SendTestNotification(ISite site) => _email.SendTestEmail(site);
+    public void SendTestNotification(ISite site) => _email.SendTestEmail(site);
 
     #endregion
 

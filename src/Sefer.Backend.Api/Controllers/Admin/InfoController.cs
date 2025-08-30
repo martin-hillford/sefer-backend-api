@@ -23,8 +23,6 @@ public class InfoController(IServiceProvider serviceProvider) : BaseController(s
     }
 
     [HttpGet("/info/test-email")]
-    [ProducesResponseType(200)]
-    [ProducesResponseType(400)]
     public async Task<ActionResult> SendTestEmail([FromQuery] string password, [FromQuery] string site)
     {
         if (password != _mailServiceOptions.Password) return BadRequest();
@@ -32,10 +30,8 @@ public class InfoController(IServiceProvider serviceProvider) : BaseController(s
         var siteObject = await Send(new GetSiteByNameRequest(site));
         if (siteObject == null) return BadRequest();
 
-        var result = _notificationService.SendTestNotification(siteObject);
-        if (string.IsNullOrEmpty(result)) result = "The test e-mail has been send successful.";
-
-        return Json(result);
+        _notificationService.SendTestNotification(siteObject);
+        return Accepted();
     }
 
     [HttpPost("/info/admin-test-email")]
@@ -46,10 +42,8 @@ public class InfoController(IServiceProvider serviceProvider) : BaseController(s
         var siteObject = await Send(new GetSiteByNameRequest(site));
         if (siteObject == null) return BadRequest();
 
-        var result = _notificationService.SendTestNotification(siteObject);
-        if (string.IsNullOrEmpty(result)) result = "The test e-mail has been send successful.";
-
-        return Json(result);
+        _notificationService.SendTestNotification(siteObject);
+        return Accepted();
     }
 
     [HttpGet("/info/headers")]

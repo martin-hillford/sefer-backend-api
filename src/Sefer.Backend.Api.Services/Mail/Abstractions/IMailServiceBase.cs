@@ -11,11 +11,4 @@ public interface IMailServiceBase
     /// </summary>
     /// <param name="message">The message to send</param>
     public void QueueEmailForSending(MailMessage message);
-
-    /// <summary>
-    /// Sends the e-mail as given in the message synchronously without a queue.
-    /// Note: this method should only be used to testing or critical purposes!
-    /// </summary>
-    /// <param name="message">The message to send</param>
-    public void SendEmailSynchronously(MailMessage message);
 }

@@ -95,5 +95,5 @@ public interface INotificationService
     /// <summary>
     /// This method is used to send a test notification
     /// </summary>
-    string SendTestNotification(ISite site);
+    void SendTestNotification(ISite site);
 }

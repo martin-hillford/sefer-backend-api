@@ -61,4 +61,20 @@ public class MailServiceOptions
     /// A location to write a copy to
     /// </summary>
     public string WriteCopy { get; set;  }
+
+    /// <summary>
+    /// Which this a rate can be defined 
+    /// </summary>
+    public int? MaxMessagesPerMinute { get; set; } = 30;
+    
+    /// <summary>
+    /// Holds if the mail service is rate limit
+    /// </summary>
+    public bool IsRateLimit => MaxMessagesPerMinute is > 0;
+    
+    /// <summary>
+    /// Gets the delay if the mail service is rate limit else 0   
+    /// </summary>
+    // ReSharper disable once PossibleInvalidOperationException
+    public int Delay => IsRateLimit ? 60 / MaxMessagesPerMinute.Value * 1000 : 0;
 }

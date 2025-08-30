@@ -35,7 +35,7 @@ public interface IMailService
 
     public Task SendVoucherRewardEmailAsync(MailData data, RewardGrant reward);
 
-    public string SendTestEmail(ISite site);
+    public void SendTestEmail(ISite site);
 
     public Task SendNotificationEmailAsync(MailData data, List<Message> messages, List<LessonSubmission> submissions);
 

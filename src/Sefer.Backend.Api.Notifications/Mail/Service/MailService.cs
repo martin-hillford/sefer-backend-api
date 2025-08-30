@@ -117,15 +117,10 @@ public class MailService(IServiceProvider serviceProvider) : IMailService
         await Task.WhenAll(task);
     }
 
-    public string SendTestEmail(ISite site)
+    public void SendTestEmail(ISite site)
     {
-        try
-        {
-            var message = GetTestMessage(site);
-            _baseMailService.SendEmailSynchronously(message);
-            return string.Empty;
-        }
-        catch (Exception exp) { return exp.Message + "\n\n" + exp.StackTrace; }
+        var message = GetTestMessage(site);
+        _baseMailService.QueueEmailForSending(message);
     }
 
     public async Task SendNotificationEmailAsync(MailData data, List<Message> messages, List<LessonSubmission> submissions)
