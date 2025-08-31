@@ -1,13 +1,12 @@
 ﻿using System.Threading.Channels;
 using Channel = System.Threading.Channels.Channel;
 using MailMessage = Sefer.Backend.Api.Services.Mail.Abstractions.MailMessage;
-using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace Sefer.Backend.Api.Services.Mail;
 
 /// <summary>
-/// This MailService is a default implementation for mail service using an IViewRenderService
-/// This Service is currently a wrapper for MailKit
+/// This service will send mail message (current via a smtp relay). It ensures thread safety and will limit the
+/// smtp connection to only one concurrent smtp connection (since many smtp server are rate limited) 
 /// </summary>
 public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
 {
@@ -21,14 +20,23 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
     
     private readonly MailServiceOptions _mailOptions;
 
-    private readonly SmtpClient _client = new ();
+    private readonly ISmtpClient _client;
     
     private readonly SemaphoreSlim _smtpGate = new(1, 1);
     
     private volatile bool _disposed;
     
-    public MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<MailServiceBase> logger)
+    private const int MaxRetries = 10;
+    
+    public MailServiceBase(IOptions<MailServiceOptions> mailOptions, ILogger<MailServiceBase> logger, ISmtpClientProvider smtpClientProvider)
     {
+        // Store the required helpers
+        _logger = logger;
+        _mailOptions = mailOptions.Value;
+        
+        // Create a bounded channel that acts as a queue. Only one reader can be active as only one smtp connection
+        // is made to prevent the smtp server from being overwhelmed by smtp connections (or being kicked by a rate
+        // limiter at the smtp server)
         var channelOptions = new BoundedChannelOptions(1000)
         {
             SingleReader = true,
@@ -36,30 +44,33 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
             FullMode = BoundedChannelFullMode.Wait
         };
         _channel = Channel.CreateBounded<MailMessage>(channelOptions);
-        _logger = logger;
-        _mailOptions = mailOptions.Value;
+        
+        // Create the smtp client
+        _client = smtpClientProvider.GetSmtpClient();
+        _client.AuthenticationMechanisms.Remove("XOAUTH");
         _client.Timeout = 10000;
         
-        // Start background loop immediately
-        _consumerTask = Task.Run(() => ProcessLoopAsync(_cts.Token));
+        // Start background loop immediately.
+        // NB. this must be the last action in the constructor to prevent race conditions 
+        _consumerTask = Task.Run(() => HandleChannelAsync(_cts.Token));
     }
     
-    
-    public void QueueEmailForSending(MailMessage item)
+    public void QueueEmailForSending(MailMessage message)
     {
         // If the queue is disposed, don't add to the queue
         ObjectDisposedException.ThrowIf(_disposed, this);
         
-        // Add in a fire and forget mode. In this  
-        EnqueueFireAndForget(item);
+        // Add the message in a fire and forget style.
+        // In this way callers will not be blocked when the queue is full  
+        EnqueueFireAndForget(message);
     }
     
     private void EnqueueFireAndForget(MailMessage item)
     {
-        // Fast path
+        // Fast path (the queue is not locked and there is space in the queue)
         if (_channel.Writer.TryWrite(item)) return;
 
-        // Slow path: schedule the awaited write
+        // Slow path: schedule the awaited write. (run this in a fire and forget style)
         _ = _channel.Writer.WriteAsync(item, _cts.Token).AsTask().ContinueWith(t =>
         {
             if (t.IsCanceled) _logger.LogDebug("Enqueue canceled during shutdown.");
@@ -67,16 +78,18 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
         }, TaskContinuationOptions.ExecuteSynchronously);
     }
     
-    private async Task ProcessLoopAsync(CancellationToken token)
+    private async Task HandleChannelAsync(CancellationToken token)
     {
         try
         {
+            // Keep active and wait for the channel to receive a message
             while (await _channel.Reader.WaitToReadAsync(token).ConfigureAwait(false))
             {
-                while (_channel.Reader.TryRead(out var item))
+                // Try to get the next mail message from the queue and process it
+                while (_channel.Reader.TryRead(out var message))
                 {
                     // Process the item. This method will take care of handling recoverable exceptions
-                    await ProcessItem(item, token).ConfigureAwait(false);
+                    await HandleMailMessageAsync(message, token).ConfigureAwait(false);
                 }
             }
         }
@@ -91,31 +104,37 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
         }
     }
 
-    private async Task ProcessItem(MailMessage item, CancellationToken token)
+    private async Task HandleMailMessageAsync(MailMessage message, CancellationToken token)
     {
+        // Since Smtp errors can occur, this handler will retry to resend the message as smtp exceptions occur
         var attempt = 0;
         for (;;)
         {
+            // If the process is being cannel, do not continue (e.q. at shutdown)
             token.ThrowIfCancellationRequested();
             try
             {
-                await SendEmailAsync(item, token).ConfigureAwait(false); // uses _client
-                if (_mailOptions.IsRateLimit)
-                {
-                    await Task.Delay(_mailOptions.Delay, token).ConfigureAwait(false);
-                }
-                break;
+                // Try to send the e-mail 
+                await SendEmailAsync(message, token).ConfigureAwait(false);
+                
+                // If the options indicate rate limiting is enabled delay the task
+                if (_mailOptions.IsRateLimit) await Task.Delay(_mailOptions.Delay, token).ConfigureAwait(false);
+                break; // Break out of the for loop
             }
+            // A smtp connection has occured
             catch (MailSendException exception)
             {
                 attempt++;
                 _logger.LogWarning(exception, "Send failed (attempt {Attempt}); resetting SMTP connection.", attempt);
                 
+                // Ensure to disconnect from the server, wait for 5 seconds and retry to send the message
                 await SafeDisconnectAsync().ConfigureAwait(false);
-                await Task.Delay(1000, token).ConfigureAwait(false);
+                await Task.Delay(_mailOptions.DelayAfterException ?? 5000, token).ConfigureAwait(false);
                 
-                if (attempt < 10) continue;
-                _logger.LogError(exception.InnerException, "Giving up after {Attempt} attempts for {View}.", attempt, item.ViewIdentifier);
+                // If the max number of retries has not been reached,
+                // simple continue the for loop, else give up and break
+                if (attempt < MaxRetries) continue;
+                _logger.LogError(exception.InnerException, "Giving up after {Attempt} attempts for {View}.", attempt, message.ViewIdentifier);
                 break;
             }
             catch (OperationCanceledException) { throw; }
@@ -169,26 +188,30 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
         try
         {
             // Connect to the server
-            _client.AuthenticationMechanisms.Remove("XOAUTH");
             _logger.LogDebug("Connecting to server '{Host}'", _mailOptions.Host);
-            if (!_client.IsConnected) await _client.ConnectAsync(_mailOptions.Host, _mailOptions.PortInt, _mailOptions.UseSslBoolean, token);
+            await SmtpConnectAsync(token).ConfigureAwait(false);
             
             // Perform proper authentication
             _logger.LogDebug("Connected to server '{Host}'", _mailOptions.Host);
-            if (!_client.IsAuthenticated) await _client.AuthenticateAsync(_mailOptions.Username, _mailOptions.Password, token);
-
+            await SmtpAuthenticateAsync(token).ConfigureAwait(false);
+            
             // And send the e-mail
             _logger.LogDebug("Sending message '{MessageViewIdentifier}'", message.ViewIdentifier);
             await _client.SendAsync(mimeMessage, token);
         }
+        catch (OperationCanceledException) // ← let cancellation flow
+        {
+            throw;
+        }
         catch (Exception exception)
         {
-            // If an exception occurred during sending the e-mail, it is put back into the queue
-            // But it can't be done in this method else deadlock can occur
+            // If an exception occurred during sending the e-mail, inform the HandleMailMessageAsync about 
+            // the exception so that sending the message can be retried
             throw new MailSendException(exception);
         }
         finally
         {
+            // Ensure to release the lock so that the smtp client is released as well
             _smtpGate.Release();
         }
     }
@@ -203,7 +226,7 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
 
             var fileName = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + Guid.NewGuid() + ".txt";
             var fullName = Path.Combine(_mailOptions.WriteCopy, fileName);
-            await mimeMessage.WriteToAsync(fullName, token);    
+            await mimeMessage.WriteToAsync(fullName, token).ConfigureAwait(false);
         }
         // ReSharper disable once EmptyGeneralCatchClause
         catch (Exception) { }
@@ -218,7 +241,10 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
         }
         else
         {
-            foreach (var address in message.To.GetAddresses()) { mime.To.Add(new MailboxAddress(address.Name, address.Email)); }
+            foreach (var address in message.To.GetAddresses())
+            {
+                mime.To.Add(new MailboxAddress(address.Name, address.Email));
+            }
         }
         return mime;
     }
@@ -226,18 +252,31 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
     private async Task SafeDisconnectAsync()
     {
         // best-effort: avoid contending if the sender is active
-        if (await _smtpGate.WaitAsync(0).ConfigureAwait(false))
+        if (await _smtpGate.WaitAsync(1000).ConfigureAwait(false))
         {
             try { if (_client.IsConnected) await _client.DisconnectAsync(true).ConfigureAwait(false); }
             catch { /* ignore */ }
             finally { _smtpGate.Release(); }
         }
     }
+
+    private async Task SmtpConnectAsync(CancellationToken token)
+    {
+        if (_client.IsConnected) return;
+        await _client.ConnectAsync(_mailOptions.Host, _mailOptions.PortInt, _mailOptions.UseSslBoolean, token)
+            .ConfigureAwait(false);
+    }
+
+    private async Task SmtpAuthenticateAsync(CancellationToken token)
+    {
+        if (_client.IsAuthenticated) return;
+        await _client.AuthenticateAsync(_mailOptions.Username, _mailOptions.Password, token).ConfigureAwait(false);
+    }
     
     public async ValueTask DisposeAsync()
     {
         // Prevent from calling disposed twice
-        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_disposed) return;
         
         // Mark that the disposed service is called, this prevents from new message coming into the queue
         _disposed = true;
@@ -262,5 +301,5 @@ public sealed class MailServiceBase : IMailServiceBase, IAsyncDisposable
         _client.Dispose();
     }
     
-    private class MailSendException(Exception innerException) : Exception("An SMTP Error occured", innerException);
+    private sealed class MailSendException(Exception innerException) : Exception("An SMTP Error occurred", innerException);
 }

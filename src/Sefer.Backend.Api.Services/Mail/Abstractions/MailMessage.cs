@@ -50,4 +50,13 @@ public class MailMessage
     {
         To = new MailAddressList();
     }
+    
+    /// <summary>
+    /// Creates a new MailMessage
+    /// </summary>
+    public MailMessage(string receiverEmail, string receiverName)
+    {
+        To = new MailAddressList();
+        To.Add(new MailAddress(receiverEmail, receiverName));
+    }
 }

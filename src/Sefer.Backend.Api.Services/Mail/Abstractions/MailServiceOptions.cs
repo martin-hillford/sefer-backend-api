@@ -77,4 +77,9 @@ public class MailServiceOptions
     /// </summary>
     // ReSharper disable once PossibleInvalidOperationException
     public int Delay => IsRateLimit ? 60 / MaxMessagesPerMinute.Value * 1000 : 0;
+
+    /// <summary>
+    /// Gets the delay after smtp exceptions
+    /// </summary>
+    public int? DelayAfterException { get; set; } = 5000;
 }
