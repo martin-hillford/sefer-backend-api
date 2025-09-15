@@ -181,4 +181,25 @@ public class EnrollmentController(IServiceProvider serviceProvider) : UserContro
         var success = await Send(new UnEnrollRequest(enrollment.Id));
         return success ? NoContent() : StatusCode(500);
     }
+
+    [HttpGet("/student/enrollments")]
+    public async Task<ActionResult> GetEnrollments()
+    {
+        var student = await GetCurrentUser();
+        if (student == null || student.IsMentor) return Forbid();
+        
+        // A simple overview must be created, so load all enrollments but only for the active more information should 
+        // be included, specifically the next lesson to take
+        var enrollments = await Send(new GetEnrollmentsOfStudentRequest(student.Id));
+        var active = await Send(new GetActiveEnrollmentsOfStudentRequest(student.Id, true));
+        var lookup = active.ToLookup(c => c.Id);
+        
+        // Create the view with the all the enrollments
+        var view = active
+            .Union(enrollments.Where(enrollment => !lookup.Contains(enrollment.Id)))
+            .OrderByDescending(enrollment => enrollment.CreationDate)
+            .Select(enrollment => new BaseEnrollmentView(enrollment));
+        
+        return Ok(view);
+    }
 }

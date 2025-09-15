@@ -11,10 +11,11 @@ public class DownloadCourseController(IServiceProvider serviceProvider) : BaseCo
     /// Create one single JSON structure for a single course (current public revision).
     /// </summary>
     /// <param name="courseId">The course to download</param>
+    /// <param name="includeMedia"></param>
     [HttpGet("/download-course/{courseId:int}")]
-    public async Task<IActionResult> DownloadCourse(int courseId)
+    public async Task<IActionResult> DownloadCourse(int courseId, [FromQuery] bool includeMedia = true)
     {
-        var request = new DownloadRequest { CourseId = courseId };
+        var request = new DownloadRequest { CourseId = courseId,  IncludeMedia = includeMedia };
         return await DownloadCourse(request);
     }
     

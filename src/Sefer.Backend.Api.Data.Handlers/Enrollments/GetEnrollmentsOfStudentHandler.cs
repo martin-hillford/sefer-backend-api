@@ -5,7 +5,7 @@ public class GetEnrollmentsOfStudentHandler(IServiceProvider serviceProvider)
 {
     public override async Task<List<Enrollment>> Handle(GetEnrollmentsOfStudentRequest request, CancellationToken token)
     {
-        if (request.Top < 1) return new List<Enrollment>();
+        if (request.Top < 1) return [];
         await using var context = GetDataContext();
 
         var query = context.Enrollments
