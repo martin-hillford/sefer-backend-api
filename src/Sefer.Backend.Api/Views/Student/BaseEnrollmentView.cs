@@ -3,6 +3,8 @@ namespace Sefer.Backend.Api.Views.Student;
 
 public class BaseEnrollmentView(Enrollment enrollment)
 {
+    public int Id => enrollment.Id;
+    
     public int CourseId => enrollment.CourseRevision.CourseId;
     
     public int StudentId => enrollment.StudentId;
