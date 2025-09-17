@@ -11,10 +11,10 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
     #region Properties
     
     public int Id => course.Id;
+
+    public long CreationDate => course.CreationDate.ToUnixTime();
     
-    public DateTime CreationDate  => course.CreationDate;
-    
-    public DateTime? ModificationDate => course.ModificationDate;
+    public long? ModificationDate => course.ModificationDate?.ToUnixTime();
     
     public string Name => course.Name;
     

@@ -13,9 +13,9 @@ public class BaseEnrollmentView(Enrollment enrollment)
     
     public int CourseRevisionId => enrollment.CourseRevisionId;
     
-    public long CreationDate => enrollment.CreationDate.ToUnixTimes();
+    public long CreationDate => enrollment.CreationDate.ToUnixTime();
     
-    public long? ClosureDate => enrollment.ClosureDate?.ToUnixTimes();
+    public long? ClosureDate => enrollment.ClosureDate?.ToUnixTime();
     
     public bool IsCourseCompleted => enrollment.IsCourseCompleted;
     

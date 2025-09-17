@@ -13,10 +13,10 @@ namespace Sefer.Backend.Api.Views.Public.Download;
 public abstract class ContentBlock(Data.Models.Courses.Lessons.ContentBlock contentBlock)
 {
     public int Id => contentBlock.Id;
+
+    public long CreationDate => contentBlock.CreationDate.ToUnixTime();
     
-    public DateTime CreationDate  => contentBlock.CreationDate;
-    
-    public DateTime? ModificationDate => contentBlock.ModificationDate;
+    public long? ModificationDate => contentBlock.ModificationDate?.ToUnixTime();
     
     public int SequenceId => contentBlock.SequenceId;
 

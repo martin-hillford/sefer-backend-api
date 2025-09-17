@@ -2,7 +2,7 @@ namespace Sefer.Backend.Api.Support.Extensions;
 
 public static class ObjectExtensions
 {
-    public static long ToUnixTimes(this DateTime dateTime)
+    public static long ToUnixTime(this DateTime dateTime)
     {
         // Ensure the DateTime is in UTC
         var utc = dateTime.Kind == DateTimeKind.Utc ? dateTime : dateTime.ToUniversalTime();

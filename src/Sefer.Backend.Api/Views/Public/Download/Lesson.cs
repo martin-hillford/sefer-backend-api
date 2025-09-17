@@ -6,9 +6,9 @@ public class Lesson(Data.Models.Courses.Lessons.Lesson lesson)
 {
     public int Id => lesson.Id;
     
-    public DateTime CreationDate  => lesson.CreationDate;
+    public long CreationDate  => lesson.CreationDate.ToUnixTime();
     
-    public DateTime? ModificationDate => lesson.ModificationDate;
+    public long? ModificationDate => lesson.ModificationDate?.ToUnixTime();
     
     public int SequenceId => lesson.SequenceId;
     
