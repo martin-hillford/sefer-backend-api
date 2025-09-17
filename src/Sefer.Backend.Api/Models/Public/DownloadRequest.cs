@@ -5,7 +5,7 @@ namespace Sefer.Backend.Api.Models.Public;
 public class DownloadRequest
 {
     public int CourseId { get; set; }
-    
+
     public int CourseRevisionId { get; set; }
     
     public bool IncludeMedia { get; set; }

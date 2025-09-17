@@ -39,7 +39,7 @@ public class DownloadCourseController(IServiceProvider serviceProvider) : BaseCo
     public async Task<IActionResult> DownloadCourse(DownloadRequest request)
     {
         var dataRevision = await GetRevision(request);
-        if (dataRevision == null) return NotFound();
+        if (dataRevision == null) return BadRequest();
         
         // If the revision can't be edited anymore (either it is closed or published) checked if it is cached
         
