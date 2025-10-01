@@ -43,7 +43,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
 
         // Next, check if the course revision exists and is editable
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(model.CourseRevisionId));
-        if (courseRevision == null || courseRevision.IsEditable == false) return BadRequest();
+        if (courseRevision is not { IsEditable: true }) return BadRequest();
 
         // The next step is to validate the content blocks of the lesson
         if (!await IsContentValid(lessonPostModel, 0)) return BadRequest();
@@ -61,21 +61,21 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
     public async Task<ActionResult> UpdateLesson([FromBody] LessonPostModel lessonPostModel, int id)
     {
         // First, check and create a valid lesson model from the post
-        if (lessonPostModel == null || ModelState.IsValid == false) return BadRequest(ModelState.ValidationState);
+        if (lessonPostModel == null || !ModelState.IsValid) return BadRequest(ModelState.ValidationState);
         if (await Send(new GetLessonByIdRequest(id)) == null) return NotFound();
         var model = lessonPostModel.ToLesson();
         if (model == null || !await Send(new IsLessonValidRequest(model))) return BadRequest(ModelState.ValidationState);
 
         // Next, check if the course revision exists and is editable
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(model.CourseRevisionId));
-        if (courseRevision == null || courseRevision.IsEditable == false) return BadRequest();
+        if (courseRevision is not { IsEditable: true }) return BadRequest("Not Editable");
 
         // The next step is to validate the content blocks of the lesson
-        if (!await IsContentValid(lessonPostModel, id)) return BadRequest();
+        if (!await IsContentValid(lessonPostModel, id)) return BadRequest("Content not valid");
 
         // The next step is to save the full lesson
         var result = await SaveLesson(lessonPostModel, id);
-        return result.HasValue == false ? BadRequest() : StatusCode(202);
+        return !result.HasValue ? BadRequest("Not Saved") : StatusCode(202);
     }
 
     [HttpDelete("/courses/lessons/{id:int}")]
@@ -89,7 +89,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
         if (courseRevision == null || courseRevision.IsEditable == false) return BadRequest();
 
         var deleted = await Send(new DeleteLessonRequest(lesson));
-        return (deleted == false) ? StatusCode(500) : StatusCode(202);
+        return !deleted ? StatusCode(500) : StatusCode(202);
     }
 
     private async Task<bool> IsContentValid(LessonPostModel lessonPostModel, int lessonId)
