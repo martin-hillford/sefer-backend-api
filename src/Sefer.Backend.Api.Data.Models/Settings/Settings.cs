@@ -76,7 +76,8 @@ public class Settings : Entity
     /// <summary>
     /// Holds is the lesson submissions are limited
     /// </summary>
-    public bool IsLessonSubmissionsLimited => MaxLessonSubmissionsPerDay != null;
+    public bool IsLessonSubmissionsLimited => 
+        MaxLessonSubmissionsPerDay is > 0;
     
     #endregion
 }

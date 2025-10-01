@@ -134,6 +134,51 @@ public partial class SubmitLessonControllerTest : AbstractControllerTest
         var result = await controller.IsStudentAllowedToSubmit();
         Assert.IsInstanceOfType<NoContentResult>(result);
     }
+
+    [TestMethod]
+    [DataRow(0, 0, true, DisplayName = "NoRestrictions")]
+    [DataRow(null, null, true, DisplayName = "NoRestrictions_SetByNull")]
+    [DataRow(0, 1, false, DisplayName = "Overloaded")]
+    [DataRow(null, 1, false, DisplayName = "Overloaded_SetByNull")]
+    [DataRow(1, 0, false, DisplayName = "RestrictedGeneral")]
+    [DataRow(1, null, false, DisplayName = "RestrictedGeneral_SetByNull")]
+    [DataRow(0, 2, true, DisplayName = "Overloaded_ButAllowed")]
+    [DataRow(2, 0, true, DisplayName = "Allowed_By_General")]
+    [DataRow(2, null, true, DisplayName = "AllowedByGeneral_SpecificIsNull")]
+    public async Task IsStudentAllowedToSubmit_Integration_Settings(int? generalMax, int? specialMax, bool allowed )
+    {
+        // Create the services and the base data
+        var services = new IntegrationServices();
+        var (enrollment, lesson) = IsStudentAllowedToSubmit_IntegrationSetup(services);
+        
+        // Set the generalMax
+        var context = services.Provider.GetContext();
+        var settings = context.Settings.First();
+        settings.MaxLessonSubmissionsPerDay = (byte?)generalMax;
+        context.Settings.Update(settings);
+        await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+        
+        // Set the specialMax
+        var courseRevision =  context.CourseRevisions.Single(c => c.Id == lesson.CourseRevisionId);
+        var course = context.Courses.Single(c => c.Id == courseRevision.CourseId);
+        course.MaxLessonSubmissionsPerDay =  specialMax;
+        context.Courses.Update(course);
+        await context.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+        
+        // Create an existing submission
+        var provider = services.BuildServiceProvider();
+        var controller = new SubmissionController(provider);
+        var submission = new LessonSubmission { EnrollmentId = enrollment.Id, IsFinal = true, LessonId = lesson.Id, CreationDate = DateTime.UtcNow, SubmissionDate = DateTime.UtcNow };
+        services.Provider.GetContext().Insert(submission);
+        
+        // After all this 
+        var result = await controller.IsStudentAllowedToSubmit();
+        
+        // Now check the result 
+        if(allowed) Assert.IsInstanceOfType<OkResult>(result);
+        else Assert.IsInstanceOfType<NoContentResult>(result);
+    }
+    
     
     private static (Enrollment, Lesson) IsStudentAllowedToSubmit_IntegrationSetup(IntegrationServices services)
     {
@@ -144,4 +189,6 @@ public partial class SubmitLessonControllerTest : AbstractControllerTest
         services.SetSettings(new Settings { AllowMultipleActiveEnrollments = false, MaxLessonSubmissionsPerDay = 1 });
         return (enrollment, lesson);
     }
+
+    public TestContext TestContext { get; set; }
 }

@@ -23,6 +23,8 @@ public class SubmissionController(IServiceProvider serviceProvider) : GrantContr
     /// </summary>
     /// <returns>Please note, this endpoint can only be used for we</returns>
     [HttpGet("/student/submissions/allowed")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> IsStudentAllowedToSubmit()
     {
         var student = await GetCurrentUser();
@@ -46,7 +48,9 @@ public class SubmissionController(IServiceProvider serviceProvider) : GrantContr
             var upperBound = DateTime.UtcNow.Date.AddDays(1).AddMilliseconds(-1);
             var count = await Send(new GetSubmittedLessonsBetweenDatesCountRequest(lowerBound, upperBound, student.Id));
             var settings = await Send(new GetSettingsRequest());
-            allowed = count - 1 < settings.MaxLessonSubmissionsPerDay;
+            allowed =
+                !settings.IsLessonSubmissionsLimited ||
+                count - 1 < settings.MaxLessonSubmissionsPerDay;
         }
 
         if (allowed) return Ok();
@@ -55,12 +59,16 @@ public class SubmissionController(IServiceProvider serviceProvider) : GrantContr
 
     internal async Task<bool> IsStudentAllowedToSubmit(User student, Course course)
     {
+        // Get the number of currently submitted lessons today
+        var submitted = await Send(new GetNumberOfSubmittedLessonsTodayRequest(student.Id));
+        
+        // First check if a specific number of lessons is set by the course
+        var courseSubmitted = course.MaxLessonSubmissionsPerDay;
+        if (courseSubmitted  is > 0) return submitted < courseSubmitted.Value;
+        
+        // Next test the settings
         var settings = await Send(new GetSettingsRequest());
         if (!settings.IsLessonSubmissionsLimited) return true;
-        var submitted = await Send(new GetNumberOfSubmittedLessonsTodayRequest(student.Id));
-
-        var courseSubmitted = course.MaxLessonSubmissionsPerDay;
-        if (courseSubmitted.HasValue) return submitted < courseSubmitted.Value;
         return submitted < settings.MaxLessonSubmissionsPerDay;
     }
     
