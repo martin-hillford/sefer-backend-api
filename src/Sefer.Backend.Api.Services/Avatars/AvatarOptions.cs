@@ -7,12 +7,16 @@ namespace Sefer.Backend.Api.Services.Avatars;
 public class AvatarOptions
 {
     /// <summary>
-    /// The endpoint of the service itself (without the /avatar)
-    /// </summary>
-    public string Service { get; set; }
-
-    /// <summary>
     /// The ApiKey used to contact the avatar service
     /// </summary>
-    public string ApiKey { get; set; }
+    public string HashKey { get; set; }
+    
+    /// <summary>
+    /// The url used for the service
+    /// </summary>
+    public string Service { get; set;  }
+    
+    public string Store { get; set; }
+    
+    public bool UseBlob { get; set; }
 }

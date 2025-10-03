@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Sefer.Backend.Api.Data.Requests\Sefer.Backend.Api.Data.Requests.csproj" />
     <ProjectReference Include="..\Sefer.Backend.Api.Data\Sefer.Backend.Api.Data.csproj" />
+      <ProjectReference Include="..\Sefer.Backend.Api.Shared\Sefer.Backend.Api.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Notifications/" />

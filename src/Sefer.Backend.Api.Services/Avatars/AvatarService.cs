@@ -25,17 +25,7 @@ public class AvatarService(IOptions<AvatarOptions> options) : IAvatarService
 
         return $"{_options.Service}/avatar-no-cache?hash={hash}&initials={initials}";
     }
-
-    /// <summary>
-    /// The avatar service is capable of retrieving also avatars from gravatars
-    /// This method will generate the correct url for this.
-    /// </summary>
-    public string GetGravatarUrl(string userEmail)
-    {
-        var hash = GravatarHash(userEmail);
-        return $"{_options.Service}/gravatar?hash={hash}";
-    }
-
+    
     private static string GetInitials(string userName)
     {
         var value = userName?.Trim().ToUpper();
@@ -47,35 +37,13 @@ public class AvatarService(IOptions<AvatarOptions> options) : IAvatarService
         if (parts.Length == 1) return first;
         return first + parts[^1][0];
     }
-
-    private static string GravatarHash(string email)
+    
+    public string GetAvatarId(int userId)
     {
-        var bytes = Encoding.ASCII.GetBytes(email.Trim().ToLower());
-        var hash = MD5.HashData(bytes);
-        return BitConverter.ToString(hash).ToLower().Replace("-", string.Empty);
-    }
-
-    private string GetAvatarId(int userId)
-    {
-        var bytes = Encoding.ASCII.GetBytes($"{userId}_{_options.ApiKey}");
+        var bytes = Encoding.ASCII.GetBytes($"{userId}_{_options.HashKey}");
         var hash = SHA512.HashData(bytes);
         return BitConverter.ToString(hash).ToLower().Replace("-", string.Empty);
     }
-
-    public string GetAvatarUploadUrl(int userId)
-    {
-        var hash = GetAvatarId(userId);
-        var token = CreateToken();
-        return $"{_options.Service}/upload?hash={hash}&token={token}";
-    }
     
-    private string CreateToken()
-    {
-        var unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        var data = unixTime + _options.ApiKey;
-        var bytes = Encoding.UTF8.GetBytes(data);
-        var hash = SHA256.HashData(bytes);
-        var hex = BitConverter.ToString(hash).ToLower().Replace("-", string.Empty);
-        return $"{unixTime}.{hex}";
-    }
+    public static AvatarService Create(IOptions<AvatarOptions> options) => new (options);
 }

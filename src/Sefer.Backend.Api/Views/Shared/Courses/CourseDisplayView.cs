@@ -45,7 +45,7 @@ public class CourseDisplayView : CourseView
     {
         Model = model;
         FileStorageService = fileStorageService;
-        if (string.IsNullOrEmpty(model.Permalink) == false) Permalink = "/course/" + Model.Permalink;
+        if (!string.IsNullOrEmpty(model.Permalink)) Permalink = "/course/" + Model.Permalink;
         else Permalink = "/public/course/" + model.Id;
     }
 }

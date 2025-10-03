@@ -13,13 +13,10 @@ public interface IAvatarService
     public string GetNonCachedAvatarUrl(int userId, string userName);
 
     /// <summary>
-    /// The avatar service is capable of retrieving also avatars from gravatars
-    /// This method will generate the correct url for this.
+    /// This generates the right hash given a userId. This is done to prevent enumeration of the avatar based
+    /// on the userId.
     /// </summary>
-    public string GetGravatarUrl(string userEmail);
-
-    /// <summary>
-    /// Generates the url that can be used to upload an avatar of a user
-    /// </summary>
-    public string GetAvatarUploadUrl(int userId);
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public string GetAvatarId(int userId);
 }

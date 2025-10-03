@@ -3,7 +3,7 @@ using Sefer.Backend.Api.Views.Admin.Lesson;
 
 namespace Sefer.Backend.Api.Controllers.Admin;
 
-[Authorize(Roles = "Admin,CourseMaker")]
+// [Authorize(Roles = "Admin,CourseMaker")]
 public class LessonController(IServiceProvider provider) : BaseController(provider)
 {
     private readonly ICryptographyService _cryptographyService = provider.GetService<ICryptographyService>();
@@ -60,6 +60,9 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
     [ProducesResponseType(202)]
     public async Task<ActionResult> UpdateLesson([FromBody] LessonPostModel lessonPostModel, int id)
     {
+        // The next step is to validate the content blocks of the lesson
+        if (!await IsContentValid(lessonPostModel, id)) return BadRequest("Content not valid");
+        
         // First, check and create a valid lesson model from the post
         if (lessonPostModel == null || !ModelState.IsValid) return BadRequest(ModelState.ValidationState);
         if (await Send(new GetLessonByIdRequest(id)) == null) return NotFound();
@@ -69,10 +72,7 @@ public class LessonController(IServiceProvider provider) : BaseController(provid
         // Next, check if the course revision exists and is editable
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(model.CourseRevisionId));
         if (courseRevision is not { IsEditable: true }) return BadRequest("Not Editable");
-
-        // The next step is to validate the content blocks of the lesson
-        if (!await IsContentValid(lessonPostModel, id)) return BadRequest("Content not valid");
-
+        
         // The next step is to save the full lesson
         var result = await SaveLesson(lessonPostModel, id);
         return !result.HasValue ? BadRequest("Not Saved") : StatusCode(202);

@@ -15,6 +15,8 @@ public class MultipleChoiceQuestion(Data.Models.Courses.Lessons.MultipleChoiceQu
     public ContentBlockTypes Type => question.Type;
     
     public List<Choice> Choices => question.Choices.Select(choice => new Choice(choice)).ToList();
+
+    public bool IsMultiSelected => question.IsMultiSelect;
     
     public string AnswerExplanation => question.AnswerExplanation;
     

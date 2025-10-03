@@ -5,5 +5,5 @@ public abstract class UserController(IServiceProvider serviceProvider) : BaseCon
     protected readonly IUserAuthenticationService UserAuthenticationService = 
         serviceProvider.GetService<IUserAuthenticationService>();
 
-    protected int? UserId => UserAuthenticationService.UserId;
+    protected int? UserId => UserAuthenticationService?.UserId;
 }

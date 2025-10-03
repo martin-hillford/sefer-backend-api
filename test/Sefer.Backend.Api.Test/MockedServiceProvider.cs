@@ -70,6 +70,12 @@ public class MockedServiceProvider
         _mocked.Setup(s => s.GetService(typeof(TInterface))).Returns(service.Object);
         return this;
     }
+    
+    public MockedServiceProvider AddService<TInterface>(TInterface service) where TInterface : class
+    {
+        _mocked.Setup(s => s.GetService(typeof(TInterface))).Returns(service);
+        return this;
+    }
 
     public MockedServiceProvider SetupUserId(int? userId)
     {
