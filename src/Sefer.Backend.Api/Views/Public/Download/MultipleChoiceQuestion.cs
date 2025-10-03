@@ -10,6 +10,8 @@ public class MultipleChoiceQuestion(Data.Models.Courses.Lessons.MultipleChoiceQu
     public override string Content { get; set; } = question.Content;
 
     public bool IsMarkDownContent => question.IsMarkDownContent;
+    
+    public bool IsMultiSelect => question.IsMultiSelect;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ContentBlockTypes Type => question.Type;
