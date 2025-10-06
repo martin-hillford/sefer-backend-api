@@ -112,8 +112,8 @@ public class SyncView<T>(List<T> data)
     [JsonPropertyName("s_dt")]
     public long SyncDate = DateTime.UtcNow.ToUnixTime();
 
-    [JsonPropertyName("date")]
-    public List<T> Data = data;
+    [JsonPropertyName("data")]
+    public readonly List<T> Data = data;
 }
 
 /// <summary>
