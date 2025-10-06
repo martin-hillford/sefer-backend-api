@@ -32,6 +32,12 @@ public class CourseRevision : Revision, IRevision<CourseRevision>
     /// </summary>
     [MaxLength(int.MaxValue)]
     public string GeneralInformation { get; set; }
+    
+    /// <summary>
+    /// The enrollments that students have on this course revision
+    /// </summary>
+    [InverseProperty("CourseRevision")]
+    public ICollection<Enrollment> Enrollments { get; set; }
 
     /// <summary>
     /// Gets the CourseId of this revision
