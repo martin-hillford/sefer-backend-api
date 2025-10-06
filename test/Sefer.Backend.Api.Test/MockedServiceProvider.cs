@@ -5,12 +5,12 @@ public class MockedServiceProvider
 {
     private readonly Mock<IServiceProvider> _mocked = new();
 
-    private readonly Mock<IMediator> _mediator = new();
+    public readonly Mock<IMediator> Mediator = new();
 
     public MockedServiceProvider AddRequestResult<TRequest, TResponse>(TResponse response)
         where TRequest : IRequest<TResponse>
     {
-        _mediator
+        Mediator
             .Setup(m => m.Send(It.IsAny<TRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
@@ -24,7 +24,7 @@ public class MockedServiceProvider
         var response = Extensions.GetValueOrNull(parameters, property);
         if (response is null) return this;
         
-        _mediator
+        Mediator
             .Setup(m => m.Send(It.IsAny<TRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response  as TResponse);
 
@@ -34,7 +34,7 @@ public class MockedServiceProvider
     public MockedServiceProvider AddRequestResults<TRequest, TResponse>(List<TResponse> responses)
         where TRequest : IRequest<TResponse>
     {
-        var setup = _mediator.SetupSequence(m => m.Send(It.IsAny<TRequest>(), It.IsAny<CancellationToken>()));
+        var setup = Mediator.SetupSequence(m => m.Send(It.IsAny<TRequest>(), It.IsAny<CancellationToken>()));
         var result = setup.ReturnsAsync(responses.First());
 
         for (var index = 1; index < responses.Count; index++)
@@ -49,7 +49,7 @@ public class MockedServiceProvider
     {
         get
         {
-            _mocked.Setup(s => s.GetService(typeof(IMediator))).Returns(_mediator.Object);
+            _mocked.Setup(s => s.GetService(typeof(IMediator))).Returns(Mediator.Object);
             return _mocked.Object;
         }
     }
@@ -84,4 +84,18 @@ public class MockedServiceProvider
     }
 
     public static MockedServiceProvider Create() => new();
+}
+
+public static class MockedMediatorExtensions
+{
+    public static void VerifySend<TRequest, TResponse>(this MockedServiceProvider provider, Times times)
+        where TRequest : IRequest<TResponse>
+    {
+        VerifySend<TRequest, TResponse>(provider.Mediator, times);
+    }
+    
+    public static void VerifySend<TRequest, TResponse>(this Mock<IMediator> mediator, Times times) where TRequest : IRequest<TResponse>
+    {
+        mediator.Verify(m => m.Send(It.IsAny<TRequest>(), It.IsAny<CancellationToken>() ), times);
+    }
 }

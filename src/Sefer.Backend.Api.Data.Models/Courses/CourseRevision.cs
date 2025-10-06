@@ -58,13 +58,7 @@ public class CourseRevision : Revision, IRevision<CourseRevision>
     /// Gets all the lessons for the CourseRevision
     /// </summary>
     public ICollection<Lesson> Lessons { get; set; }
-
-    /// <summary>
-    /// The enrollments that students have on this course revision
-    /// </summary>
-    [InverseProperty("CourseRevision")]
-    public ICollection<Enrollment> Enrollments { get; set; }
-
+    
     /// <summary>
     /// Get or sets the survey for this lesson
     /// </summary>

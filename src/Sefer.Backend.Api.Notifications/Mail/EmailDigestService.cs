@@ -101,7 +101,6 @@ public class EmailDigestService(IServiceProvider serviceProvider) : IEmailDigest
         foreach (var submission in submissions)
         {
             submission.Enrollment.CourseRevision.Course.CourseRevisions = [];
-            submission.Enrollment.CourseRevision.Enrollments = [];
             submission.Enrollment.Student.Enrollments = [];
             submission.Enrollment.Student.SendMessages = [];
             submission.Enrollment.Student.PartnerEnrollments = [];

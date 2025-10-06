@@ -54,7 +54,7 @@ public class EnrollmentView : ExtendedEnrollmentView
     /// <summary>
     /// This property will contain if the student can re-enroll for an enrollment (given no active enrollment)
     /// </summary>
-    public bool CanStudentReEnroll => (Model.AllowRetake || Model.IsCourseCompleted == false) && IsActive == false;
+    public bool CanStudentReEnroll => (Model.AllowRetake || !Model.IsCourseCompleted) && !IsActive;
 
     /// <summary>
     /// The url to the diploma

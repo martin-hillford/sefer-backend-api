@@ -261,7 +261,6 @@ public class DataContext(DbContextOptions options) : DbContext(options)
         
         // Let ef core now about the relations
         modelBuilder.Entity<User>().HasOne(u => u.MentorSettings).WithOne(s => s.Mentor);
-        modelBuilder.Entity<Enrollment>().HasOne(s => s.CourseRevision).WithMany(c => c.Enrollments).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Enrollment>().HasOne(s => s.AccountabilityPartner).WithMany(c => c.PartnerEnrollments).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Enrollment>().HasOne(s => s.Student).WithMany(c => c.Enrollments).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Enrollment>().HasOne(s => s.Mentor).WithMany(c => c.Mentoring).OnDelete(DeleteBehavior.Restrict);
