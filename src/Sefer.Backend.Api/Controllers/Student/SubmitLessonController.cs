@@ -88,7 +88,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
 
         // Save the result
         var saved = await Send(new SaveSubmissionRequest(submission, answers));
-        if (saved == false) return StatusCode(500);
+        if (!saved) return StatusCode(500);
 
         var courseRevision = await Send(new GetCourseRevisionByIdRequest(enrollment.CourseRevisionId));
         if (courseRevision == null) return BadRequest();
@@ -123,7 +123,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         var finished = await CheckIsEnrollmentIsFinished(enrollment);
 
         // Situation 1) The enrollment is not completed a next lesson will be available - 201 should be returned
-        if (finished == false) return Json(view, 201);
+        if (!finished) return Json(view, 201);
 
         // Situation 2) If the enrollment is finished, the survey must be loaded and returned
         var survey = await Send(new GetSurveyByCourseRevisionRequest(courseRevision.Id));
@@ -203,7 +203,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
         foreach (var question in questions)
         {
             var contains = answers.Contains(question.Id) && answers[question.Id].Any(a => a.QuestionType == question.Type);
-            if (contains == false) return false;
+            if (!contains) return false;
             
             var answer = answers[question.Id].FirstOrDefault(a => a.QuestionType == question.Type);
             if (answer == null) return false;

@@ -3,15 +3,17 @@ using Sefer.Backend.Api.Controllers.App;
 using Sefer.Backend.Api.Data.Models.Courses;
 using Sefer.Backend.Api.Data.Models.Enrollments;
 using Sefer.Backend.Api.Data.Requests.Enrollments;
+using Sefer.Backend.Api.Models.App;
+using Sefer.Backend.Api.Views.App;
 
 namespace Sefer.Backend.Api.Test.Controllers.App;
 
 [TestClass]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class SyncControllerTest_PushEnrollments
+public partial class SyncControllerTest
 {
     [TestMethod]
-    public async Task UserIsNull()
+    public async Task PushEnrollments_UserIsNull()
     {
         var local = new List<LocalEnrollment>();
         var server = new List<Enrollment>();
@@ -21,7 +23,7 @@ public class SyncControllerTest_PushEnrollments
     }
     
     [TestMethod]
-    public async Task UserIsMentor()
+    public async Task PushEnrollments_UserIsMentor()
     {
         var mentor = new User { Id = 1, Name = "Mentor", Role = UserRoles.Mentor };
         var local = new List<LocalEnrollment>();
@@ -32,7 +34,7 @@ public class SyncControllerTest_PushEnrollments
     }
 
     [TestMethod]
-    public async Task NoLocalEnrollmentsToSync()
+    public async Task PushEnrollments_NoLocalEnrollmentsToSync()
     {
         var student = new User { Id = 1, Name = "Mentor", Role = UserRoles.Student };
         var locals = new List<LocalEnrollment>();
@@ -47,18 +49,18 @@ public class SyncControllerTest_PushEnrollments
     }
 
     [TestMethod]
-    public async Task NewLocalEnrollment()
+    public async Task PushEnrollments_NewLocalEnrollment()
     {
         var student = new User { Id = 1, Name = "Student", Role = UserRoles.Student };
         var local = new LocalEnrollment { LocalId = 13, CourseId = 19, Grade = 8, UserId = student.Id };
         var locals = new List<LocalEnrollment> { local };
         var servers = new List<Enrollment>();
         
-        await AssertInserted(student, locals, servers);
+        await PushEnrollments_AssertInserted(student, locals, servers);
     }
     
     [TestMethod]
-    public async Task LocalEnrollmentNotMatchingCourse()
+    public async Task PushEnrollments_LocalEnrollmentNotMatchingCourse()
     {
         var student = new User { Id = 11, Name = "Student", Role = UserRoles.Student };
         var local = new LocalEnrollment { LocalId = 13, CourseId = 19, Grade = 8, UserId = student.Id };
@@ -66,11 +68,11 @@ public class SyncControllerTest_PushEnrollments
         var server = new Enrollment { CourseRevision = new CourseRevision { CourseId = 17 } };
         var servers = new List<Enrollment> { server };
         
-        await AssertInserted(student, locals, servers);
+        await PushEnrollments_AssertInserted(student, locals, servers);
     }
 
     [TestMethod]
-    public async Task LocalEnrollmentNotAhead()
+    public async Task PushEnrollments_LocalEnrollmentNotAhead()
     {
         var student = new User { Id = 1, Name = "Student", Role = UserRoles.Student };
         var local = new LocalEnrollment { LocalId = 13, CourseId = 19, Grade = 8, UserId = student.Id };
@@ -79,11 +81,11 @@ public class SyncControllerTest_PushEnrollments
         var servers = new List<Enrollment> { server };
         
         var (provider, result) = await PushEnrollments(student, locals, servers);
-        AssertUpdate(provider, result, null, false);
+        PushEnrollments_AssertUpdate(provider, result, null, false);
     }
     
     [TestMethod]
-    public async Task LocalEnrollmentAhead()
+    public async Task PushEnrollments_LocalEnrollmentAhead()
     {
         var student = new User { Id = 1, Name = "Student", Role = UserRoles.Student };
         var local = new LocalEnrollment { LocalId = 13, CourseId = 19, Grade = 8, UserId = student.Id, IsCourseCompleted = true};
@@ -92,11 +94,11 @@ public class SyncControllerTest_PushEnrollments
         var servers = new List<Enrollment> { server };
         
         var (provider, result) = await PushEnrollments(student, locals, servers);
-        AssertUpdate(provider, result, "17", true);
+        PushEnrollments_AssertUpdate(provider, result, "17", true);
     }
     
     [TestMethod]
-    public async Task MultipleEnrollmentsLocalNotAhead()
+    public async Task PushEnrollments_MultipleEnrollmentsLocalNotAhead()
     {
         var student = new User { Id = 1, Name = "Student", Role = UserRoles.Student };
         var local = new LocalEnrollment { LocalId = 13, CourseId = 19, Grade = 8, UserId = student.Id};
@@ -108,11 +110,11 @@ public class SyncControllerTest_PushEnrollments
         };
         
         var (provider, result) = await PushEnrollments(student, locals, servers);
-        AssertUpdate(provider, result, null, false);
+        PushEnrollments_AssertUpdate(provider, result, null, false);
     }
     
     [TestMethod]
-    public async Task MultipleEnrollmentsLocalAhead()
+    public async Task PushEnrollments_MultipleEnrollmentsLocalAhead()
     {
         var student = new User { Id = 1, Name = "Student", Role = UserRoles.Student };
         var local = new LocalEnrollment { LocalId = 13, CourseId = 19, Grade = 8, UserId = student.Id, IsCourseCompleted = true};
@@ -125,10 +127,10 @@ public class SyncControllerTest_PushEnrollments
         };
         
         var (provider, result) = await PushEnrollments(student, locals, servers);
-        AssertUpdate(provider, result, "23", true);
+        PushEnrollments_AssertUpdate(provider, result, "23", true);
     }
     
-    private static async Task AssertInserted(User student, List<LocalEnrollment> locals, List<Enrollment> servers)
+    private static async Task PushEnrollments_AssertInserted(User student, List<LocalEnrollment> locals, List<Enrollment> servers)
     {
         var (provider, result) = await PushEnrollments(student, locals, servers);
         
@@ -144,7 +146,7 @@ public class SyncControllerTest_PushEnrollments
         provider.Mediator.VerifySend<UpdateEnrollmentRequest, bool>(Times.Never());     
     }
 
-    private static void AssertUpdate(MockedServiceProvider provider, IActionResult result, string serverId, bool updated)
+    private static void PushEnrollments_AssertUpdate(MockedServiceProvider provider, IActionResult result, string serverId, bool updated)
     {
         var pushResult = (result as ObjectResult)?.Value as SyncView<PushResult>;
         Assert.IsInstanceOfType<OkObjectResult>(result);

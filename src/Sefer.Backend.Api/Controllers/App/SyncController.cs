@@ -1,6 +1,10 @@
 // ReSharper disable UnusedMember.Global PropertyCanBeMadeInitOnly.Global UnusedAutoPropertyAccessor.Global
 using System.Diagnostics.CodeAnalysis;
+using Sefer.Backend.Api.Controllers.Student;
+using Sefer.Backend.Api.Models.App;
 using Sefer.Backend.Api.Shared;
+using Sefer.Backend.Api.Views.App;
+using EnrollmentView = Sefer.Backend.Api.Views.App.EnrollmentView;
 
 namespace Sefer.Backend.Api.Controllers.App;
 
@@ -82,8 +86,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
     /// This method returns all the enrollments for a given students.
     /// By settings previousSyncTime 
     /// </summary>
-    /// <param name="prevSyncTime"></param>
-    /// <returns></returns>
+    /// <param name="prevSyncTime">The last time the local client was synced with the server</param>
     [HttpGet("/app/sync/pull/enrollments")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<IActionResult> PullEnrollments(long? prevSyncTime = null)
@@ -100,133 +103,86 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
         var view = enrollments.Select(enrollment => new EnrollmentView(enrollment)).ToList();
         return Ok(new SyncView<EnrollmentView>(view)); 
     }
-}
-
-/// <summary>
-/// This 
-/// </summary>
-/// <param name="data"></param>
-/// <typeparam name="T"></typeparam>
-public class SyncView<T>(List<T> data)
-{
-    [JsonPropertyName("s_dt")]
-    public long SyncDate = DateTime.UtcNow.ToUnixTime();
-
-    [JsonPropertyName("data")]
-    public readonly List<T> Data = data;
-}
-
-/// <summary>
-/// This is a result from a push.
-/// </summary>
-/// <param name="local"></param>
-public class PushResult(LocalEnrollment local)
-{
-    public string Id => local.Id;
     
-    public int LocalId => local.LocalId;
-}
-
-/// <summary>
-/// This reprents the local enrollment
-/// </summary>
-public class LocalEnrollment
-{
-    [JsonPropertyName("id")]
-    public string Id { get; set;  }
-    
-    [JsonPropertyName("l_id")]
-    public int LocalId { get; set; }
-    
-    [JsonPropertyName("cr_id")]
-    public int CourseRevisionId { get; set;  }
-    
-    [JsonPropertyName("u_id")]
-    public int UserId { get; set;  }
-    
-    [JsonPropertyName("c_id")]
-    public int CourseId { get; set;  }
-    
-    [JsonPropertyName("dn")]
-    public bool IsCourseCompleted { get; set;  }
-    
-    [JsonPropertyName("grd")]
-    public double? Grade { get; set;  }
-    
-    public Enrollment CreateEnrollment()
+    /// <summary>
+    /// This method will take the submission from a local device and will process them
+    /// The assumptions is that the moment a submission for an enrollment / lesson combination
+    /// already exists, the server is leading
+    /// </summary>
+    /// <param name="localSubmissions"></param>
+    /// <returns></returns>
+    [HttpPost("/app/sync/push/submissions")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> PushSubmission(List<LocalSubmission> localSubmissions)
     {
-        return new Enrollment
+        // Check if a student is making this request
+        var student = await GetCurrentUser();
+        if (student == null || student.IsMentor) return Forbid();
+        
+        // Create a lookup for enrollment for performance reasons
+        var enrollments = new Dictionary<int, Enrollment>();
+        var result = new Dictionary<LessonSubmission, LocalSubmission>();
+        
+        foreach (var local in localSubmissions)
         {
-            CourseRevisionId = CourseRevisionId,
-            CreationDate = DateTime.UtcNow,
-            ClosureDate = IsCourseCompleted ? DateTime.UtcNow : null,
-            Grade = Grade,
-            IsCourseCompleted = IsCourseCompleted,
-            Imported = false,
-            OnPaper = false,
-            StudentId = UserId,
-            ModificationDate = DateTime.UtcNow
-        };
+            // First check if the enrollment exists for this submission
+            if (!enrollments.ContainsKey(local.EnrollmentId))
+            {
+                var enrollment = await Send(new GetEnrollmentByIdRequest(local.EnrollmentId));
+                if (enrollment == null) return BadRequest();
+                enrollments.Add(local.EnrollmentId, enrollment);
+            }
+            
+            // The combination of enrollmentId and lessonId must be unique.
+            // If the combination does not exist this is submission must be inserted. 
+            // Else ignore the submission. it will be fixed when the submission is pulled
+            var server = await Send(new SearchSubmissionRequest(local.EnrollmentId, local.LessonId));
+
+            // If there is no server submission, then create on and insert it
+            if (server == null)
+            {
+                // Check if the posted submission is valid. This should also be the case if the app is used!
+                var postModel = local.ToPostModel();
+                var lesson = await Send(new GetLessonIncludeReferencesRequest(local.LessonId));
+                var isValid = SubmitLessonController.IsValidSubmission(lesson, postModel);
+                if (!isValid) return BadRequest($"Answers for submission of lesson {local.EnrollmentId} are not valid");
+                
+                // Now save it to the sever.
+                server = local.ToSubmission();
+                var answers = local.Answers.Select(a => a.ToQuestionAnswer()).ToList();
+                var response = await Send(new SaveSubmissionRequest(server, answers));
+                if(!response) return BadRequest($"Could not save answers for submission of lesson {local.EnrollmentId}");
+            }
+            
+            // Add the result to the dictionary
+            result.Add(server, local);
+        }
+        
+        var view = result.Select(s => new PushResult(s.Key, s.Value)).ToList();
+        return Ok(view);
     }
-}
+    
+    /// <summary>
+    /// This method returns all the submissions for a given students.
+    /// By settings previousSyncTime 
+    /// </summary>
+    /// <param name="prevSyncTime">The last time the local client was synced with the server</param>
+    [HttpGet("/app/sync/pull/submissions")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> PullSubmissions (long? prevSyncTime = null)
+    {
+        // Check if a student is making this request
+        var student = await GetCurrentUser();
+        if (student == null || student.IsMentor) return Forbid();
+            
+        // Determine the start 
+        DateTime? start = prevSyncTime.HasValue
+            ? DateTimeOffset.FromUnixTimeSeconds(prevSyncTime.Value).UtcDateTime
+            : null;
 
-/// <summary>
-/// An enrollment as send to the client
-/// </summary>
-/// <param name="enrollment"></param>
-public class EnrollmentView(Enrollment enrollment)
-{
-    [JsonPropertyName("id")]
-    public int Id => enrollment.Id;
-
-    /// <summary>
-    /// The date the enrollment was created.
-    /// </summary>
-    [JsonPropertyName("cr_dt")]
-    public long CreationDate => enrollment.CreationDate.ToUnixTime();
-
-    /// <summary>
-    /// The date the enrollment was modified for the last time
-    /// </summary>
-    [JsonPropertyName("m_dt")]
-    public long? ModificationDate => enrollment.ModificationDate?.ToUnixTime();
-    
-    /// <summary>
-    /// The date the enrollment is closed.
-    /// Either because the user ended his enrollment or did complete the course
-    /// </summary>
-    [JsonPropertyName("cl_dt")]
-    public long? ClosureDate => enrollment.ClosureDate?.ToUnixTime();
-    
-    /// <summary>
-    /// The id of the revision of the course that is taken by the student.
-    /// </summary>
-    [JsonPropertyName("cr_id")]
-    public int CourseRevisionId => enrollment.CourseRevisionId;
-    
-    /// <summary>
-    /// The id of the student that is enrolled to the course.
-    /// </summary>
-    [JsonPropertyName("s_id")]
-    public int StudentId => enrollment.StudentId;
-    
-    /// <summary>
-    /// Holds if the User has completed the course. Can be set because the user submitted all the lessons of course to mentor.
-    /// Or can be set by an administrator because he knows of completion in the past.
-    /// </summary>
-    [JsonPropertyName("dn")]
-    public int IsCourseCompleted => enrollment.IsCourseCompleted ? 1 : 0;
-    
-    /// <summary>
-    /// Gets the CourseId of this enrollment
-    /// </summary>
-    [JsonPropertyName("c_id")]
-    public int CourseId => enrollment.CourseRevision.CourseId;
-    
-    /// <summary>
-    /// This contains the final grade for of the course (between 0 and zero)
-    /// </summary>
-    /// <value></value>
-    [JsonPropertyName("grd")]
-    public double? Grade =>  enrollment.Grade;
+        // Get all the submissions that should be synced by the device
+        var submissions = await Send(new GetSubmissionsByTimeRequest(student.Id, start));
+        var view = submissions.Select(LocalSubmission.Create).ToList();
+        return Ok(new SyncView<LocalSubmission>(view));
+    }
 }
