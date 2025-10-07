@@ -22,7 +22,7 @@ public class LocalSubmission
     [JsonPropertyName("u_id")]
     public int StudentId { get; set; }
     
-    [JsonPropertyName("l_id")]
+    [JsonPropertyName("ls_id")]
     public int LessonId { get; set; }
     
     [JsonPropertyName("s_dt")]
