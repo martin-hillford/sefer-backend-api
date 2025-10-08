@@ -159,7 +159,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
         }
         
         var view = result.Select(s => new PushResult(s.Key, s.Value)).ToList();
-        return Ok(view);
+        return Ok(new SyncView<PushResult>(view));
     }
     
     /// <summary>
