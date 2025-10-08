@@ -6,8 +6,11 @@ namespace Sefer.Backend.Api.Views.App;
 /// <param name="enrollment"></param>
 public class EnrollmentView(Enrollment enrollment)
 {
+    /// <summary>
+    /// This is the server id of the enrollment
+    /// </summary>
     [JsonPropertyName("id")]
-    public int Id => enrollment.Id;
+    public string Id => enrollment.Id.ToString(); // In the database this is for now a long, but this is anticipating for Guid
 
     /// <summary>
     /// The date the enrollment was created.

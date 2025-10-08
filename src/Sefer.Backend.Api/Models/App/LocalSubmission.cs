@@ -17,7 +17,7 @@ public class LocalSubmission
     public int LocalId { get; set; }
     
     [JsonPropertyName("e_id")]
-    public int EnrollmentId { get; set; }
+    public string EnrollmentId { get; set; }
     
     [JsonPropertyName("u_id")]
     public int StudentId { get; set; }
@@ -37,7 +37,7 @@ public class LocalSubmission
     public SubmissionPostModel ToPostModel()
     {
         var answers = Answers.Select(answer => answer.ToPostModel()).ToList();
-        return new SubmissionPostModel { EnrollmentId = EnrollmentId, Final = true, Answers = answers};
+        return new SubmissionPostModel { EnrollmentId = int.Parse(EnrollmentId), Final = true, Answers = answers};
     }
 
     public LessonSubmission ToSubmission()
@@ -48,7 +48,7 @@ public class LocalSubmission
             CreationDate = DateTime.UtcNow,
             ModificationDate = DateTime.UtcNow,
             LessonId = LessonId,
-            EnrollmentId = EnrollmentId,
+            EnrollmentId = int.Parse(EnrollmentId),
             IsFinal = true,
             ResultsStudentVisible = true,
             SubmissionDate = DateTime.UtcNow,
@@ -61,7 +61,7 @@ public class LocalSubmission
         return new LocalSubmission
         {
             LessonId = submission.LessonId,
-            EnrollmentId = submission.EnrollmentId,
+            EnrollmentId = submission.EnrollmentId.ToString(),
             Grade = submission.Grade,
             StudentId = submission.Enrollment.StudentId,
             SubmissionDate = submission.SubmissionDate?.ToUnixTime() ?? 0,
@@ -74,14 +74,19 @@ public class LocalSubmission
 public class LocalAnswer
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonPropertyName("q_tp")]
     public ContentBlockTypes QuestionType { get; set; }
     
+    [JsonPropertyName("q_id")]
     public int QuestionId { get; set; }
     
+    [JsonPropertyName("t")]
     public string Text { get; set; }
     
+    [JsonPropertyName("c")]
     public List<int> Choices { get; set; }
     
+    [JsonPropertyName("b")]
     public bool BoolValue { get; set; }
 
     public QuestionAnswerPostModel ToPostModel()

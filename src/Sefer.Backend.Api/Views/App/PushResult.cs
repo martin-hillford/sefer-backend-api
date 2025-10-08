@@ -7,7 +7,7 @@ namespace Sefer.Backend.Api.Views.App;
 /// </summary>
 public class PushResult
 {
-    public string Id { get; init; }
+    public string Id { get; init; } // In the database this is for now a long, but this is anticipating for Guid
 
     public int LocalId { get; init; }
 

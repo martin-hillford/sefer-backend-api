@@ -97,7 +97,7 @@ public partial class SyncControllerTest
         
         Assert.AreEqual(8, syncView.Data[0].Grade);
         Assert.AreEqual(DateTime.MaxValue.ToUnixTime(), syncView.Data[0].ClosureDate);
-        Assert.AreEqual(13, syncView.Data[0].Id);
+        Assert.AreEqual("13", syncView.Data[0].Id);
         Assert.AreEqual(0, syncView.Data[0].IsCourseCompleted);
         Assert.AreEqual(10, syncView.Data[0].CourseRevisionId);
         Assert.AreEqual(17, syncView.Data[0].CourseId);

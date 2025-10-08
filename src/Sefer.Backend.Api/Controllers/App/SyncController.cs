@@ -31,7 +31,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
     /// </remarks>
     [HttpPost("/app/sync/push/enrollments")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public async Task<IActionResult> PushEnrollments(List<LocalEnrollment> localEnrollments)
+    public async Task<IActionResult> PushEnrollments([FromBody] List<LocalEnrollment> localEnrollments)
     {
         // Check if a student is making this request
         var student = await GetCurrentUser();
@@ -113,14 +113,14 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
     /// <returns></returns>
     [HttpPost("/app/sync/push/submissions")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public async Task<IActionResult> PushSubmission(List<LocalSubmission> localSubmissions)
+    public async Task<IActionResult> PushSubmission([FromBody] List<LocalSubmission> localSubmissions)
     {
         // Check if a student is making this request
         var student = await GetCurrentUser();
         if (student == null || student.IsMentor) return Forbid();
         
         // Create a lookup for enrollment for performance reasons
-        var enrollments = new Dictionary<int, Enrollment>();
+        var enrollments = new Dictionary<string, Enrollment>();
         var result = new Dictionary<LessonSubmission, LocalSubmission>();
         
         foreach (var local in localSubmissions)
@@ -128,7 +128,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
             // First check if the enrollment exists for this submission
             if (!enrollments.ContainsKey(local.EnrollmentId))
             {
-                var enrollment = await Send(new GetEnrollmentByIdRequest(local.EnrollmentId));
+                var enrollment = await Send(new GetEnrollmentByIdRequest(int.Parse(local.EnrollmentId)));
                 if (enrollment == null) return BadRequest();
                 enrollments.Add(local.EnrollmentId, enrollment);
             }
@@ -136,7 +136,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
             // The combination of enrollmentId and lessonId must be unique.
             // If the combination does not exist this is submission must be inserted. 
             // Else ignore the submission. it will be fixed when the submission is pulled
-            var server = await Send(new SearchSubmissionRequest(local.EnrollmentId, local.LessonId));
+            var server = await Send(new SearchSubmissionRequest(int.Parse(local.EnrollmentId), local.LessonId));
 
             // If there is no server submission, then create on and insert it
             if (server == null)
