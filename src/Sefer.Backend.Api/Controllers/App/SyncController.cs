@@ -133,22 +133,29 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
                 enrollments.Add(local.EnrollmentId, enrollment);
             }
             
+            // Check if the posted submission is valid. This should also be the case if the app is used!
+            var postModel = local.ToPostModel();
+            var lesson = await Send(new GetLessonIncludeReferencesRequest(local.LessonId));
+            var isValid = SubmitLessonController.IsValidSubmission(lesson, postModel);
+            if (!isValid) return BadRequest($"Answers for submission of lesson {local.EnrollmentId} are not valid");
+            
             // The combination of enrollmentId and lessonId must be unique.
             // If the combination does not exist this is submission must be inserted. 
             // Else ignore the submission. it will be fixed when the submission is pulled
             var server = await Send(new SearchSubmissionRequest(int.Parse(local.EnrollmentId), local.LessonId));
 
             // If there is no server submission, then create on and insert it
-            if (server == null)
+            if (server == null )
             {
-                // Check if the posted submission is valid. This should also be the case if the app is used!
-                var postModel = local.ToPostModel();
-                var lesson = await Send(new GetLessonIncludeReferencesRequest(local.LessonId));
-                var isValid = SubmitLessonController.IsValidSubmission(lesson, postModel);
-                if (!isValid) return BadRequest($"Answers for submission of lesson {local.EnrollmentId} are not valid");
-                
                 // Now save it to the sever.
                 server = local.ToSubmission();
+                var answers = local.Answers.Select(a => a.ToQuestionAnswer()).ToList();
+                var response = await Send(new SaveSubmissionRequest(server, answers));
+                if(!response) return BadRequest($"Could not save answers for submission of lesson {local.EnrollmentId}");
+            }
+            else if (server.IsFinal == false)
+            {
+                server.Update(local);
                 var answers = local.Answers.Select(a => a.ToQuestionAnswer()).ToList();
                 var response = await Send(new SaveSubmissionRequest(server, answers));
                 if(!response) return BadRequest($"Could not save answers for submission of lesson {local.EnrollmentId}");

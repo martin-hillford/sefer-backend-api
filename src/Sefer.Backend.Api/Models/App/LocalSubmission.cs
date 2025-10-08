@@ -71,6 +71,22 @@ public class LocalSubmission
     }
 }
 
+public static class Extensions
+{
+    public static void Update(this LessonSubmission lessonSubmission, LocalSubmission submission)
+    {
+        lessonSubmission.Grade = submission.Grade;
+        lessonSubmission.CreationDate = DateTime.UtcNow;
+        lessonSubmission.ModificationDate = DateTime.UtcNow;
+        lessonSubmission.LessonId = submission.LessonId;
+        lessonSubmission.EnrollmentId = int.Parse(submission.EnrollmentId);
+        lessonSubmission.IsFinal = true;
+        lessonSubmission.ResultsStudentVisible = true;
+        lessonSubmission.SubmissionDate = DateTime.UtcNow;
+        lessonSubmission.Imported = false;
+    }
+}
+
 public class LocalAnswer
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
