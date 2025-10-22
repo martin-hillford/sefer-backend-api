@@ -11,6 +11,8 @@ public class Course(Data.Models.Courses.Course course, CourseRevision revision)
     #region Properties
     
     public int Id => course.Id;
+    
+    public int CourseRevisionId => revision.Id; // This field is required for proper creation of enrollments
 
     public long CreationDate => course.CreationDate.ToUnixTime();
     
