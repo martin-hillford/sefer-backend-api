@@ -219,7 +219,7 @@ public class SubmitLessonController(IServiceProvider serviceProvider) : GrantCon
                 case ContentBlockTypes.QuestionMultipleChoice:
                     var multipleChoiceQuestion = (MultipleChoiceQuestion)question;
                     // here is the thing, answers for multiple choice question are provided as a comma-separated list of id
-                    var choiceIds = answer.Answer.Split(',');
+                    var choiceIds = answer.Answer.Split(',').Select(id => id.Trim());
                     var hasChoice = choiceIds.All(ac => multipleChoiceQuestion.Choices.Any(c => c.Id.ToString() == ac));
                     if (hasChoice == false) return false;
                     break;
