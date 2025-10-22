@@ -129,7 +129,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
             if (!enrollments.ContainsKey(local.EnrollmentId))
             {
                 var enrollment = await Send(new GetEnrollmentByIdRequest(int.Parse(local.EnrollmentId)));
-                if (enrollment == null) return BadRequest();
+                if (enrollment == null) return BadRequest(error: new { error = $"Could not find Enrollment with id {local.EnrollmentId}" });
                 enrollments.Add(local.EnrollmentId, enrollment);
             }
             
@@ -137,7 +137,7 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
             var postModel = local.ToPostModel();
             var lesson = await Send(new GetLessonIncludeReferencesRequest(local.LessonId));
             var isValid = SubmitLessonController.IsValidSubmission(lesson, postModel);
-            if (!isValid) return BadRequest($"Answers for submission of lesson {local.EnrollmentId} are not valid");
+            if (!isValid) return BadRequest(error: new { error = $"Answers for submission of lesson {local.EnrollmentId} are not valid"});
             
             // The combination of enrollmentId and lessonId must be unique.
             // If the combination does not exist this is submission must be inserted. 
@@ -151,14 +151,14 @@ public class SyncController(IServiceProvider serviceProvider) : BaseController(s
                 server = local.ToSubmission();
                 var answers = local.Answers.Select(a => a.ToQuestionAnswer()).ToList();
                 var response = await Send(new SaveSubmissionRequest(server, answers));
-                if(!response) return BadRequest($"Could not save answers for submission of lesson {local.EnrollmentId}");
+                if(!response) return BadRequest(error: new { error = $"Could not save answers for submission of lesson {local.EnrollmentId}"});
             }
             else if (server.IsFinal == false)
             {
                 server.Update(local);
                 var answers = local.Answers.Select(a => a.ToQuestionAnswer()).ToList();
                 var response = await Send(new SaveSubmissionRequest(server, answers));
-                if(!response) return BadRequest($"Could not save answers for submission of lesson {local.EnrollmentId}");
+                if(!response) return BadRequest(error: new { error = $"Could not save answers for submission of lesson {local.EnrollmentId}"});
             }
             
             // Add the result to the dictionary
