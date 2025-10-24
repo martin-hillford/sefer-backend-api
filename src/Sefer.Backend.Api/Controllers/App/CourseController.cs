@@ -14,7 +14,8 @@ public class CourseController(IServiceProvider serviceProvider) : BaseController
     /// <param name="courseId"></param>
     /// <returns></returns>
     [HttpGet("/app/courses/{courseId:int}")]
-    private async Task<IActionResult> GetCourseOverView(int? courseId)
+    [ResponseCache(Duration = 1209600)]
+    public async Task<IActionResult> GetCourseOverView(int? courseId)
     {
         var course = await Send(new GetPublishedCourseByIdRequest(courseId));
         if (course == null) return NotFound();
