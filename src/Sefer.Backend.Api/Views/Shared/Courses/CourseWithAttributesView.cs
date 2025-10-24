@@ -19,6 +19,11 @@ public abstract class CourseWithAttributesView : CourseDisplayView
     public int Version => CourseRevision.Version;
 
     /// <summary>
+    /// The id of the revision of course this view is about
+    /// </summary>
+    public int CourseRevisionId => CourseRevision.Id;
+
+    /// <summary>
     /// When this is set to true; Students are allowed to take this course
     /// without the aid of a mentor
     /// </summary>
