@@ -3,7 +3,7 @@ using Sefer.Backend.Api.Views.Public.Download;
 using Course = Sefer.Backend.Api.Views.Public.Download.Course;
 using Lesson = Sefer.Backend.Api.Views.Public.Download.Lesson;
 
-namespace Sefer.Backend.Api.Controllers.Public;
+namespace Sefer.Backend.Api.Controllers.App;
 
 public class DownloadCourseController(IServiceProvider serviceProvider) : BaseController(serviceProvider)
 {
@@ -12,22 +12,23 @@ public class DownloadCourseController(IServiceProvider serviceProvider) : BaseCo
     /// </summary>
     /// <param name="courseId">The course to download</param>
     /// <param name="includeMedia"></param>
-    [HttpGet("/download-course/{courseId:int}")]
+    [HttpGet("/app/download-course/{courseId:int}")]
     public async Task<IActionResult> DownloadCourse(int courseId, [FromQuery] bool includeMedia = true)
     {
         var request = new DownloadRequest { CourseId = courseId,  IncludeMedia = includeMedia };
         return await DownloadCourse(request);
     }
-    
+
     /// <summary>
     /// Create one single JSON structure for a single course revision
     ///  This structure will the source for the move to a separate course api that will use MongoDB
     /// </summary>
     /// <param name="courseRevisionId">The course revision to download</param>
-    [Authorize(Roles = "Admin"), HttpGet("/download-course-revision/{courseRevisionId:int}")]
-    public async Task<IActionResult> DownloadCourseRevision(int courseRevisionId)
+    /// <param name="includeMedia"></param>
+    [HttpGet("/app/download-course-revision/{courseRevisionId:int}")]
+    public async Task<IActionResult> DownloadCourseRevision(int courseRevisionId, [FromQuery] bool includeMedia = true)
     {
-        var request = new DownloadRequest { CourseRevisionId = courseRevisionId };
+        var request = new DownloadRequest { CourseRevisionId = courseRevisionId,  IncludeMedia = includeMedia };
         return await DownloadCourse(request);
     }
     
@@ -35,7 +36,7 @@ public class DownloadCourseController(IServiceProvider serviceProvider) : BaseCo
     /// Creates a full downloadable package of a course (published revision) or revision.
     /// Depending on the parameters, it will also include all images of the course.
     /// </summary>
-    [HttpPost("/download-course")]
+    [HttpPost("/app/download-course")]
     public async Task<IActionResult> DownloadCourse(DownloadRequest request)
     {
         var dataRevision = await GetRevision(request);
